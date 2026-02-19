@@ -479,6 +479,12 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                   showCustomSnackBar(context, 'User not logged in.', positive: false);
                                   return;
                                 }
+                                final session = Supabase.instance.client.auth.currentSession;
+                                final jwt = session?.accessToken;
+                                if (jwt == null) {
+                                  showCustomSnackBar(context, 'Session token not available.', positive: false);
+                                  return;
+                                }
                                 final now = DateTime.now();
                                 final planId = now.year == 2026 ? 'free' : 'paid';
                                 final body = {
@@ -490,6 +496,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                   body: body,
                                   headers: {
                                     'Content-Type': 'application/json',
+                                    'Authorization': 'Bearer $jwt',
                                   },
                                 );
                                 final data = res.data;
