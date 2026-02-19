@@ -1,8 +1,7 @@
 [[plugins]]
-  package = "netlify-plugin-flutter-sdk"
+  package = "netlify-plugin-flutter"
 
 [build]
-  # We removed the 'base' line entirely so it stays in the root
   command = "flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --dart-define=STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY"
   publish = "build/web"
 

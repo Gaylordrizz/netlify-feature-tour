@@ -1,5 +1,5 @@
 {
   "devDependencies": {
-    "netlify-plugin-flutter-sdk": "0.1.3"
+    "netlify-plugin-flutter": "latest"
   }
 }
