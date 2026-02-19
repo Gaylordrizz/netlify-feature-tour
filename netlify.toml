@@ -1,5 +1,5 @@
 [build]
-  # This tells Netlify how to compile your Flutter app
+  base = ""
   command = "flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --dart-define=STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY"
   publish = "build/web"
 
@@ -7,7 +7,6 @@
   FLUTTER_VERSION = "stable"
 
 [[redirects]]
-  # This fixes the "404 error" when you refresh the page in a Flutter Web app
   from = "/*"
   to = "/index.html"
   status = 200
