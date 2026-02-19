@@ -1,0 +1,26 @@
+{
+  "@@locale": "ur",
+  "appTitle": "اسٹورازار",
+  "settings": "ترتیبات",
+  "notifications": "اطلاعات",
+  "privacy": "رازداری",
+  "language": "زبان",
+  "helpSupport": "مدد اور معاونت",
+  "about": "کے بارے میں",
+  "termsConditions": "شرائط و ضوابط",
+  "logout": "لاگ آؤٹ",
+  "selectLanguage": "زبان منتخب کریں",
+  "languageChanged": "زبان {language} میں تبدیل ہوگئی ہے",
+  "@languageChanged": {
+    "description": "زبان تبدیل ہونے پر دکھایا جانے والا پیغام۔",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "اردو"
+      }
+    }
+  },
+  "cancel": "منسوخ کریں",
+  "logoutConfirm": "کیا آپ واقعی لاگ آؤٹ کرنا چاہتے ہیں؟",
+  "loggedOut": "کامیابی سے لاگ آؤٹ ہوگیا"
+}

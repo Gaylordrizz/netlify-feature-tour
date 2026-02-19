@@ -1,0 +1,26 @@
+{
+  "@@locale": "vi",
+  "appTitle": "Storazaar",
+  "settings": "Cài đặt",
+  "notifications": "Thông báo",
+  "privacy": "Quyền riêng tư",
+  "language": "Ngôn ngữ",
+  "helpSupport": "Trợ giúp & Hỗ trợ",
+  "about": "Giới thiệu",
+  "termsConditions": "Điều khoản & Điều kiện",
+  "logout": "Đăng xuất",
+  "selectLanguage": "Chọn ngôn ngữ",
+  "languageChanged": "Ngôn ngữ đã được đổi sang {language}",
+  "@languageChanged": {
+    "description": "Thông báo khi ngôn ngữ được thay đổi.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "Tiếng Việt"
+      }
+    }
+  },
+  "cancel": "Hủy",
+  "logoutConfirm": "Bạn có chắc chắn muốn đăng xuất không?",
+  "loggedOut": "Đăng xuất thành công"
+}

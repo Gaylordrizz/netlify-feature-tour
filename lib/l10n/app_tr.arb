@@ -1,0 +1,26 @@
+{
+  "@@locale": "tr",
+  "appTitle": "Storazaar",
+  "settings": "Ayarlar",
+  "notifications": "Bildirimler",
+  "privacy": "Gizlilik",
+  "language": "Dil",
+  "helpSupport": "Yardım ve Destek",
+  "about": "Hakkında",
+  "termsConditions": "Şartlar ve Koşullar",
+  "logout": "Çıkış Yap",
+  "selectLanguage": "Dil Seç",
+  "languageChanged": "Dil {language} olarak değiştirildi",
+  "@languageChanged": {
+    "description": "Dil değiştirildiğinde gösterilen mesaj.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "Türkçe"
+      }
+    }
+  },
+  "cancel": "İptal",
+  "logoutConfirm": "Çıkış yapmak istediğinizden emin misiniz?",
+  "loggedOut": "Başarıyla çıkış yapıldı"
+}

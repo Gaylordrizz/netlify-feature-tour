@@ -1,0 +1,26 @@
+{
+  "@@locale": "ar",
+  "appTitle": "ستورازار",
+  "settings": "الإعدادات",
+  "notifications": "الإشعارات",
+  "privacy": "الخصوصية",
+  "language": "اللغة",
+  "helpSupport": "المساعدة والدعم",
+  "about": "حول",
+  "termsConditions": "الشروط والأحكام",
+  "logout": "تسجيل الخروج",
+  "selectLanguage": "اختر اللغة",
+  "languageChanged": "تم تغيير اللغة إلى {language}",
+  "@languageChanged": {
+    "description": "رسالة تظهر عند تغيير اللغة.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "العربية"
+      }
+    }
+  },
+  "cancel": "إلغاء",
+  "logoutConfirm": "هل أنت متأكد أنك تريد تسجيل الخروج؟",
+  "loggedOut": "تم تسجيل الخروج بنجاح"
+}

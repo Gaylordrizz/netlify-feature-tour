@@ -1,0 +1,26 @@
+{
+  "@@locale": "pa",
+  "appTitle": "ਸਟੋਰਾਜ਼ਾਰ",
+  "settings": "ਸੈਟਿੰਗਾਂ",
+  "notifications": "ਨੋਟੀਫਿਕੇਸ਼ਨ",
+  "privacy": "ਪਰਦੇਦਾਰੀ",
+  "language": "ਭਾਸ਼ਾ",
+  "helpSupport": "ਮਦਦ ਅਤੇ ਸਹਾਇਤਾ",
+  "about": "ਬਾਰੇ",
+  "termsConditions": "ਨਿਯਮ ਅਤੇ ਸ਼ਰਤਾਂ",
+  "logout": "ਲੌਗ ਆਉਟ",
+  "selectLanguage": "ਭਾਸ਼ਾ ਚੁਣੋ",
+  "languageChanged": "ਭਾਸ਼ਾ {language} ਵਿੱਚ ਬਦਲੀ ਗਈ ਹੈ",
+  "@languageChanged": {
+    "description": "ਭਾਸ਼ਾ ਬਦਲਣ ਤੇ ਦਿਖਾਇਆ ਜਾਣ ਵਾਲਾ ਸੁਨੇਹਾ।",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "ਪੰਜਾਬੀ"
+      }
+    }
+  },
+  "cancel": "ਰੱਦ ਕਰੋ",
+  "logoutConfirm": "ਕੀ ਤੁਸੀਂ ਯਕੀਨਨ ਲੌਗ ਆਉਟ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?",
+  "loggedOut": "ਸਫਲਤਾਪੂਰਵਕ ਲੌਗ ਆਉਟ ਹੋ ਗਿਆ"
+}

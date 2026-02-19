@@ -1,0 +1,26 @@
+{
+  "@@locale": "zh",
+  "appTitle": "Storazaar",
+  "settings": "设置",
+  "notifications": "通知",
+  "privacy": "隐私",
+  "language": "语言",
+  "helpSupport": "帮助与支持",
+  "about": "关于",
+  "termsConditions": "条款和条件",
+  "logout": "退出登录",
+  "selectLanguage": "选择语言",
+  "languageChanged": "语言已更改为{language}",
+  "@languageChanged": {
+    "description": "更改语言时显示的消息。",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "中文（普通话）"
+      }
+    }
+  },
+  "cancel": "取消",
+  "logoutConfirm": "您确定要退出登录吗？",
+  "loggedOut": "已成功退出登录"
+}

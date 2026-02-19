@@ -1,0 +1,1089 @@
+{
+  "@@locale": "fr",
+  "appTitle": "Storazaar",
+  "settings": "Paramètres",
+  "notifications": "Notifications",
+    "subscriptionPageTitle": "Abonnement propriétaire de boutique",
+    "readyForMoreCustomers": "Prêt pour plus de clients ?",
+    "postYourStoreCTA": "Publiez votre boutique en ligne et soyez découvert par des acheteurs qui recherchent des boutiques comme la vôtre.",
+    "scrollDownTooltip": "Faire défiler vers le bas",
+    "storeOwnerPlanTitle": "Formule propriétaire de boutique",
+    "storeOwnerPlanFeatures": "• Publiez votre boutique sur Storazaar\n• Présentez jusqu'à 10 produits\n• Profil de boutique entièrement personnalisable\n• Atteignez des clients qui recherchent votre boutique\n• Accédez à un espace de gestion avec statistiques de base\n• Ajoutez les infos de la boutique, contact et liens sociaux\n• Annulez à tout moment\n• Abonnez-vous GRATUITEMENT pour 2026",
+    "selectPlan": "Sélectionner la formule",
+    "freeUntilDate": "jusqu'au 31 décembre 2026, puis 40,00 $ USD/mois.",
+    "letsGetYourProductsSeen": "Faisons voir vos produits.",
+    "welcomeToStorazaarSubscription": "Bienvenue sur Storazaar, la plateforme ultime pour présenter votre boutique en ligne et atteindre de vrais clients. En vous abonnant, vous pouvez publier votre boutique, présenter jusqu'à 10 produits, personnaliser votre profil de boutique et suivre la performance de votre boutique et de vos produits avec des analyses simples. Les acheteurs peuvent visiter votre boutique réelle via un bouton sur votre profil.\n\nEn tant que promotion de lancement, tous les propriétaires de boutique peuvent s'abonner gratuitement pour toute l'année 2026. Peu importe quand vous rejoignez, votre boutique et vos produits peuvent être listés, vus et prêts pour les clients jusqu'au 31 décembre 2026. Après cela, vous pouvez continuer automatiquement votre abonnement pour toucher plus d'acheteurs chaque mois.",
+    "subscribeForFree2026": "Abonnez-vous GRATUITEMENT pour 2026",
+    "cancelAnytime": "Annulez à tout moment",
+    "showcaseUpTo10Products": "Présentez jusqu'à 10 produits",
+    "customizableStoreProfile": "Profil de boutique entièrement personnalisable",
+    "reachCustomers": "Atteignez des clients qui recherchent votre boutique",
+    "storeBackendStats": "Accédez à un espace de gestion avec statistiques de base",
+    "addStoreInfoContactSocial": "Ajoutez les infos de la boutique, contact et liens sociaux",
+    "subscriptionFooter": "Abonnement Storazaar",
+  "privacy": "Confidentialité",
+    "manageProductsPageTitle": "Mes produits",
+    "editProductTitle": "Modifier le produit",
+    "addNewProductTitle": "Ajouter un nouveau produit",
+    "backTooltip": "Retour",
+    "productTilePrice": "Prix : {price}",
+    "@productTilePrice": {
+      "description": "Affiche le prix du produit dans la tuile du produit.",
+      "placeholders": {
+        "price": {
+          "type": "String",
+          "example": "19.99"
+        }
+      }
+    },
+    "productTileRating": "Note : {rating}",
+    "@productTileRating": {
+      "description": "Affiche la note du produit dans la tuile du produit.",
+      "placeholders": {
+        "rating": {
+          "type": "String",
+          "example": "4.5"
+        }
+      }
+    },
+    "productTileNoImage": "Aucune image",
+    "productTileDemoDescription": "Description de démonstration {num}",
+    "@productTileDemoDescription": {
+      "description": "Description de démonstration pour un produit avec un numéro.",
+      "placeholders": {
+        "num": {
+          "type": "int",
+          "example": "1"
+        }
+      }
+    },
+    "productTileDemoTitle": "Produit {num}",
+    "@productTileDemoTitle": {
+      "description": "Titre de démonstration pour un produit avec un numéro.",
+      "placeholders": {
+        "num": {
+          "type": "int",
+          "example": "1"
+        }
+      }
+    },
+    "loadingProducts": "Chargement des produits...",
+    "failedToLoadProducts": "Échec du chargement des produits.",
+    "editProductButton": "Modifier",
+    "saveChangesButton": "Enregistrer les modifications",
+    "productUpdatedSuccess": "Produit mis à jour !",
+    "productUpdatedError": "Échec de la mise à jour du produit : {error}",
+    "@productUpdatedError": {
+      "description": "Message affiché lorsqu'il y a une erreur lors de la mise à jour d'un produit.",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Erreur réseau"
+        }
+      }
+    },
+    "mainProductPhotoLabel": "Photo principale du produit",
+    "mainProductPhotoRequirements": "Exigences de la photo principale :\n- Carré (1:1)\n- 600x600 px minimum\n- JPG/PNG\n- Max 2 Mo",
+    "additionalPhotosLabel": "Photos supplémentaires (jusqu'à 4)",
+    "productConditionDropdownLabel": "État du produit",
+    "productConditionNew": "Neuf",
+    "productConditionUsed": "Occasion",
+    "productConditionRefurbished": "Reconditionné",
+    "priceLabel": "Prix",
+    "priceRequired": "Le prix est requis",
+    "priceInvalid": "Entrez un prix valide",
+    "titleLabel": "Titre",
+    "titleHint": "Entrez le titre du produit",
+    "titleRequired": "Le titre est requis",
+    "descriptionLabel": "Description",
+    "descriptionHint": "Entrez la description du produit",
+    "descriptionRequired": "La description est requise",
+    "freeShippingLabel": "Livraison gratuite",
+    "saveButton": "Enregistrer",
+    "productLengthIndicator": "{current} / {max}",
+    "@productLengthIndicator": {
+      "description": "Indicateur de longueur du produit, affiche la valeur actuelle et la valeur maximale.",
+      "placeholders": {
+        "current": {
+          "type": "int",
+          "example": "5"
+        },
+        "max": {
+          "type": "int",
+          "example": "10"
+        }
+      }
+    },
+    "productDemoPrice": "{price} €",
+    "@productDemoPrice": {
+      "description": "Affiche le prix de démonstration d'un produit.",
+      "placeholders": {
+        "price": {
+          "type": "String",
+          "example": "19.99"
+        }
+      }
+    },
+    "productDemoRating": "{rating} étoiles",
+    "@productDemoRating": {
+      "description": "Affiche la note de démonstration d'un produit.",
+      "placeholders": {
+        "rating": {
+          "type": "String",
+          "example": "4.5"
+        }
+      }
+    },
+    "storeBackendTitle": "Tableau de bord de la boutique",
+    "@storeBackendTitle": {
+      "description": "Titre du tableau de bord de la boutique."
+    },
+    "storeAnalytics": "Analytique de la boutique",
+    "productAnalytics": "Analytique des produits",
+    "editStoreInfo": "Modifier les informations de la boutique",
+    "manageProducts": "Gérer les produits",
+    "docsTooltip": "Documentation",
+    "storeNameLabelDashboard": "Nom de la boutique :",
+    "domainLabelDashboard": "Domaine :",
+    "categoryLabelDashboard": "Catégorie :",
+    "productsListedLabel": "Produits listés :",
+    "impressionsLabel": "Impressions",
+    "clicksLabel": "Clics",
+    "visitsToStoreLabel": "Visites de la boutique",
+    "daysListedLabel": "Jours listés",
+    "daysLabel": "Jours",
+    "productRatingLabel": "Note du produit",
+    "sampleProduct": "Produit d'exemple {num}",
+    "@sampleProduct": {
+      "description": "Libellé pour un produit d'exemple avec un numéro.",
+      "placeholders": {
+        "num": {
+          "type": "int",
+          "example": "1"
+        }
+      }
+    },
+    "toggleStoreAnalytics": "Afficher l'analytique de la boutique",
+    "toggleProductAnalytics": "Afficher l'analytique des produits",
+    "analyticsOverlayTitle": "Aperçu analytique",
+    "closeOverlay": "Fermer",
+    "selectProduct": "Sélectionner un produit",
+    "noProductsAvailable": "Aucun produit disponible",
+    "statBoxImpressions": "Impressions",
+    "statBoxClicks": "Clics",
+    "statBoxVisits": "Visites",
+    "statBoxDaysListed": "Jours listés",
+    "statBoxProductRating": "Note du produit",
+    "statBoxDays": "Jours",
+    "statBoxNoData": "Aucune donnée disponible",
+    "lineChartImpressions": "Impressions dans le temps",
+    "lineChartClicks": "Clics dans le temps",
+    "lineChartVisits": "Visites dans le temps",
+    "lineChartDaysListed": "Jours listés dans le temps",
+    "lineChartProductRating": "Note du produit dans le temps",
+    "lineChartDays": "Jours dans le temps",
+    "analyticsOverlayDescription": "Aperçu des statistiques et des performances de votre boutique et de vos produits.",
+    "postYourStoreTitle": "Publier votre boutique",
+    "storeDetailsSection": "Détails de la boutique",
+    "productsSection": "Produits",
+    "storeNameLabel": "Nom de la boutique",
+    "storeNameHint": "Entrez le nom de votre boutique",
+    "storeNameRequired": "Le nom de la boutique est requis",
+    "storeNameMinLength": "Le nom de la boutique doit comporter au moins 1 caractère",
+    "storeDomainLabel": "Domaine de la boutique",
+    "storeDomainHint": "Entrez le domaine (ex : abc.com)",
+    "storeDomainRequired": "Le domaine de la boutique est requis",
+    "storeDomainNoSpaces": "Aucun espace autorisé dans le domaine",
+    "storeDomainInvalid": "Entrez un domaine valide (ex : abc.com)",
+    "categoryLabel": "Catégorie",
+    "categoryHint": "Sélectionnez une catégorie",
+    "categoryRequired": "Veuillez sélectionner une catégorie",
+    "storeSubheadingLabel": "Sous-titre de la boutique",
+    "storeSubheadingHint": "Entrez un sous-titre pour votre boutique",
+    "storeSubheadingRequired": "Le sous-titre de la boutique est requis",
+    "aboutStoreLabel": "À propos de la boutique",
+    "aboutStoreHint": "Décrivez votre boutique",
+    "aboutStoreRequired": "La description de la boutique est requise",
+    "facebookLabel": "Lien Facebook",
+    "instagramLabel": "Lien Instagram",
+    "socialLinkInvalid": "Entrez un lien valide vers la page sociale",
+    "bannerPhotoLabel": "Bannière de la boutique",
+    "bannerPhotoRequired": "La photo de bannière de la boutique est requise",
+    "thumbnailPhotoLabel": "Miniature de la boutique",
+    "thumbnailPhotoRequired": "La photo miniature de la boutique est requise",
+    "contactEmailLabel": "Email de contact",
+    "contactEmailHint": "Entrez l'email de contact",
+    "contactEmailInvalid": "Entrez une adresse email valide",
+    "contactAddressLabel": "Adresse de contact",
+    "contactPostalLabel": "Code postal",
+    "contactPostalInvalid": "Le code postal ne peut contenir que des lettres, chiffres et tirets",
+    "contactPhoneLabel": "Téléphone de contact",
+    "contactPhoneInvalid": "Le téléphone ne peut contenir que des chiffres et des tirets",
+    "productPhotoLabel": "Photo du produit",
+    "productPhotoRequired": "Au moins une photo du produit est requise",
+    "productConditionLabel": "État du produit",
+    "productConditionRequired": "L'état du produit est requis",
+    "productConditionInvalid": "État du produit invalide",
+    "productTitleLabel": "Titre du produit",
+    "productTitleHint": "Entrez le titre du produit",
+    "productTitleRequired": "Le titre du produit est requis",
+    "productTitleInvalid": "Le titre du produit ne peut contenir que des lettres et des espaces",
+    "productPriceLabel": "Prix du produit",
+    "productPriceHint": "Entrez le prix du produit",
+    "productPriceRequired": "Le prix du produit est requis",
+    "productPriceInvalid": "Entrez un prix valide (chiffres et un point)",
+    "estimatedArrivalLabel": "Arrivée estimée",
+    "estimatedArrivalHint": "Entrez le délai d'arrivée estimé",
+    "estimatedArrivalRequired": "L'arrivée estimée est requise",
+    "estimatedArrivalInvalid": "Seuls les chiffres sont autorisés pour l'arrivée estimée",
+    "addProductButton": "Ajouter un produit",
+    "maxProductAmountReached": "Nombre maximum de produits atteint (10)",
+    "finishFormButton": "Terminer le formulaire",
+    "submitStoreButton": "Soumettre la boutique",
+    "pleaseFillRequiredFields": "Veuillez remplir tous les champs obligatoires avant de terminer le formulaire.",
+    "pleaseFillAllRequiredFields": "Veuillez remplir tous les champs obligatoires.",
+    "thumbnailImageSelected": "Image miniature sélectionnée",
+    "bannerImageSelected": "Image de bannière sélectionnée",
+    "productImageSelected": "Image du produit sélectionnée",
+    "storeSavedSuccess": "Boutique enregistrée avec succès !",
+    "storeSavedError": "Erreur lors de l'enregistrement de la boutique.",
+    "productSavedSuccess": "Produit enregistré avec succès !",
+    "productSavedError": "Erreur lors de l'enregistrement du produit.",
+    "draftSaved": "Brouillon enregistré",
+    "draftCleared": "Brouillon effacé",
+    "requiredField": "Champ obligatoire",
+    "invalidField": "Champ invalide",
+    "selectImage": "Sélectionner une image",
+    "selectCategory": "Sélectionner une catégorie",
+    "storeFormIncomplete": "Le formulaire de la boutique est incomplet",
+    "productFormIncomplete": "Le formulaire du produit est incomplet",
+    "storeFormComplete": "Formulaire de la boutique complet",
+    "productFormComplete": "Formulaire du produit complet",
+    "storeFormError": "Erreur dans le formulaire de la boutique",
+    "productFormError": "Erreur dans le formulaire du produit",
+    "storeFormSuccess": "Formulaire de la boutique soumis avec succès",
+    "productFormSuccess": "Formulaire du produit soumis avec succès",
+    "storeFormDraft": "Brouillon du formulaire de la boutique enregistré",
+    "productFormDraft": "Brouillon du formulaire du produit enregistré",
+    "storeFormDraftCleared": "Brouillon du formulaire de la boutique effacé",
+    "productFormDraftCleared": "Brouillon du formulaire du produit effacé",
+    "@privacy": {
+      "description": "Libellé du paramètre de confidentialité dans le compte utilisateur."
+    },
+  "language": "Langue",
+  "helpSupport": "Aide et support",
+  "about": "À propos",
+  "termsConditions": "Termes et conditions",
+  "selectLanguage": "Choisir la langue",
+  "languageChanged": "Langue changée en {language}",
+  "@languageChanged": {
+    "description": "Message affichée lors du changement de langue.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "Français"
+      }
+    }
+  },
+  "cancel": "Annuler",
+    "logoutConfirm": "Êtes-vous sûr de vouloir vous déconnecter ?",
+    "@logoutConfirm": {
+      "description": "Message affiché pour confirmer la déconnexion de l'utilisateur."
+    },
+  "loggedOut": "Déconnexion réussie",
+  "headerTitle": "Storazaar",
+  "profile": "Profil",
+    "accountFooter": "Compte",
+    "@accountFooter": {
+      "description": "Libellé du pied de page du compte utilisateur."
+    },
+    "security": "Sécurité",
+    "@security": {
+      "description": "Libellé du paramètre de sécurité dans le compte utilisateur."
+    },
+    "notificationsFooter": "Notifications",
+    "@notificationsFooter": {
+      "description": "Libellé du pied de page des notifications dans le compte utilisateur."
+    },
+    "privacyFooter": "Confidentialité",
+    "@privacyFooter": {
+      "description": "Libellé du pied de page de la confidentialité dans le compte utilisateur."
+    },
+    "paymentMethods": "Méthodes de paiement",
+    "subscriptionBilling": "Abonnement / Facturation",
+    "@subscriptionBilling": {
+      "description": "Libellé du paramètre d'abonnement et de facturation dans le compte utilisateur."
+    },
+  "connectedDevices": "Appareils connectés",
+  "dataStorage": "Données et stockage",
+  "helpSupportFooter": "Aide et support",
+  "aboutFooter": "À propos",
+  "termsConditionsFooter": "Termes et conditions",
+  "docs": "Docs",
+  "termsTitle": "Termes et conditions",
+  "lastUpdated": "Dernière mise à jour : 1 janvier 2025",
+  "acceptanceOfTerms": "1. Acceptation des conditions",
+  "acceptanceOfTermsContent": "En accédant et en utilisant Storazaar, vous acceptez d'être lié par les termes et dispositions de cet accord. Si vous n'acceptez pas ces conditions, veuillez ne pas utiliser ce service.",
+  "useLicense": "2. Licence d'utilisation",
+  "useLicenseContent": "L'autorisation est accordée d'utiliser temporairement Storazaar pour une consultation personnelle et non commerciale. Il s'agit d'une licence, non d'un transfert de titre, et sous cette licence vous ne pouvez pas :\n\n• Modifier ou copier les matériaux\n• Utiliser les matériaux à des fins commerciales\n• Tenter de décompiler ou de rétroconcevoir tout logiciel\n• Supprimer toute mention de droit d'auteur ou de propriété",
+  "storeCreationManagement": "3. Création et gestion de boutique",
+  "storeCreationManagementContent": "Les utilisateurs qui créent des boutiques sur Storazaar s'engagent à :\n\n• Fournir des informations exactes et complètes\n• Maintenir la sécurité de leur compte\n• Assumer la responsabilité de toutes les activités sous leur compte\n• Respecter toutes les lois et réglementations applicables\n• Ne pas se livrer à des pratiques frauduleuses ou trompeuses",
+  "contentGuidelines": "4. Directives de contenu",
+  "contentGuidelinesContent": "Tout contenu publié sur Storazaar doit :\n\n• Être exact et non trompeur\n• Ne pas enfreindre les droits de propriété intellectuelle\n• Ne pas contenir de matériel offensant ou inapproprié\n• Respecter les lois locales et internationales",
+  "paymentFees": "5. Paiement et frais",
+  "paymentFeesContent": "Storazaar peut facturer des frais pour certains services. Les utilisateurs acceptent de :\n\n• Payer tous les frais applicables\n• Fournir des informations de paiement exactes\n• Assumer la responsabilité de tous les frais encourus\n• Comprendre que les frais ne sont pas remboursables sauf si la loi l'exige",
+  "privacyDataProtection": "6. Confidentialité et protection des données",
+  "privacyDataProtectionContent": "Votre vie privée est importante pour nous. Veuillez consulter notre politique de confidentialité pour comprendre comment nous collectons, utilisons et protégeons vos informations personnelles. En utilisant Storazaar, vous consentez à nos pratiques de données telles que décrites dans la politique de confidentialité.",
+  "limitationOfLiability": "7. Limitation de responsabilité",
+  "limitationOfLiabilityContent": "Storazaar ne sera pas responsable des dommages indirects, accessoires, spéciaux, consécutifs ou punitifs résultant de votre utilisation ou incapacité à utiliser le service, même si nous avons été informés de la possibilité de tels dommages.",
+  "termination": "8. Résiliation",
+  "terminationContent": "Nous nous réservons le droit de résilier ou de suspendre votre compte et l'accès à Storazaar à notre seule discrétion, sans préavis, pour tout comportement que nous estimons violer ces conditions ou être nuisible aux autres utilisateurs, à nous-mêmes ou à des tiers.",
+  "changesToTerms": "9. Modifications des conditions",
+  "changesToTermsContent": "Nous nous réservons le droit de modifier ces conditions à tout moment. Nous informerons les utilisateurs de tout changement important. Votre utilisation continue de Storazaar après ces modifications constitue votre acceptation des conditions mises à jour.",
+  "communityGuidelinesTitle": "Directives de la communauté Storazaar",
+  "communityGuidelinesIntro": "Pour créer un salon de discussion, veuillez accepter ces conditions :",
+  "communityGuidelines1": "1. Soyez respectueux et professionnel.",
+  "communityGuidelines1Content": "Traitez tous les membres avec courtoisie. Le harcèlement, la haine ou la discrimination ne sont pas autorisés.",
+  "communityGuidelines2": "2. Gardez les discussions axées sur les affaires.",
+  "communityGuidelines2Content": "Les conversations doivent concerner les boutiques en ligne, le commerce et le développement professionnel.",
+  "communityGuidelines3": "3. Pas de contenu interdit.",
+  "communityGuidelines3Content": "Les armes, drogues, pornographie, contenu sexuel, violence, racisme ou discrimination sont strictement interdits.",
+  "communityGuidelines4": "4. Pas de spam ou d'escroquerie.",
+  "communityGuidelines4Content": "Ne publiez pas d'informations trompeuses, de promotions non sollicitées ou d'offres frauduleuses.",
+  "communityGuidelines5": "5. Protégez la vie privée.",
+  "communityGuidelines5Content": "Ne partagez pas d'informations personnelles, sensibles ou confidentielles — les vôtres ou celles des autres.",
+  "communityGuidelines6": "6. Respectez la loi et les règles de la plateforme.",
+  "communityGuidelines6Content": "Toute activité doit respecter les lois applicables et les politiques de Storazaar.",
+  "communityGuidelines7": "7. Signalez les comportements inappropriés.",
+  "communityGuidelines7Content": "Aidez à maintenir la sécurité de la communauté en signalant les violations.",
+  "contactInfo": "10. Informations de contact",
+  "contactInfoContent": "Si vous avez des questions concernant ces Termes et Conditions, veuillez nous contacter à :\n\nEmail : legal@storazaar.com\nAdresse : [Adresse de l'entreprise]",
+  "docsTitle": "Documentation Storazaar",
+  "storeDocTitle": "1. Préparer votre boutique pour la publication",
+  "storeDocContent": "Avant même d'ouvrir Storazaar, prenez le temps de préparer le contenu de votre boutique. Plus votre annonce est soignée et complète, meilleure sera votre visibilité et votre attractivité.",
+  "storeDocElements": "Éléments essentiels à préparer :\nNom de la boutique – Choisissez un nom mémorable et pertinent qui reflète votre marque ou le type de produits que vous proposez.\nLogo & Images – Images de haute qualité de votre vitrine, de vos produits et de votre logo. Des visuels clairs et lumineux attirent l'attention et inspirent confiance.\nDescription – Un résumé convaincant de votre boutique. Mettez en avant vos points forts, votre gamme de produits et ce qui vous distingue.\nCoordonnées & Infos de localisation – Assurez-vous que les numéros de téléphone, l'email, le site web et l'adresse physique (si applicable) sont exacts.\nCatégorie & Tags – Identifiez la catégorie principale de votre boutique (ex : électronique, mode, maison) et les tags pertinents pour améliorer la recherche.\nLiens réseaux sociaux – Ajoutez Instagram, Facebook, TikTok ou autres pour permettre aux utilisateurs d'explorer davantage votre marque.",
+  "postingStoreTitle": "2. Publier votre boutique",
+  "postingStoreContent": "Une fois vos éléments prêts, suivez ces étapes pour publier votre boutique :\nConnectez-vous ou créez un compte – Utilisez votre compte Storazaar pour accéder au panneau de gestion.\nAccédez à 'Créer une boutique' – Généralement dans le tableau de bord ou le menu principal.\nRemplissez les détails – Saisissez toutes les informations essentielles : nom, description, catégorie, tags, coordonnées.\nTéléchargez les images – Ajoutez votre logo et des photos de la boutique/produits.\nAjoutez les liens sociaux & site web – Pour permettre aux utilisateurs de suivre votre marque et générer du trafic externe.\nDéfinissez les détails opérationnels – Horaires, options de livraison, méthodes de paiement, etc.\nPrévisualisez – Vérifiez l'apparence de votre annonce. Ajustez le texte ou les images si besoin.\nPubliez – Cliquez sur 'Publier' pour mettre votre boutique en ligne.",
+  "optimizingStoreTitle": "3. Optimiser votre boutique pour la visibilité maximale",
+  "optimizingStoreContent": "Une bonne annonce n'est qu'une partie du travail. L'optimisation garantit que votre boutique soit remarquée par les utilisateurs recherchant vos produits.",
+  "optimizingStoreTips": "Conseils pour le SEO et la découvrabilité :\nUtilisez des mots-clés dans la description – Incluez les produits que vous vendez et les termes recherchés.\nCatégorisez correctement – Placez votre boutique dans la bonne catégorie.\nAjoutez des tags – Les tags améliorent la recherche organique.\nMettez à jour fréquemment – Les boutiques actives sont plus visibles.\nEncouragez les avis – Les avis clients renforcent la crédibilité.\nLiez les réseaux sociaux – Augmente le trafic et la présence en ligne.",
+  "showcasingStoreTitle": "4. Mettre en valeur votre boutique efficacement",
+  "showcasingStoreContent": "La présentation compte. L'apparence de votre boutique influence la décision d'achat des visiteurs.",
+  "visualBestPractices": "Bonnes pratiques visuelles :\nImages haute résolution – Évitez les visuels flous.\nMise en page organisée – Groupez les produits logiquement.\nMettez en avant les produits clés – Placez les best-sellers en haut.\nCohérence de la marque – Couleurs, polices et style uniformes.\nIncluez des images lifestyle – Montrez les produits en situation.",
+  "contentBestPractices": "Bonnes pratiques de contenu :\nDescription engageante – Racontez une histoire.\nAppels à l'action clairs – Encouragez à 'Acheter', 'Suivre', 'Contacter'.\nInfos détaillées sur les produits – Tailles, matériaux, couleurs, caractéristiques.",
+  "maintainingStoreTitle": "5. Maintenir votre boutique",
+  "maintainingStoreContent": "Une boutique publiée n'est pas statique. Un entretien régulier la garde attrayante et pertinente.",
+  "maintenanceChecklist": "Liste d'entretien :\nMettez à jour les images et descriptions régulièrement.\nRépondez rapidement aux demandes ou avis.\nAjoutez des promotions saisonnières ou nouvelles collections.\nSurveillez les analyses pour voir ce qui attire le plus.\nActualisez les tags et mots-clés.",
+  "longTermSuccessTitle": "6. Conseils pour réussir sur le long terme",
+  "longTermSuccessContent": "Soyez cohérent – La régularité dans la publication et le branding crée la reconnaissance.\nEngagez la clientèle – Répondez aux questions et interagissez pour fidéliser.\nTestez le contenu – Essayez différents types d'images, descriptions, promotions.\nUtilisez la preuve sociale – Encouragez les avis et le partage sur les réseaux.\nSuivez la performance – Utilisez les analyses Storazaar pour optimiser.",
+  "storeConclusionTitle": "Conclusion",
+  "storeConclusionContent": "Publier une boutique sur Storazaar, c'est plus que remplir un formulaire : il s'agit de présenter votre marque sous son meilleur jour, d'optimiser la visibilité et d'engager votre audience. Suivez ces étapes pour attirer l'attention, gagner la confiance et stimuler la croissance.\n\nRappel : Une boutique performante est une boutique vivante. Gardez-la à jour et alignée avec votre marque pour maximiser votre succès sur Storazaar.",
+  "productsDocTitle": "1. Préparer la fiche produit",
+    "editStoreInfoPageTitle": "Modifier les informations de la boutique",
+    "editStoreInfoHeader": "Modifier les informations de votre boutique",
+    "editStoreInfoSubheader": "Mettez à jour les détails et les photos de votre boutique",
+    "storePhotosSection": "Photos de la boutique",
+    "storePhotoRequirementsTooltip": "Afficher les exigences des photos",
+    "storeBannerLabel": "Bannière de la boutique (photo d'arrière-plan)",
+    "storeBannerRequirements": "Exigences de la bannière :\n- Horizontal (2:1)\n- 800x400 px minimum\n- JPG/PNG\n- Max 2 Mo",
+    "storeThumbnailLabel": "Photo miniature de la boutique",
+    "storeThumbnailRequirements": "Exigences de la miniature :\n- Carré (1:1)\n- 400x400 px minimum\n- JPG/PNG\n- Max 2 Mo",
+    "storeInformationSection": "Informations sur la boutique",
+    "storeNameLabelEdit": "Nom de la boutique",
+    "storeNameHintEdit": "Entrez le nom de votre boutique",
+    "storeNameRequiredEdit": "Veuillez entrer le nom de votre boutique",
+    "storeDomainLabelEdit": "Domaine / URL du site",
+    "storeDomainHintEdit": "https://votreboutique.com",
+    "storeDomainRequiredEdit": "Veuillez entrer le domaine de votre boutique",
+    "storeSubheadingLabelEdit": "Sous-titre de la boutique",
+    "storeSubheadingHintEdit": "Brève description qui apparaît sur le profil de votre boutique",
+    "storeDescriptionLabelEdit": "Description de la boutique",
+    "storeDescriptionHintEdit": "Description détaillée de votre boutique",
+    "aboutLabelEdit": "À propos",
+    "aboutHintEdit": "Parlez de votre entreprise aux clients",
+    "contactInformationSection": "Informations de contact",
+    "contactEmailLabelEdit": "Email de contact",
+    "contactEmailHintEdit": "contact@votreboutique.com",
+    "facebookLabelEdit": "Facebook (optionnel)",
+    "facebookHintEdit": "URL de la page Facebook",
+    "instagramLabelEdit": "Instagram (optionnel)",
+    "instagramHintEdit": "URL du profil Instagram",
+    "saveChangesButtonEdit": "Enregistrer les modifications",
+    "storeInfoUpdatedSuccess": "Informations de la boutique mises à jour avec succès !",
+    "storeInfoUpdatedError": "Échec de la mise à jour de la boutique : {error}",
+    "@storeInfoUpdatedError": {
+      "description": "Message affiché lorsqu'il y a une erreur lors de la mise à jour des informations de la boutique.",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Erreur réseau"
+        }
+      }
+    },
+    "backTooltipEdit": "Retour",
+    "editIconTooltip": "Modifier",
+    "saveButtonEdit": "Enregistrer",
+    "fieldRequiredEdit": "Champ obligatoire",
+    "invalidFieldEdit": "Champ invalide",
+    "currentLengthIndicatorEdit": "{current} / {max}",
+    "@currentLengthIndicatorEdit": {
+      "description": "Indicateur de longueur actuel pour l'édition, affiche la valeur actuelle et la valeur maximale.",
+      "placeholders": {
+        "current": {
+          "type": "int",
+          "example": "5"
+        },
+        "max": {
+          "type": "int",
+          "example": "10"
+        }
+      }
+    },
+    "showPhotoRequirementsEdit": "Afficher les exigences des photos",
+    "storeBannerImageSelected": "Image de bannière sélectionnée",
+    "storeThumbnailImageSelected": "Image miniature sélectionnée",
+    "storePhotoPickerLabel": "Sélectionner une image",
+    "storePhotoPickerBanner": "Sélectionner la bannière",
+    "storePhotoPickerThumbnail": "Sélectionner la miniature",
+    "storePhotoPickerRequirements": "Exigences de la photo : JPG/PNG, max 2 Mo",
+    "storePhotoPickerBannerRequirements": "Bannière : Horizontal (2:1), 800x400 px minimum",
+    "storePhotoPickerThumbnailRequirements": "Miniature : Carré (1:1), 400x400 px minimum",
+    "editStoreInfoPageBack": "Retour à la gestion de la boutique",
+    "editStoreInfoPageSave": "Enregistrer les modifications",
+    "editStoreInfoPageCancel": "Annuler",
+    "editStoreInfoPageLoading": "Chargement des informations de la boutique...",
+    "editStoreInfoPageFailed": "Échec du chargement des informations de la boutique.",
+    "editStoreInfoPageSuccess": "Informations de la boutique enregistrées avec succès !",
+    "editStoreInfoPageError": "Erreur lors de l'enregistrement de la boutique : {error}",
+    "@editStoreInfoPageError": {
+      "description": "Message affiché lorsqu'il y a une erreur lors de l'enregistrement des informations de la boutique.",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Erreur réseau"
+        }
+      }
+    },
+    "editStoreInfoPageFormIncomplete": "Veuillez remplir tous les champs obligatoires.",
+    "editStoreInfoPageFormComplete": "Formulaire de la boutique complet",
+    "editStoreInfoPageFormError": "Erreur dans le formulaire de la boutique",
+    "editStoreInfoPageFormSuccess": "Formulaire de la boutique soumis avec succès",
+    "editStoreInfoPageFormDraft": "Brouillon du formulaire de la boutique enregistré",
+    "editStoreInfoPageFormDraftCleared": "Brouillon du formulaire de la boutique effacé",
+    "editStoreInfoPageRequiredField": "Champ obligatoire",
+    "editStoreInfoPageInvalidField": "Champ invalide",
+    "editStoreInfoPageSelectImage": "Sélectionner une image",
+    "editStoreInfoPageSelectCategory": "Sélectionner une catégorie",
+    "editStoreInfoPageNoImage": "Aucune image",
+    "editStoreInfoPagePhotoRequirements": "Exigences des photos : JPG/PNG, max 2 Mo",
+    "editStoreInfoPageBannerRequirements": "Bannière : Horizontal (2:1), 800x400 px minimum",
+    "editStoreInfoPageThumbnailRequirements": "Miniature : Carré (1:1), 400x400 px minimum",
+    "editStoreInfoPageContactEmailInvalid": "Entrez une adresse email valide",
+    "editStoreInfoPageFacebookInvalid": "Entrez une URL Facebook valide",
+    "editStoreInfoPageInstagramInvalid": "Entrez une URL Instagram valide",
+    "editStoreInfoPageStoreNameMinLength": "Le nom de la boutique doit comporter au moins 1 caractère",
+    "editStoreInfoPageStoreDomainNoSpaces": "Aucun espace autorisé dans le domaine",
+    "editStoreInfoPageStoreDomainInvalid": "Entrez un domaine valide (ex : abc.com)",
+    "editStoreInfoPageSubheadingRequired": "Le sous-titre de la boutique est requis",
+    "editStoreInfoPageDescriptionRequired": "La description de la boutique est requise",
+    "editStoreInfoPageAboutRequired": "La section À propos est requise",
+    "editStoreInfoPageContactEmailRequired": "L'email de contact est requis",
+    "editStoreInfoPageBannerRequired": "La photo de bannière de la boutique est requise",
+    "editStoreInfoPageThumbnailRequired": "La photo miniature de la boutique est requise",
+    "editStoreInfoPageFacebookOptional": "Facebook (optionnel)",
+    "editStoreInfoPageInstagramOptional": "Instagram (optionnel)",
+    "editStoreInfoPageFieldMaxLength": "Longueur maximale atteinte : {max}",
+    "@editStoreInfoPageFieldMaxLength": {
+      "description": "Message affiché lorsque la longueur maximale d'un champ est atteinte lors de l'édition des informations de la boutique.",
+      "placeholders": {
+        "max": {
+          "type": "int",
+          "example": "100"
+        }
+      }
+    },
+    "editStoreInfoPageFieldCurrentLength": "Longueur actuelle : {current}",
+    "@editStoreInfoPageFieldCurrentLength": {
+      "description": "Affiche la longueur actuelle d'un champ lors de l'édition des informations de la boutique.",
+      "placeholders": {
+        "current": {
+          "type": "int",
+          "example": "5"
+        }
+      }
+    },
+    "editStoreInfoPageFieldCounter": "{current} / {max}",
+    "@editStoreInfoPageFieldCounter": {
+      "description": "Indicateur de longueur du champ lors de l'édition des informations de la boutique, affiche la valeur actuelle et la valeur maximale.",
+      "placeholders": {
+        "current": {
+          "type": "int",
+          "example": "5"
+        },
+        "max": {
+          "type": "int",
+          "example": "10"
+        }
+      }
+    },
+    "editStoreInfoPageSaveSuccess": "Modifications enregistrées avec succès !",
+    "editStoreInfoPageSaveError": "Erreur lors de l'enregistrement des modifications : {error}",
+    "@editStoreInfoPageSaveError": {
+      "description": "Message affiché lorsqu'il y a une erreur lors de l'enregistrement des modifications des informations de la boutique.",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Erreur réseau"
+        }
+      }
+    },
+    "editStoreInfoPageLoadingError": "Erreur lors du chargement des informations de la boutique : {error}",
+    "@editStoreInfoPageLoadingError": {
+      "description": "Message affiché lorsqu'il y a une erreur lors du chargement des informations de la boutique.",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Erreur réseau"
+        }
+      }
+    },
+    "editStoreInfoPagePhotoPickerBanner": "Sélectionner la bannière",
+    "editStoreInfoPagePhotoPickerThumbnail": "Sélectionner la miniature",
+    "editStoreInfoPagePhotoPickerBannerRequirements": "Bannière : Horizontal (2:1), 800x400 px minimum",
+    "editStoreInfoPagePhotoPickerThumbnailRequirements": "Miniature : Carré (1:1), 400x400 px minimum",
+    "editStoreInfoPagePhotoPickerRequirements": "Exigences de la photo : JPG/PNG, max 2 Mo",
+    "editStoreInfoPagePhotoPickerSelected": "Image sélectionnée",
+    "editStoreInfoPagePhotoPickerNoImage": "Aucune image sélectionnée",
+    "editStoreInfoPagePhotoPickerBannerSelected": "Bannière sélectionnée",
+    "editStoreInfoPagePhotoPickerThumbnailSelected": "Miniature sélectionnée",
+    "editStoreInfoPagePhotoPickerBannerNoImage": "Aucune bannière sélectionnée",
+    "editStoreInfoPagePhotoPickerThumbnailNoImage": "Aucune miniature sélectionnée",
+    "editStoreInfoPagePhotoPickerBannerLabel": "Bannière de la boutique",
+    "editStoreInfoPagePhotoPickerThumbnailLabel": "Miniature de la boutique",
+    "editStoreInfoPagePhotoPickerBannerHint": "Sélectionnez une bannière",
+    "editStoreInfoPagePhotoPickerThumbnailHint": "Sélectionnez une miniature",
+    "editStoreInfoPagePhotoPickerBannerRequirementsHint": "Bannière : Horizontal (2:1), 800x400 px minimum",
+    "editStoreInfoPagePhotoPickerThumbnailRequirementsHint": "Miniature : Carré (1:1), 400x400 px minimum",
+    "editStoreInfoPagePhotoPickerRequirementsHint": "Exigences de la photo : JPG/PNG, max 2 Mo",
+    "editStoreInfoPagePhotoPickerBannerSelectedHint": "Bannière sélectionnée",
+    "editStoreInfoPagePhotoPickerThumbnailSelectedHint": "Miniature sélectionnée",
+    "editStoreInfoPagePhotoPickerBannerNoImageHint": "Aucune bannière sélectionnée",
+    "editStoreInfoPagePhotoPickerThumbnailNoImageHint": "Aucune miniature sélectionnée",
+    "editStoreInfoPagePhotoPickerBannerLabelHint": "Bannière de la boutique",
+    "editStoreInfoPagePhotoPickerThumbnailLabelHint": "Miniature de la boutique",
+    "editStoreInfoPagePhotoPickerBannerLabelEdit": "Bannière de la boutique",
+    "editStoreInfoPagePhotoPickerThumbnailLabelEdit": "Miniature de la boutique",
+    "editStoreInfoPagePhotoPickerBannerHintEdit": "Sélectionnez une bannière",
+    "editStoreInfoPagePhotoPickerThumbnailHintEdit": "Sélectionnez une miniature",
+    "editStoreInfoPagePhotoPickerBannerRequirementsEdit": "Bannière : Horizontal (2:1), 800x400 px minimum",
+    "editStoreInfoPagePhotoPickerThumbnailRequirementsEdit": "Miniature : Carré (1:1), 400x400 px minimum",
+    "editStoreInfoPagePhotoPickerRequirementsEdit": "Exigences de la photo : JPG/PNG, max 2 Mo",
+  "productsDocContent": "Avant de vous connecter à Storazaar, préparez tous les éléments nécessaires. Plus votre fiche est complète et de qualité, plus elle attirera les clients.",
+  "@productsDocContent": {
+    "description": "Conseil pour préparer la fiche produit avant de se connecter à Storazaar."
+  },
+  "productsDocMaterials": "Matériel essentiel à rassembler :\nNom du produit – Clair, descriptif et facile à rechercher.\nImages du produit – Photos haute résolution sous plusieurs angles.\nDescription – Détaillez les matériaux, tailles, couleurs, caractéristiques.\nPrix – Fixez un prix compétitif.\nInfos d'inventaire – Quantité en stock, variantes.\nTags & Catégories – Sélectionnez la bonne catégorie et des tags descriptifs.\nInfos de livraison – Options, coûts, délais.\nSKU ou ID produit – Pour la gestion de l'inventaire.\nNote : Chaque boutique peut publier jusqu'à 10 produits sur Storazaar.",
+  "postingProductTitle": "2. Publier votre produit",
+  "postingProductContent": "Une fois vos éléments prêts, suivez ces étapes :\nConnectez-vous à Storazaar – Accédez au tableau de bord.\nAllez sur 'Ajouter un produit' – Généralement dans le panneau de gestion.\nSaisissez les détails du produit : nom, description, prix, inventaire, catégorie, tags.\nTéléchargez les images – Incluez une image principale et des images supplémentaires.\nDéfinissez les options de livraison – Coûts, délais, régions.\nPrévisualisez – Vérifiez l'apparence de la fiche.\nPubliez – Cliquez sur 'Publier' pour mettre le produit en ligne.",
+  "optimizingProductTitle": "3. Optimiser vos fiches produits",
+  "optimizingProductContent": "Des fiches optimisées augmentent la visibilité et les conversions.",
+  "optimizingProductTips": "Conseils d'optimisation :\nUtilisez des mots-clés dans le nom et la description.\nIncluez des images de qualité.\nMettez en avant les caractéristiques uniques.\nUtilisez les tags stratégiquement.\nMettez à jour régulièrement.\nEncouragez les avis.\nProposez des options de livraison claires.",
+  "showcasingProductTitle": "4. Mettre en valeur les produits efficacement",
+  "showcasingProductContent": "L'apparence et la description de votre produit font la différence.",
+  "visualProductBestPractices": "Bonnes pratiques visuelles :\nImage principale claire\nMultiples angles\nStyle cohérent\nZoom et détails",
+  "descriptionProductBestPractices": "Bonnes pratiques de description :\nCommencez par les points forts\nSoyez honnête et précis\nUtilisez des listes à puces\nIncluez taille et matériaux",
+  "managingProductTitle": "5. Gérer vos produits",
+  "managingProductContent": "La gestion active garantit la pertinence et la visibilité.",
+  "productManagementChecklist": "Liste de gestion :\nMettez à jour les stocks régulièrement.\nActualisez les images ou descriptions selon les tendances.\nSuivez la performance avec les analyses Storazaar.\nRépondez rapidement aux clients.\nMettez en avant les produits phares.",
+  "longTermProductSuccessTitle": "6. Conseils pour réussir sur le long terme",
+  "longTermProductSuccessContent": "La régularité est essentielle – Publiez ou actualisez régulièrement dans la limite des 10 produits.\nEngagez la clientèle – Répondez aux questions et acceptez les retours.\nUtilisez les promotions – Offres, bundles, réductions.\nPartagez sur les réseaux sociaux.\nSurveillez les tendances.",
+  "productsConclusionTitle": "Conclusion",
+  "productsConclusionContent": "Publier des produits sur Storazaar, c'est créer des offres attrayantes qui génèrent des ventes. De la préparation à l'optimisation et à la gestion, chaque étape contribue au succès de votre boutique.\n\nRappel : Chaque boutique peut publier jusqu'à 10 produits, avec 5 images maximum par produit. Présentez chaque produit de façon claire et attractive.",
+  "subscriptionDocTitle": "1. Accès gratuit pour 2026",
+    "notificationsSettingsPageTitle": "Paramètres de notification",
+    "notificationsHeader": "Notifications",
+    "notificationsSubheader": "Recevez des mises à jour par email",
+    "notificationTypesHeader": "Types de notification",
+    "emailNotificationsLabel": "Notifications par email",
+    "emailNotificationsSubtitle": "Recevez des mises à jour par email",
+    "storazaarUpdatesLabel": "Mises à jour Storazaar",
+    "storazaarUpdatesSubtitle": "Mises à jour de la plateforme, de l'interface et corrections de bugs",
+    "promotionalEmailsLabel": "Emails promotionnels",
+    "promotionalEmailsSubtitle": "Promotions, offres et emails marketing",
+    "saveNotificationPreferencesButton": "Enregistrer",
+    "notificationPreferencesSaved": "Préférences de notification enregistrées",
+    "notificationPreferencesSaveFailed": "Échec de l'enregistrement des préférences de notification.",
+    "mustBeSignedIn": "Vous devez être connecté.",
+    "loadingNotificationSettings": "Chargement des paramètres de notification...",
+    "failedToLoadNotificationSettings": "Échec du chargement des paramètres de notification.",
+    "notificationSettingsUpdatedSuccess": "Paramètres de notification mis à jour avec succès !",
+    "notificationSettingsUpdatedError": "Échec de la mise à jour des paramètres de notification : {error}",
+    "@notificationSettingsUpdatedError": {
+      "description": "Message affiché lorsqu'il y a une erreur lors de la mise à jour des paramètres de notification.",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Erreur réseau"
+        }
+      }
+    },
+    "backTooltipNotificationSettings": "Retour",
+    "notificationToggleActive": "Activé",
+    "notificationToggleInactive": "Désactivé",
+    "notificationSettingsSaveError": "Erreur lors de l'enregistrement des paramètres : {error}",
+    "@notificationSettingsSaveError": {
+      "description": "Message affiché lorsqu'il y a une erreur lors de l'enregistrement des paramètres de notification.",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Erreur réseau"
+        }
+      }
+    },
+    "notificationSettingsLoadingError": "Erreur lors du chargement des paramètres : {error}",
+    "@notificationSettingsLoadingError": {
+      "description": "Message affiché lorsqu'il y a une erreur lors du chargement des paramètres de notification.",
+      "placeholders": {
+        "error": {
+          "type": "String",
+          "example": "Erreur réseau"
+        }
+      }
+    },
+    "notificationSettingsFormIncomplete": "Veuillez remplir tous les champs obligatoires.",
+    "notificationSettingsFormComplete": "Formulaire de notification complet",
+    "notificationSettingsFormError": "Erreur dans le formulaire de notification",
+    "notificationSettingsFormSuccess": "Formulaire de notification soumis avec succès",
+    "notificationSettingsFormDraft": "Brouillon du formulaire de notification enregistré",
+  "notificationSettingsFormDraftCleared": "Brouillon du formulaire de notification effacé",
+  "subscriptionDocContent": "Pour être équitable envers les clients et les propriétaires de boutiques, Storazaar est entièrement gratuit pour toute l'année 2026.\n\nTous les utilisateurs en 2026 ont un accès complet à la plateforme sans paiement.\n\nMême si le service est gratuit, les abonnés recevront des reçus par email, y compris des reçus affichant un montant de 0,00 €.\n\nL'accès gratuit inclut la possibilité de publier votre boutique, de télécharger des images, d'ajouter des liens sociaux et de lister des produits.",
+  "@subscriptionDocContent": {
+    "description": "Explication de l'accès gratuit à Storazaar pour l'année 2026 pour les propriétaires de boutiques et les clients."
+  },
+  "storeProfileTitle": "Profil du magasin",
+  "storeBanner": "Bannière du magasin",
+  "storeDescription": "Description du magasin",
+  "storeId": "ID du magasin",
+  "products": "Produits",
+  "storeInfo": "Informations sur le magasin",
+  "contactEmail": "Email de contact",
+  "contactAddress": "Adresse de contact",
+  "contactPostal": "Code postal",
+  "contactPhone": "Téléphone",
+  "facebook": "Facebook",
+  "instagram": "Instagram",
+  "visitStore": "Visiter le magasin",
+  "storeRating": "Note du magasin",
+  "rateThisStore": "Évaluer ce magasin",
+  "tapAStarToRate": "Touchez une étoile pour évaluer :",
+  "noRatingSelected": "Aucune note sélectionnée",
+  "submit": "Soumettre",
+  "@submit": {
+    "description": "Bouton pour soumettre un formulaire ou une action."
+  },
+  "thankYouForRatingStore": "Merci d'avoir évalué ce magasin {stars} étoiles !",
+  "@thankYouForRatingStore": {
+    "description": "Message affiché après qu'un utilisateur ait évalué un magasin.",
+    "placeholders": {
+      "stars": {
+        "type": "int",
+        "example": "5"
+      }
+    }
+  },
+  "storeInfoSection": "Section d'informations du magasin",
+  "storeIdLabel": "ID du magasin : {id}",
+  "@storeIdLabel": {
+    "description": "Libellé affichant l'ID du magasin.",
+    "placeholders": {
+      "id": {
+        "type": "String",
+        "example": "12345"
+      }
+    }
+  },
+  "storeCouldNotOpenWebsite": "Impossible d'ouvrir le site du magasin.",
+  "welcomeToStorazaar": "BIENVENUE SUR STORAZAAR",
+  "productsHome": "Produits",
+  "storesHome": "Magasins",
+  "searchProducts": "Rechercher des produits",
+  "searchStores": "Rechercher des magasins",
+  "category": "Catégorie",
+  "price": "Prix",
+  "rating": "Note",
+  "brand": "Marque",
+  "condition": "État",
+  "noProductsFound": "Aucun produit trouvé.",
+  "noStoresFound": "Aucun magasin trouvé.",
+  "verifiedStore": "Magasin vérifié",
+  "failedToFetchData": "Échec de la récupération des données : {error}",
+  "@failedToFetchData": {
+    "description": "Message d'erreur lors de la récupération des données.",
+    "placeholders": {
+      "error": {
+        "type": "String",
+        "example": "Erreur réseau"
+      }
+    }
+  },
+  "loading": "Chargement...",
+  "search": "Rechercher",
+  "filters": "Filtres",
+  "applyFilters": "Appliquer les filtres",
+  "clearFilters": "Effacer les filtres",
+  "sortBy": "Trier par",
+  "sortByPrice": "Trier par prix",
+  "sortByRating": "Trier par note",
+  "sortByBrand": "Trier par marque",
+  "sortByCategory": "Trier par catégorie",
+  "sortByCondition": "Trier par état",
+  "addToCart": "Ajouter au panier",
+  "addedToCart": "Ajouté au panier",
+  "viewDetails": "Voir les détails",
+  "productDetails": "Détails du produit",
+  "storeDetails": "Détails du magasin",
+  "outOfStock": "Rupture de stock",
+  "inStock": "En stock",
+  "quantity": "Quantité",
+  "total": "Total",
+  "checkout": "Passer à la caisse",
+  "buyNow": "Acheter maintenant",
+  "remove": "Retirer",
+  "confirm": "Confirmer",
+  "success": "Succès",
+  "error": "Erreur"
+    ,
+    "checkEmailTitle": "Vérifiez votre email",
+    "checkEmailDescription": "Si un compte existe pour cet email, un code à usage unique a été envoyé à votre adresse email.\nVeuillez vérifier votre dossier spam si vous ne le trouvez pas dans votre boîte de réception.",
+      "@checkEmailDescription": {
+        "description": "Message d'instructions pour vérifier l'email et le dossier spam lors de la récupération du code."
+      },
+    "emailLabel": "Email : {email}",
+      "@emailLabel": {
+        "description": "Libellé affichant l'adresse email de l'utilisateur.",
+        "placeholders": {
+          "email": {}
+        }
+      },
+    "otpEntryHint": "Entrez le code reçu",
+    "didntGetCode": "Vous n'avez pas reçu de code ?",
+    "resendCode": "Renvoyer le code",
+    "resending": "Renvoi en cours...",
+    "codeSent": "Un nouveau code a été envoyé à votre email.",
+    "errorResendingCode": "Erreur lors du renvoi du code : {error}",
+      "@errorResendingCode": {
+        "description": "Message d'erreur lors du renvoi du code.",
+        "placeholders": {
+          "error": {}
+        }
+      },
+    "invalidOrExpiredCode": "Code invalide ou expiré.",
+    "supabaseError": "Erreur Supabase : {error}",
+      "@supabaseError": {
+        "description": "Message d'erreur Supabase lors de la vérification du code.",
+        "placeholders": {
+          "error": {}
+        }
+      },
+    "errorVerifyingCode": "Erreur lors de la vérification du code : {error}",
+      "@errorVerifyingCode": {
+        "description": "Message d'erreur lors de la vérification du code.",
+        "placeholders": {
+          "error": {}
+        }
+      },
+    "backToLogin": "Retour à la connexion"
+    ,
+    "privacySettingsPageTitle": "Paramètres de confidentialité",
+    "privacyPolicyHeader": "Politique de confidentialité",
+      "helpSupportSettingsPageTitle": "Aide et support",
+      "helpSupportHeader": "Aide et support",
+      "helpSupportSubheader": "FAQ, contactez le support, guides de dépannage",
+      "contactStorazaarTitle": "Contacter Storazaar",
+      "contactStorazaarEmail": "Email : support@storazaar.com",
+      "closeButton": "Fermer",
+      "contactUsButton": "Nous contacter",
+      "faqSectionHeader": "Questions fréquemment posées",
+      "faqCreateStoreQuestion": "Comment créer une boutique ?",
+      "faqCreateStoreAnswer": "Allez dans le menu latéral et sélectionnez 'Publier votre boutique'. Payez les frais d'abonnement (0,00 €/mois pour 2026), ajoutez les informations de votre boutique et de vos produits.",
+      "faqAddProductsQuestion": "Comment ajouter des produits à ma boutique ?",
+      "faqAddProductsAnswer": "Naviguez vers Menu latéral🡢Tableau de bord boutique🡢Gérer les produits et remplissez les champs pour chaque fiche produit.",
+      "faqPaymentMethodsQuestion": "Quels modes de paiement sont acceptés ?",
+      "faqPaymentMethodsAnswer": "Nous acceptons toutes les principales cartes de crédit, PayPal, Apple Pay, Google Pay et les portefeuilles numériques. Les cartes de débit ne sont pas acceptées.",
+      "faqTrackAnalyticsQuestion": "Comment suivre mes statistiques ?",
+      "faqTrackAnalyticsAnswer": "Naviguez vers le Tableau de bord boutique depuis le menu latéral pour voir les statistiques détaillées.",
+      "faqExpandIconColor": "Noir",
+      "faqCollapseIconColor": "Noir",
+      "privacyPolicyContent": "Storazaar — Politique de confidentialité (Version Démo)\n\nDernière mise à jour : [Insérer la date]\n\nCette politique de confidentialité explique comment Storazaar (« nous », « notre », « nos ») collecte, utilise et protège les informations des utilisateurs qui accèdent à notre application et à nos services (le « Service »).\nIl s'agit d'une politique de démonstration et elle sera mise à jour au fur et à mesure du développement du Service.\n\n1. Informations que nous collectons\n1.1 Informations que vous fournissez\n\nSelon votre utilisation du Service, nous pouvons collecter :\nInformations de compte (ex : nom, adresse email, mot de passe)\nDétails du profil que vous choisissez de saisir\nDonnées de communication si vous contactez le support\n\n1.2 Informations collectées automatiquement\n\nLorsque vous utilisez Storazaar, nous pouvons collecter automatiquement :\nInformations sur l'appareil (modèle, OS, navigateur)\nDonnées de journal (adresse IP, horodatages, pages consultées)\nAnalyses d'utilisation de base\n\nNous ne collectons aucune donnée personnelle sensible sauf si vous la fournissez explicitement.\n\n1.3 Services tiers\n\nSi Storazaar intègre des outils tiers (ex : analyses, paiements, authentification), des informations limitées peuvent être partagées ou collectées via ces services.\nLes détails complets seront ajoutés une fois les intégrations finalisées.\n\n2. Comment nous utilisons vos informations\n\nNous pouvons utiliser les informations collectées pour :\nFournir et maintenir le Service\nAméliorer les performances et les fonctionnalités\nCommuniquer avec vous (support, mises à jour)\nSécuriser les comptes et prévenir les abus\nAnalyser les tendances d'utilisation de base\n\nNous ne vendons pas les données des utilisateurs.\n\n3. Cookies & suivi\n\nStorazaar peut utiliser des cookies ou du stockage local pour :\nMémoriser les sessions de connexion\nAnalyses de base\n\nVous pouvez désactiver les cookies via les paramètres de votre appareil ou navigateur.\n\n4. Stockage et sécurité des données\n\nNous prenons des mesures raisonnables pour protéger vos informations, y compris le chiffrement lorsque cela est approprié.\nCependant, aucun service en ligne ne peut garantir une sécurité totale.\n\n5. Partage des données\n\nNous pouvons partager des informations uniquement si nécessaire avec :\nFournisseurs de services (hébergement, analyses, authentification)\nAutorités légales si la loi l'exige\n\nNous ne vendons ni ne louons vos informations personnelles.\n\n6. Vos droits\n\nSelon votre région, vous pouvez avoir le droit de :\nAccéder à vos données\nDemander la suppression\nDemander la correction\nRefuser certains usages des données\n\nPour exercer ces droits, contactez-nous à : [Insérer l'email de contact]\n\n7. Confidentialité des enfants\n\nStorazaar n'est pas destiné aux utilisateurs de moins de 13 ans (ou l'âge minimum requis dans votre région).\nNous ne collectons pas sciemment de données auprès des enfants.\n\n8. Modifications de cette politique\n\nÀ mesure que Storazaar évolue, nous pouvons mettre à jour cette politique de confidentialité.\nLorsque nous apportons des modifications, nous mettrons à jour la date « Dernière mise à jour » ci-dessus.\n\n9. Nous contacter\n\nSi vous avez des questions concernant cette politique de confidentialité, contactez-nous à :\n[Insérer l'email de contact]",
+      "@privacyPolicyContent": {
+        "description": "Texte complet de la politique de confidentialité affiché dans la page des paramètres de confidentialité."
+      },
+    "signIn": "Se connecter",
+    "signUp": "Créer un compte",
+    "logIn": "Connexion",
+    "account": "Compte",
+    "name": "Nom",
+    "email": "Email",
+    "password": "Mot de passe",
+    "confirmPassword": "Confirmer le mot de passe",
+    "enterYourName": "Entrez votre nom",
+    "enterYourEmail": "Entrez votre email",
+    "enterYourPassword": "Entrez votre mot de passe",
+    "reEnterYourPassword": "Ressaisissez votre mot de passe",
+    "pleaseEnterYourName": "Veuillez entrer votre nom",
+    "pleaseEnterYourEmail": "Veuillez entrer votre email",
+    "pleaseEnterValidEmail": "Veuillez entrer un email valide",
+    "pleaseEnterYourPassword": "Veuillez entrer votre mot de passe",
+    "pleaseConfirmYourPassword": "Veuillez confirmer votre mot de passe",
+    "passwordsDoNotMatch": "Les mots de passe ne correspondent pas",
+    "passwordDoesNotMeetRequirements": "Le mot de passe ne répond pas à toutes les exigences",
+    "passwordsMatch": "Les mots de passe correspondent",
+    "forgotPassword": "Mot de passe oublié ?",
+    "checkYourEmail": "Vérifiez votre email",
+    "confirmationLinkSent": "Nous vous avons envoyé un lien de confirmation par email.",
+    "pleaseConfirmEmailBeforeSignIn": "Veuillez confirmer votre email avant de vous connecter.",
+    "signInSuccessful": "Connexion réussie !",
+    "alreadyHaveAccount": "Vous avez déjà un compte ? ",
+    "dontHaveAccount": "Vous n'avez pas de compte ? ",
+    "byCreatingAccountYouAgree": "En créant un compte Storazaar, vous acceptez les ",
+    "termsAndConditions": "Termes et conditions",
+    "logoutSuccessful": "Déconnexion réussie",
+      "communityForumTitle": "Forum de la communauté",
+      "communityForumIntro": "Partagez vos idées, connectez-vous avec d'autres propriétaires de boutiques et restez informé des nouveautés du commerce en ligne.",
+      "selectChatRoomTooltip": "Sélectionner un salon de discussion",
+      "inChat": "En discussion",
+      "peopleInChat": "{count} personnes dans le chat",
+      "@peopleInChat": {
+        "description": "Affiche le nombre de personnes dans le chat.",
+        "placeholders": {
+          "count": {
+            "type": "int",
+            "example": "3"
+          }
+        }
+      },
+      "userName": "Nom d'utilisateur",
+      "storeName": "Nom de la boutique",
+      "storeDomain": "Domaine de la boutique",
+      "addMessagePlaceholder": "Ajouter un message...",
+      "typeMessagePlaceholder": "Tapez votre message...",
+      "messageCannotBeEmpty": "Le message ne peut pas être vide.",
+      "messageSent": "Message envoyé !",
+      "send": "Envoyer",
+      "messageMaxLength": "Le message ne doit pas dépasser {max} caractères.",
+      "@messageMaxLength": {
+        "description": "Message affiché lorsque la longueur du message dépasse la limite maximale.",
+        "placeholders": {
+          "max": {
+            "type": "int",
+            "example": "200"
+          }
+        }
+      },
+      "you": "Vous",
+      "chat": "Chat",
+      "chatRoom": "Salon de discussion",
+      "chatRooms": "Salons de discussion",
+      "connectWithOwners": "Connectez-vous avec d'autres propriétaires de boutiques.",
+      "shareIdeas": "Partagez vos idées.",
+      "stayUpdated": "Restez informé des nouveautés.",
+      "sendMessage": "Envoyer un message",
+      "messageInputBar": "Barre de saisie du message",
+      "message": "Message",
+      "emptyChat": "Aucun message pour le moment.",
+      "chatWelcome": "Bienvenue dans le forum de la communauté Storazaar !",
+      "chatError": "Erreur lors de l'envoi du message.",
+      "chatSuccess": "Message envoyé avec succès.",
+      "chatRoomSelect": "Sélectionner un salon de discussion",
+      "chatRoomList": "Liste des salons de discussion",
+      "chatRoomHeader": "En discussion",
+      "chatRoomCount": "{count} participants",
+      "@chatRoomCount": {
+        "description": "Affiche le nombre de participants dans le salon de discussion.",
+        "placeholders": {
+          "count": {
+            "type": "int",
+            "example": "5"
+          }
+        }
+      },
+      "chatRoomJoin": "Rejoindre le salon",
+      "chatRoomLeave": "Quitter le salon",
+      "chatRoomJoined": "Vous avez rejoint le salon.",
+      "chatRoomLeft": "Vous avez quitté le salon.",
+      "chatRoomNotFound": "Salon de discussion introuvable.",
+      "chatRoomCreate": "Créer un salon de discussion",
+      "chatRoomCreated": "Salon créé avec succès.",
+      "chatRoomCreateError": "Erreur lors de la création du salon.",
+      "chatRoomName": "Nom du salon",
+      "chatRoomDescription": "Description du salon",
+      "chatRoomParticipants": "Participants",
+      "chatRoomOwner": "Propriétaire du salon",
+      "chatRoomModerator": "Modérateur",
+      "chatRoomWelcome": "Bienvenue dans le salon de discussion !",
+      "chatRoomEmpty": "Aucun message dans ce salon pour le moment.",
+      "chatRoomSendMessage": "Envoyer un message dans ce salon",
+      "chatRoomInputPlaceholder": "Tapez votre message ici...",
+      "chatRoomMessageSent": "Message envoyé dans le salon !",
+      "chatRoomMessageError": "Erreur lors de l'envoi du message dans le salon.",
+      "chatRoomMessageEmpty": "Le message ne peut pas être vide.",
+      "chatRoomMessageMaxLength": "Le message ne doit pas dépasser {max} caractères.",
+      "@chatRoomMessageMaxLength": {
+        "description": "Message affiché lorsque la longueur du message dans le salon dépasse la limite maximale.",
+        "placeholders": {
+          "max": {
+            "type": "int",
+            "example": "200"
+          }
+        }
+      },
+      "chatRoomBack": "Retour aux salons",
+      "chatRoomListHeader": "Salons disponibles",
+      "chatRoomListEmpty": "Aucun salon disponible pour le moment.",
+      "chatRoomListJoin": "Rejoindre",
+      "chatRoomListCreate": "Créer un nouveau salon",
+      "chatRoomListRefresh": "Actualiser la liste",
+      "chatRoomListError": "Erreur lors du chargement des salons.",
+      "chatRoomListSuccess": "Liste des salons chargée avec succès.",
+      "chatRoomListCount": "{count} salons disponibles",
+      "@chatRoomListCount": {
+        "description": "Affiche le nombre de salons disponibles dans la liste.",
+        "placeholders": {
+          "count": {
+            "type": "int",
+            "example": "10"
+          }
+        }
+      },
+      "chatRoomListParticipants": "{count} participants",
+      "@chatRoomListParticipants": {
+        "description": "Affiche le nombre de participants dans la liste des salons de discussion.",
+        "placeholders": {
+          "count": {
+            "type": "int",
+            "example": "8"
+          }
+        }
+      },
+      "chatRoomListOwner": "Propriétaire : {owner}",
+      "@chatRoomListOwner": {
+        "description": "Affiche le nom du propriétaire du salon de discussion.",
+        "placeholders": {
+          "owner": {
+            "type": "String",
+            "example": "Jean Dupont"
+          }
+        }
+      },
+      "chatRoomListModerator": "Modérateur : {moderator}",
+      "@chatRoomListModerator": {
+        "description": "Affiche le nom du modérateur du salon de discussion.",
+        "placeholders": {
+          "moderator": {
+            "type": "String",
+            "example": "Marie Curie"
+          }
+        }
+      },
+      "chatRoomListWelcome": "Bienvenue dans la liste des salons de discussion !",
+      "chatRoomListBack": "Retour au forum",
+      "chatRoomListSelect": "Sélectionner un salon pour discuter",
+      "chatRoomListJoinSuccess": "Vous avez rejoint le salon avec succès.",
+      "chatRoomListJoinError": "Erreur lors de la tentative de rejoindre le salon.",
+      "chatRoomListLeaveSuccess": "Vous avez quitté le salon avec succès.",
+      "chatRoomListLeaveError": "Erreur lors de la tentative de quitter le salon.",
+      "chatRoomListCreateSuccess": "Salon créé avec succès.",
+      "chatRoomListCreateError": "Erreur lors de la création du salon.",
+      "chatRoomListInputPlaceholder": "Entrez le nom du salon...",
+      "chatRoomListDescriptionPlaceholder": "Entrez la description du salon...",
+      "chatRoomListOwnerPlaceholder": "Entrez le nom du propriétaire...",
+      "chatRoomListModeratorPlaceholder": "Entrez le nom du modérateur...",
+      "chatRoomListParticipantsPlaceholder": "Entrez le nombre de participants...",
+      "chatRoomListCountPlaceholder": "Entrez le nombre de salons...",
+      "chatRoomListWelcomePlaceholder": "Bienvenue dans la liste des salons de discussion !",
+      "chatRoomListBackPlaceholder": "Retour au forum",
+      "chatRoomListSelectPlaceholder": "Sélectionner un salon pour discuter",
+      "chatRoomListJoinSuccessPlaceholder": "Vous avez rejoint le salon avec succès.",
+      "chatRoomListJoinErrorPlaceholder": "Erreur lors de la tentative de rejoindre le salon.",
+      "chatRoomListLeaveSuccessPlaceholder": "Vous avez quitté le salon avec succès.",
+      "chatRoomListLeaveErrorPlaceholder": "Erreur lors de la tentative de quitter le salon.",
+      "chatRoomListCreateSuccessPlaceholder": "Salon créé avec succès.",
+      "chatRoomListCreateErrorPlaceholder": "Erreur lors de la création du salon.",
+      "chatRoomListInputPlaceholderText": "Entrez le nom du salon...",
+      "chatRoomListDescriptionPlaceholderText": "Entrez la description du salon...",
+      "chatRoomListOwnerPlaceholderText": "Entrez le nom du propriétaire...",
+      "chatRoomListModeratorPlaceholderText": "Entrez le nom du modérateur...",
+      "chatRoomListParticipantsPlaceholderText": "Entrez le nombre de participants...",
+      "chatRoomListCountPlaceholderText": "Entrez le nombre de salons...",
+      "chatRoomListWelcomePlaceholderText": "Bienvenue dans la liste des salons de discussion !",
+      "chatRoomListBackPlaceholderText": "Retour au forum",
+      "chatRoomListSelectPlaceholderText": "Sélectionner un salon pour discuter",
+      "chatRoomListJoinSuccessPlaceholderText": "Vous avez rejoint le salon avec succès.",
+      "chatRoomListJoinErrorPlaceholderText": "Erreur lors de la tentative de rejoindre le salon.",
+      "chatRoomListLeaveSuccessPlaceholderText": "Vous avez quitté le salon avec succès.",
+      "chatRoomListLeaveErrorPlaceholderText": "Erreur lors de la tentative de quitter le salon.",
+      "chatRoomListCreateSuccessPlaceholderText": "Salon créé avec succès.",
+      "chatRoomListCreateErrorPlaceholderText": "Erreur lors de la création du salon.",
+      "chatRoomListInputPlaceholderLabel": "Nom du salon",
+      "chatRoomListDescriptionPlaceholderLabel": "Description du salon",
+      "chatRoomListOwnerPlaceholderLabel": "Propriétaire",
+      "chatRoomListModeratorPlaceholderLabel": "Modérateur",
+      "chatRoomListParticipantsPlaceholderLabel": "Participants",
+      "chatRoomListCountPlaceholderLabel": "Nombre de salons",
+      "chatRoomListWelcomePlaceholderLabel": "Bienvenue !",
+      "chatRoomListBackPlaceholderLabel": "Retour",
+      "chatRoomListSelectPlaceholderLabel": "Sélectionner",
+      "chatRoomListJoinSuccessPlaceholderLabel": "Rejoint !",
+      "chatRoomListJoinErrorPlaceholderLabel": "Erreur de connexion",
+      "chatRoomListLeaveSuccessPlaceholderLabel": "Quitté !",
+      "chatRoomListLeaveErrorPlaceholderLabel": "Erreur de sortie",
+      "chatRoomListCreateSuccessPlaceholderLabel": "Créé !",
+      "chatRoomListCreateErrorPlaceholderLabel": "Erreur de création",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe",
+    "passwordRequirements": "Exigences du mot de passe",
+    "minLength": "Au moins 8 caractères",
+    "uppercase": "Une lettre majuscule",
+    "lowercase": "Une lettre minuscule",
+    "number": "Un chiffre",
+    "symbol": "Un symbole",
+    "accountCreated": "Compte créé avec succès !",
+    "youAreLoggedIn": "Vous êtes connecté !"
+       ,
+    "historyTitle": "Votre historique",
+    "savedProductsTitle": "Produits enregistrés",
+    "yourSavedProducts": "Vos produits enregistrés",
+    "savedProductsCount": "{count} articles",
+      "@savedProductsCount": {
+        "description": "Nombre d'articles enregistrés dans la page produits enregistrés.",
+        "placeholders": {
+          "count": {
+            "type": "int",
+            "example": "5"
+          }
+        }
+      },
+    "noSavedProducts": "Aucun produit enregistré pour le moment",
+    "startSavingProducts": "Commencez à enregistrer des produits pour les voir ici",
+    "removeFromSavedProducts": "Retirer des produits enregistrés",
+    "productsHistory": "Produits",
+    "storesHistory": "Magasins",
+    "historyProductEmpty": "Visitez un produit et votre historique apparaîtra ici.",
+    "historyStoreEmpty": "Visitez un magasin et votre historique apparaîtra ici.",
+    "historyAccountPrompt": "Créez un compte gratuit pour utiliser cette fonctionnalité.",
+    "deleteHistoryTooltip": "Supprimer",
+      "savedStoresTitle": "Magasins enregistrés",
+      "yourSavedStores": "Vos magasins enregistrés",
+      "noSavedStores": "Aucun magasin enregistré pour le moment ! Enregistrez un magasin que vous aimez, il apparaîtra ici.",
+      "savedStoresAccountPrompt": "Créez un compte gratuit pour utiliser cette fonctionnalité.",
+      "removeFromSavedStores": "Retirer des magasins enregistrés",
+    "forgotPasswordTitle": "Mot de passe oublié",
+    "enterEmailAssociated": "Entrez votre email associé à votre compte",
+    "enterEmailInstructions": "Entrez l'adresse email associée à votre compte Storazaar et nous vous enverrons un lien pour réinitialiser votre mot de passe.",
+    "emailAddress": "Adresse email",
+    "sendCode": "Envoyer le code",
+    "sending": "Envoi en cours...",
+    "resetLinkSent": "Lien de réinitialisation envoyé !",
+    "errorSendingResetLink": "Erreur lors de l'envoi du lien de réinitialisation.",
+    "checkYourEmailForReset": "Vérifiez votre email pour le lien de réinitialisation."
+  }

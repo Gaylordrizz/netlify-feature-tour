@@ -1,0 +1,38 @@
+{
+  "@@locale": "en",
+  "appTitle": "Storazaar",
+  "settings": "Settings",
+  "notifications": "Notifications",
+  "privacy": "Privacy",
+  "language": "Language",
+  "helpSupport": "Help & Support",
+  "about": "About",
+  "termsConditions": "Terms & Conditions",
+  "logout": "Logout",
+  "selectLanguage": "Select Language",
+  "languageChanged": "Language changed to {language}",
+  "@languageChanged": {
+    "description": "Message shown when the language is changed.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "English"
+      }
+    }
+  },
+  "cancel": "Cancel",
+  "logoutConfirm": "Are you sure you want to logout?",
+  "loggedOut": "Logged out successfully"
+  ,
+  "openMenu": "Open Menu",
+  "account": "Account",
+  "home": "Home",
+  "history": "History",
+  "savedProducts": "Saved Products",
+  "savedStores": "Saved Stores",
+  "productView": "Product View",
+  "storeProfile": "Store Profile",
+  "storeOwnerForum": "Store Owner Forum",
+  "postYourStore": "Post Your Store",
+  "storeDashboard": "Store Dashboard"
+}

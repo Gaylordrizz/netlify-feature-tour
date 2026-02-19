@@ -1,0 +1,43 @@
+{
+  "@@locale": "no",
+  "appTitle": "Storazaar",
+  "settings": "Innstillinger",
+  "notifications": "Varsler",
+  "privacy": "Personvern",
+  "language": "Språk",
+  "helpSupport": "Hjelp og støtte",
+  "about": "Om",
+  "termsConditions": "Vilkår og betingelser",
+  "logout": "Logg ut",
+  "selectLanguage": "Velg språk",
+  "languageChanged": "Språk endret til {language}",
+  "@languageChanged": {
+    "description": "Melding vist når språket er endret.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "Norsk"
+      }
+    }
+  },
+  "cancel": "Avbryt",
+  "logoutConfirm": "Er du sikker på at du vil logge ut?",
+  "loggedOut": "Logget ut vellykket",
+  "sidebar_account": "Konto",
+  "sidebar_home": "Hjem",
+  "sidebar_history": "Historikk",
+  "sidebar_saved_products": "Lagrede produkter",
+  "sidebar_saved_stores": "Lagrede butikker",
+  "sidebar_product_view": "Produktvisning",
+  "sidebar_store_profile": "Butikkprofil",
+  "sidebar_store_owner_forum": "Butikkeierforum",
+  "sidebar_post_your_store": "Legg ut butikken din",
+  "sidebar_store_dashboard": "Butikkdashbord",
+  "openMenu": "Åpne meny",
+  "norsk": "Norsk",
+  "headerTitle": "Storazaar",
+  "searchProductBarHint": "Søk etter et produkt",
+  "searchStoreBarHint": "Søk etter en butikk",
+  "login": "Logg inn",
+  "signUp": "Registrer deg"
+}

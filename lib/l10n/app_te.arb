@@ -1,0 +1,26 @@
+{
+  "@@locale": "te",
+  "appTitle": "స్టోరాజార్",
+  "settings": "సెట్టింగ్స్",
+  "notifications": "నోటిఫికేషన్లు",
+  "privacy": "గోప్యత",
+  "language": "భాష",
+  "helpSupport": "సహాయం & మద్దతు",
+  "about": "గురించి",
+  "termsConditions": "నిబంధనలు & షరతులు",
+  "logout": "లాగ్ అవుట్",
+  "selectLanguage": "భాషను ఎంచుకోండి",
+  "languageChanged": "భాష {language}కి మార్చబడింది",
+  "@languageChanged": {
+    "description": "భాష మార్చినప్పుడు చూపించే సందేశం.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "తెలుగు"
+      }
+    }
+  },
+  "cancel": "రద్దు చేయండి",
+  "logoutConfirm": "మీరు నిజంగా లాగ్ అవుట్ కావాలనుకుంటున్నారా?",
+  "loggedOut": "విజయవంతంగా లాగ్ అవుట్ అయ్యారు"
+}

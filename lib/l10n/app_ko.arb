@@ -1,0 +1,26 @@
+{
+  "@@locale": "ko",
+  "appTitle": "스토라자르",
+  "settings": "설정",
+  "notifications": "알림",
+  "privacy": "개인정보",
+  "language": "언어",
+  "helpSupport": "도움말 및 지원",
+  "about": "정보",
+  "termsConditions": "이용 약관",
+  "logout": "로그아웃",
+  "selectLanguage": "언어 선택",
+  "languageChanged": "언어가 {language}(으)로 변경되었습니다",
+  "@languageChanged": {
+    "description": "언어가 변경될 때 표시되는 메시지.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "한국어"
+      }
+    }
+  },
+  "cancel": "취소",
+  "logoutConfirm": "정말 로그아웃하시겠습니까?",
+  "loggedOut": "성공적으로 로그아웃되었습니다"
+}

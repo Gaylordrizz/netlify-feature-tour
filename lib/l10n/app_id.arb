@@ -1,0 +1,26 @@
+{
+  "@@locale": "id",
+  "appTitle": "Storazaar",
+  "settings": "Pengaturan",
+  "notifications": "Notifikasi",
+  "privacy": "Privasi",
+  "language": "Bahasa",
+  "helpSupport": "Bantuan & Dukungan",
+  "about": "Tentang",
+  "termsConditions": "Syarat & Ketentuan",
+  "logout": "Keluar",
+  "selectLanguage": "Pilih Bahasa",
+  "languageChanged": "Bahasa diubah ke {language}",
+  "@languageChanged": {
+    "description": "Pesan yang ditampilkan saat bahasa diubah.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "Bahasa Indonesia"
+      }
+    }
+  },
+  "cancel": "Batal",
+  "logoutConfirm": "Apakah Anda yakin ingin keluar?",
+  "loggedOut": "Berhasil keluar"
+}

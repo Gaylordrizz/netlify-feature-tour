@@ -1,0 +1,26 @@
+{
+  "@@locale": "ru",
+  "appTitle": "Storazaar",
+  "settings": "Настройки",
+  "notifications": "Уведомления",
+  "privacy": "Конфиденциальность",
+  "language": "Язык",
+  "helpSupport": "Помощь и поддержка",
+  "about": "О приложении",
+  "termsConditions": "Условия и положения",
+  "logout": "Выйти",
+  "selectLanguage": "Выберите язык",
+  "languageChanged": "Язык изменён на {language}",
+  "@languageChanged": {
+    "description": "Сообщение, отображаемое при смене языка.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "Русский"
+      }
+    }
+  },
+  "cancel": "Отмена",
+  "logoutConfirm": "Вы уверены, что хотите выйти?",
+  "loggedOut": "Вы успешно вышли из системы"
+}

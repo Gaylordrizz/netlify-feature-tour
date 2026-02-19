@@ -1,0 +1,26 @@
+{
+  "@@locale": "de",
+  "appTitle": "Storazaar",
+  "settings": "Einstellungen",
+  "notifications": "Benachrichtigungen",
+  "privacy": "Datenschutz",
+  "language": "Sprache",
+  "helpSupport": "Hilfe & Support",
+  "about": "Über",
+  "termsConditions": "Allgemeine Geschäftsbedingungen",
+  "logout": "Abmelden",
+  "selectLanguage": "Sprache auswählen",
+  "languageChanged": "Sprache geändert zu {language}",
+  "@languageChanged": {
+    "description": "Nachricht, die angezeigt wird, wenn die Sprache geändert wurde.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "Deutsch"
+      }
+    }
+  },
+  "cancel": "Abbrechen",
+  "logoutConfirm": "Sind Sie sicher, dass Sie sich abmelden möchten?",
+  "loggedOut": "Erfolgreich abgemeldet"
+}

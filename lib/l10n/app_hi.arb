@@ -1,0 +1,26 @@
+{
+  "@@locale": "hi",
+  "appTitle": "स्टोराजार",
+  "settings": "सेटिंग्स",
+  "notifications": "सूचनाएँ",
+  "privacy": "गोपनीयता",
+  "language": "भाषा",
+  "helpSupport": "सहायता और समर्थन",
+  "about": "के बारे में",
+  "termsConditions": "नियम और शर्तें",
+  "logout": "लॉग आउट",
+  "selectLanguage": "भाषा चुनें",
+  "languageChanged": "भाषा {language} में बदल गई है",
+  "@languageChanged": {
+    "description": "भाषा बदलने पर दिखाया गया संदेश।",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "हिन्दी"
+      }
+    }
+  },
+  "cancel": "रद्द करें",
+  "logoutConfirm": "क्या आप वाकई लॉग आउट करना चाहते हैं?",
+  "loggedOut": "सफलतापूर्वक लॉग आउट किया गया"
+}

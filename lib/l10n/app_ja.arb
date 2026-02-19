@@ -1,0 +1,26 @@
+{
+  "@@locale": "ja",
+  "appTitle": "Storazaar",
+  "settings": "設定",
+  "notifications": "通知",
+  "privacy": "プライバシー",
+  "language": "言語",
+  "helpSupport": "ヘルプとサポート",
+  "about": "情報",
+  "termsConditions": "利用規約",
+  "logout": "ログアウト",
+  "selectLanguage": "言語を選択",
+  "languageChanged": "言語が{language}に変更されました",
+  "@languageChanged": {
+    "description": "言語が変更されたときに表示されるメッセージ。",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "日本語"
+      }
+    }
+  },
+  "cancel": "キャンセル",
+  "logoutConfirm": "本当にログアウトしますか？",
+  "loggedOut": "正常にログアウトしました"
+}

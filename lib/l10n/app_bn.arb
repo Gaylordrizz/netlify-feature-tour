@@ -1,0 +1,38 @@
+{
+  "@@locale": "bn",
+  "appTitle": "স্টোরাজার",
+  "settings": "সেটিংস",
+  "notifications": "বিজ্ঞপ্তি",
+  "privacy": "গোপনীয়তা",
+  "language": "ভাষা",
+  "helpSupport": "সহায়তা ও সমর্থন",
+  "about": "সম্পর্কে",
+  "termsConditions": "শর্তাবলী",
+  "logout": "লগ আউট",
+  "selectLanguage": "ভাষা নির্বাচন করুন",
+  "languageChanged": "ভাষা {language} এ পরিবর্তন হয়েছে",
+  "@languageChanged": {
+    "description": "ভাষা পরিবর্তন হলে দেখানো বার্তা।",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "বাংলা"
+      }
+    }
+  },
+  "cancel": "বাতিল করুন",
+  "logoutConfirm": "আপনি কি নিশ্চিত যে আপনি লগ আউট করতে চান?",
+  "loggedOut": "সফলভাবে লগ আউট হয়েছে"
+  ,
+  "openMenu": "মেনু খুলুন",
+  "account": "অ্যাকাউন্ট",
+  "home": "হোম",
+  "history": "ইতিহাস",
+  "savedProducts": "সংরক্ষিত পণ্যসমূহ",
+  "savedStores": "সংরক্ষিত দোকানসমূহ",
+  "productView": "পণ্য দেখুন",
+  "storeProfile": "দোকানের প্রোফাইল",
+  "storeOwnerForum": "দোকান মালিক ফোরাম",
+  "postYourStore": "আপনার দোকান পোস্ট করুন",
+  "storeDashboard": "দোকান ড্যাশবোর্ড"
+}

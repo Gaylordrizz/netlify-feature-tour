@@ -1,0 +1,26 @@
+{
+  "@@locale": "es",
+  "appTitle": "Storazaar",
+  "settings": "Configuración",
+  "notifications": "Notificaciones",
+  "privacy": "Privacidad",
+  "language": "Idioma",
+  "helpSupport": "Ayuda y Soporte",
+  "about": "Acerca de",
+  "termsConditions": "Términos y Condiciones",
+  "logout": "Cerrar sesión",
+  "selectLanguage": "Seleccionar idioma",
+  "languageChanged": "Idioma cambiado a {language}",
+  "@languageChanged": {
+    "description": "Mensaje mostrado cuando se cambia el idioma.",
+    "placeholders": {
+      "language": {
+        "type": "String",
+        "example": "Español"
+      }
+    }
+  },
+  "cancel": "Cancelar",
+  "logoutConfirm": "¿Seguro que quieres cerrar sesión?",
+  "loggedOut": "Sesión cerrada con éxito"
+}
