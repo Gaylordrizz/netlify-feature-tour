@@ -1,17 +1,10 @@
-
 [build]
   base = "flutter_application_1"
-  command = "flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY"
   publish = "build/web"
+  command = "flutter build web --release"
 
-[dev]
-  command = "flutter run -d web-server"
-  port = 8888
-
-[[redirects]]
-  from = "/api/*"
-  to = "/.netlify/functions/:splat"
-  status = 200
+[build.environment]
+  FLUTTER_VERSION = "3.24.0"
 
 [[redirects]]
   from = "/*"
