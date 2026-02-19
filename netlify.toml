@@ -1,12 +1,13 @@
 [[plugins]]
   package = "netlify-plugin-flutter-sdk"
+    [plugins.inputs]
+    # This tells the plugin to handle the build itself
+    flutter_version = "stable"
 
 [build]
+  # We leave this blank because the plugin will handle the 'flutter build' call
   command = "flutter build web --release --dart-define=SUPABASE_URL=$SUPABASE_URL --dart-define=SUPABASE_ANON_KEY=$SUPABASE_ANON_KEY --dart-define=STRIPE_PUBLISHABLE_KEY=$STRIPE_PUBLISHABLE_KEY"
   publish = "build/web"
-
-[build.environment]
-  FLUTTER_VERSION = "stable"
 
 [[redirects]]
   from = "/*"
