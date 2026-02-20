@@ -500,18 +500,20 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                   },
                                 );
                                 final data = res.data;
-                                final String? sessionUrl = data is Map ? data['url'] as String? : null;
-                                if (sessionUrl == null || sessionUrl.isEmpty) {
-                                  showCustomSnackBar(context, 'No checkout URL returned.', positive: false);
-                                  return;
-                                }
-                                if (await canLaunchUrlString(sessionUrl)) {
-                                  await launchUrlString(
-                                    sessionUrl,
-                                    mode: LaunchMode.externalApplication,
-                                  );
+                                // Match TS return keys
+                                final String? checkoutUrl = data is Map ? data['url'] as String? : null;
+                                // sessionId is available if needed: data['sessionId']
+                                if (checkoutUrl != null && checkoutUrl.isNotEmpty) {
+                                  if (await canLaunchUrlString(checkoutUrl)) {
+                                    await launchUrlString(
+                                      checkoutUrl,
+                                      mode: LaunchMode.externalApplication,
+                                    );
+                                  } else {
+                                    showCustomSnackBar(context, 'Could not launch checkout URL.', positive: false);
+                                  }
                                 } else {
-                                  showCustomSnackBar(context, 'Could not launch checkout URL.', positive: false);
+                                  showCustomSnackBar(context, 'Error: No URL returned from the function', positive: false);
                                 }
                               } catch (err) {
                                 showCustomSnackBar(context, 'Error starting checkout: $err', positive: false);
