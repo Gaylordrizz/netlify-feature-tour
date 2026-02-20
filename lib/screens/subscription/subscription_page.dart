@@ -508,6 +508,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                     await launchUrlString(
                                       checkoutUrl,
                                       mode: LaunchMode.externalApplication,
+                                      webOnlyWindowName: '_self', // Prevent popup blocking on web
                                     );
                                   } else {
                                     showCustomSnackBar(context, 'Could not launch checkout URL.', positive: false);
