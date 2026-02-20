@@ -1,38 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
-
   <meta charset="UTF-8">
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description">
-
-  <!-- iOS meta tags & icons -->
-  <meta name="mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="flutter_application_1">
-  <link rel="apple-touch-icon" href="icons/Icon-192.png">
-
-  <!-- Favicon -->
-  <link rel="icon" type="image/png" href="storazaar_logo.png"/>
+  <meta name="description" content="Showcase your store and reach real customers on Storazaar. List up to 10 products, customize your profile, and track performance with built-in analytics. Shoppers can visit your shop directly via your profile link.">
 
   <title>Storazaar | Discover Online Stores and Products</title>
+  
+  <style>
+    body {
+      /* Pink on the left, Gold on the right */
+      background: linear-gradient(to right, #FFC0CB, #FFD700);
+      margin: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      overflow: hidden;
+      font-family: -apple-system, system-ui, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+    .loading-wrapper {
+      text-align: center;
+      padding: 20px;
+    }
+    .logo {
+      width: 120px; /* Not too big, just right */
+      height: auto;
+      margin-bottom: 15px;
+      /* Optional: subtle shadow to make it pop against the gradient */
+      filter: drop-shadow(0px 4px 10px rgba(0,0,0,0.1));
+    }
+    .main-text {
+      font-size: 32px;
+      font-weight: 900;
+      color: #1a1a1a;
+      letter-spacing: -0.5px;
+    }
+    .promo-text {
+      font-size: 16px;
+      color: #333;
+      margin-top: 10px;
+      font-weight: 500;
+    }
+  </style>
+  
+  <link rel="icon" type="image/png" href="storazaar_logo.png"/>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
+  <div class="loading-wrapper">
+    <img src="storazaar_logo.png" alt="Storazaar" class="logo">
+    <div class="main-text">Storazaar</div>
+  </div>
+
   <script src="flutter_bootstrap.js" async></script>
 </body>
 </html>
