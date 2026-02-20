@@ -71,12 +71,11 @@ class _AuthPageState extends State<AuthPage> {
           barrierDismissible: false,
           builder: (context) => Center(child: PageLoadingSpinner()),
         );
-        supabase.auth
-            .signInWithPassword(
-              email: _emailController.text.trim(),
-              password: _passwordController.text.trim(),
-            )
-            .then((response) {
+        try {
+          final response = await supabase.auth.signInWithPassword(
+            email: _emailController.text.trim(),
+            password: _passwordController.text.trim(),
+          );
           Navigator.of(context).pop(); // Remove loading dialog
           if (response.user != null) {
             if (response.user!.emailConfirmedAt == null) {
@@ -97,8 +96,50 @@ class _AuthPageState extends State<AuthPage> {
                 Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
               }
             });
+          } else {
+            // Should not happen, but handle as generic error
+            showCustomSnackBar(
+              context,
+              'Sign in failed. Please try again.',
+              positive: false,
+            );
           }
-        });
+        } on AuthException catch (e) {
+          Navigator.of(context).pop(); // Remove loading dialog
+          final errorMsg = e.message.toLowerCase();
+          if (errorMsg.contains('invalid login credentials') || errorMsg.contains('invalid email or password')) {
+            showCustomSnackBar(
+              context,
+              'Incorrect email or password.',
+              positive: false,
+            );
+          } else if (errorMsg.contains('email')) {
+            showCustomSnackBar(
+              context,
+              'Incorrect email.',
+              positive: false,
+            );
+          } else if (errorMsg.contains('password')) {
+            showCustomSnackBar(
+              context,
+              'Incorrect password.',
+              positive: false,
+            );
+          } else {
+            showCustomSnackBar(
+              context,
+              e.message,
+              positive: false,
+            );
+          }
+        } catch (e) {
+          Navigator.of(context).pop(); // Remove loading dialog
+          showCustomSnackBar(
+            context,
+            'Sign in failed. Please try again.',
+            positive: false,
+          );
+        }
       } else {
         // Sign Up logic with name as metadata
         showDialog(
