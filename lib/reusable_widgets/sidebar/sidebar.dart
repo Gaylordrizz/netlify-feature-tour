@@ -9,6 +9,7 @@ import '../popups/saved_stores_popup.dart';
 import '../../l10n/generated/app_localizations.dart';
 import '../../screens/settings/settings_page.dart';
 import '../../screens/subscription/subscription_page.dart';
+import '../../services/pro_status_service.dart';
 import '../../screens/store_backend/store_backend_page.dart';
 import '../../screens/community_forum/store_owner_forum_page.dart';
 class GlobalSidebar extends StatelessWidget {
@@ -33,15 +34,18 @@ class GlobalSidebarDrawer extends StatelessWidget {
   Widget build(BuildContext context) {
     final user = Supabase.instance.client.auth.currentUser;
     final loc = AppLocalizations.of(context)!;
-    // Determine user tier
-    UserTier userTier = UserTier.nonAccount;
-    if (user != null) {
-      final isPaying = user.appMetadata['isPaying'] == true;
-      userTier = isPaying ? UserTier.accountPaying : UserTier.accountFree;
-    }
-    return Drawer(
-      child: Builder(
-        builder: (drawerContext) => Column(
+    // Determine user tier using orders table (ProStatusService)
+    return FutureBuilder<bool>(
+      future: user == null ? Future.value(false) : ProStatusService.isUserPro(),
+      builder: (context, snapshot) {
+        UserTier userTier = UserTier.nonAccount;
+        if (user != null) {
+          final isPaying = snapshot.data == true;
+          userTier = isPaying ? UserTier.accountPaying : UserTier.accountFree;
+        }
+        return Drawer(
+          child: Builder(
+            builder: (drawerContext) => Column(
           children: [
           // Header section with gradient
           Container(
@@ -233,7 +237,9 @@ class GlobalSidebarDrawer extends StatelessWidget {
         ],
       ),
     ),
-  );
+        );
+      },
+    );
   }
 
   static Widget _buildMenuItem(
