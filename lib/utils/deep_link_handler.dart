@@ -19,7 +19,7 @@ class _DeepLinkHandlerState extends State<DeepLinkHandler> {
     super.initState();
     _appLinks = AppLinks();
     _appLinks.uriLinkStream.listen((Uri? uri) {
-      if (uri != null && uri.toString().startsWith('https://storazaar.com/stripe-success-post-store')) {
+      if (uri != null && uri.toString().startsWith('https://storazaar.com/post-your-store')) {
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (_) => const PostYourStorePage()),
           (route) => false,

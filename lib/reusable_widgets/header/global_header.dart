@@ -1,3 +1,4 @@
+import '../../../services/loading_spinner.dart';
 import '../../../services/avatar_color.dart';
 import 'package:flutter/material.dart';
 import '../popups/filters_popup.dart';
@@ -505,99 +506,87 @@ class _GlobalHeaderState extends State<GlobalHeader> {
                         ),
                   const Spacer(),
                   if (UserPrivileges.canAccessAccountPage(userTier))
-                    StatefulBuilder(
-                      builder: (context, setStateLogout) {
-                        bool isLoggingOut = false;
-                        return PopupMenuButton<String>(
-                          tooltip: 'Account options',
-                          offset: const Offset(0, 48),
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-                          onSelected: (value) async {
-                            if (value == 'account') {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const AccountSettingsPage(),
-                                ),
-                              );
-                            } else if (value == 'logout') {
-                              setStateLogout(() => isLoggingOut = true);
-                              try {
-                                await Supabase.instance.client.auth.signOut();
-                                if (mounted) setState(() {});
-                              } catch (e) {
-                                if (mounted) {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(content: Text('Logout failed: \\${e.toString()}')),
-                                  );
-                                }
-                              }
-                              setStateLogout(() => isLoggingOut = false);
+                    PopupMenuButton<String>(
+                      tooltip: 'Account options',
+                      offset: const Offset(0, 48),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      onSelected: (value) async {
+                        if (value == 'account') {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const AccountSettingsPage(),
+                            ),
+                          );
+                        } else if (value == 'logout') {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => Center(child: PageLoadingSpinner()),
+                          );
+                          try {
+                            await Supabase.instance.client.auth.signOut();
+                            if (mounted) {
+                              Navigator.of(context).pop(); // Remove spinner dialog
+                              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
                             }
-                          },
-                          itemBuilder: (context) => [
-                            if (UserPrivileges.canAccessAccountPage(userTier))
-                              const PopupMenuItem<String>(
-                                value: 'account',
-                                child: Text('Account'),
-                              ),
-                            if (userTier != UserTier.nonAccount)
-                              PopupMenuItem<String>(
-                                value: 'logout',
-                                child: Row(
-                                  children: [
-                                    const Text('Log out'),
-                                    const SizedBox(width: 8),
-                                    if (isLoggingOut)
-                                      SizedBox(
-                                        width: 16,
-                                        height: 16,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor: AlwaysStoppedAnimation<Color>(Colors.black),
-                                        ),
-                                      ),
-                                  ],
-                                ),
-                              ),
-                          ],
-                          child: Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(24),
-                              border: Border.all(color: Colors.black12, width: 1),
-                            ),
-                            constraints: const BoxConstraints(minWidth: 0, maxWidth: 220, minHeight: 40),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Builder(
-                                  builder: (context) {
-                                    final userName = user?.userMetadata?['name'] ?? user?.email ?? '';
-                                    return getUserAvatar(userName, radius: 16);
-                                  },
-                                ),
-                                const SizedBox(width: 8),
-                                Flexible(
-                                  child: Text(
-                                    user?.email ?? '',
-                                    style: const TextStyle(
-                                      color: Colors.black,
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 15,
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 1,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                const Icon(Icons.arrow_drop_down, color: Colors.black),
-                              ],
-                            ),
-                          ),
-                        );
+                          } catch (e) {
+                            if (mounted) {
+                              Navigator.of(context).pop(); // Remove spinner dialog
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Logout failed: ${e.toString()}')),
+                              );
+                            }
+                          }
+                        }
                       },
+                      itemBuilder: (context) => [
+                        if (UserPrivileges.canAccessAccountPage(userTier))
+                          const PopupMenuItem<String>(
+                            value: 'account',
+                            child: Text('Account'),
+                          ),
+                        if (userTier != UserTier.nonAccount)
+                          const PopupMenuItem<String>(
+                            value: 'logout',
+                            child: Text('Log out'),
+                          ),
+                      ],
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(24),
+                          border: Border.all(color: Colors.black12, width: 1),
+                        ),
+                        constraints: const BoxConstraints(minWidth: 0, maxWidth: 220, minHeight: 40),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Builder(
+                              builder: (context) {
+                                final userName = user?.userMetadata?['name'] ?? user?.email ?? '';
+                                return getUserAvatar(userName, radius: 16);
+                              },
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Text(
+                                user?.email ?? '',
+                                style: const TextStyle(
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 15,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 1,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            const Icon(Icons.arrow_drop_down, color: Colors.black),
+                          ],
+                        ),
+                      ),
                     )
                   else
                     LayoutBuilder(

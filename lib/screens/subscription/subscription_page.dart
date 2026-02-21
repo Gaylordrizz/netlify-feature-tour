@@ -8,6 +8,7 @@ import '../../reusable_widgets/header/global_header.dart';
 import '../../reusable_widgets/sidebar/sidebar.dart';
 import '../../reusable_widgets/footer/page_footer.dart';
 import '../../services/search_state.dart';
+import '../../services/pro_status_service.dart';
 // import '../post_your_store/post_your_store_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -479,6 +480,7 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                   showCustomSnackBar(context, 'User not logged in.', positive: false);
                                   return;
                                 }
+                                // Removed debug print for user id
                                 final session = Supabase.instance.client.auth.currentSession;
                                 final jwt = session?.accessToken;
                                 if (jwt == null) {
@@ -500,16 +502,20 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                   },
                                 );
                                 final data = res.data;
-                                // Match TS return keys
                                 final String? checkoutUrl = data is Map ? data['url'] as String? : null;
-                                // sessionId is available if needed: data['sessionId']
                                 if (checkoutUrl != null && checkoutUrl.isNotEmpty) {
                                   if (await canLaunchUrlString(checkoutUrl)) {
                                     await launchUrlString(
                                       checkoutUrl,
                                       mode: LaunchMode.externalApplication,
-                                      webOnlyWindowName: '_self', // Prevent popup blocking on web
+                                      webOnlyWindowName: '_self',
                                     );
+                                    // After returning from Stripe checkout, check pro status and navigate
+                                    if (await ProStatusService.isUserPro()) {
+                                      Navigator.pushReplacementNamed(context, '/post-your-store');
+                                    } else {
+                                      Navigator.pushReplacementNamed(context, '/home');
+                                    }
                                   } else {
                                     showCustomSnackBar(context, 'Could not launch checkout URL.', positive: false);
                                   }

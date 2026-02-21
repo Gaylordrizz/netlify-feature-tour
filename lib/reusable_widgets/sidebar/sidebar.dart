@@ -12,6 +12,7 @@ import '../../screens/subscription/subscription_page.dart';
 import '../../services/pro_status_service.dart';
 import '../../screens/store_backend/store_backend_page.dart';
 import '../../screens/community_forum/store_owner_forum_page.dart';
+import '../../services/loading_spinner.dart';
 class GlobalSidebar extends StatelessWidget {
   const GlobalSidebar({super.key});
 
@@ -38,6 +39,12 @@ class GlobalSidebarDrawer extends StatelessWidget {
     return FutureBuilder<bool>(
       future: user == null ? Future.value(false) : ProStatusService.isUserPro(),
       builder: (context, snapshot) {
+        // Show loading spinner while waiting for user tier
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return Drawer(
+            child: const PageLoadingSpinner(),
+          );
+        }
         UserTier userTier = UserTier.nonAccount;
         if (user != null) {
           final isPaying = snapshot.data == true;
@@ -160,45 +167,46 @@ class GlobalSidebarDrawer extends StatelessWidget {
                       );
                     },
                   ),
-                // 'Post Your Store' is always visible
-                ListTile(
-                  leading: Icon(
-                    Icons.add_business,
-                    color: Colors.grey.shade700,
-                  ),
-                  title: Text(
-                    loc.postYourStore,
-                    style: const TextStyle(
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal,
-                      color: Colors.black87,
+                // 'Post Your Store' only for non-pro users
+                if (userTier != UserTier.accountPaying)
+                  ListTile(
+                    leading: Icon(
+                      Icons.add_business,
+                      color: Colors.grey.shade700,
                     ),
-                  ),
-                  trailing: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.green, width: 2),
-                      borderRadius: BorderRadius.circular(6),
-                      color: Colors.white,
-                    ),
-                    child: const Text(
-                      'FREE',
-                      style: TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                    title: Text(
+                      loc.postYourStore,
+                      style: const TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.normal,
+                        color: Colors.black87,
                       ),
                     ),
+                    trailing: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.green, width: 2),
+                        borderRadius: BorderRadius.circular(6),
+                        color: Colors.white,
+                      ),
+                      child: const Text(
+                        'FREE',
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                    onTap: () {
+                      Navigator.pop(context);
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => SubscriptionPage()),
+                      );
+                    },
+                    tileColor: null,
                   ),
-                  onTap: () {
-                    Navigator.pop(context);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => SubscriptionPage()),
-                    );
-                  },
-                  tileColor: null,
-                ),
                 // Store Backend/Store Dashboard only for paying users
                 if (userTier == UserTier.accountPaying)
                   _buildMenuItem(

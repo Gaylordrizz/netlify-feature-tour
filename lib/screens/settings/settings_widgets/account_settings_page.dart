@@ -1,3 +1,4 @@
+import '../../../services/loading_spinner.dart';
 import 'package:flutter/material.dart';
 import '../../../reusable_widgets/sidebar/sidebar.dart';
 import 'subscription_billing_settings_page.dart';
@@ -701,12 +702,15 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                       title: const Text('Logout'),
                       onTap: () async {
                         _removeDropdown();
+                        showDialog(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) => Center(child: PageLoadingSpinner()),
+                        );
                         await Supabase.instance.client.auth.signOut();
                         if (mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Logged out successfully')),
-                          );
-                          setState(() {});
+                          Navigator.of(context).pop(); // Remove spinner dialog
+                          Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
                         }
                       },
                     ),
