@@ -91,6 +91,7 @@ class _FiltersPopupState extends State<FiltersPopup> with SingleTickerProviderSt
     'Garden',
     'Hobbies',
     'Digital Products',
+    'Services',
   ];
 
   final List<String> _sortOptions = [

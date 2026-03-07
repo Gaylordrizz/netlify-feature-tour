@@ -24,7 +24,7 @@ class SupabaseAuthRedirects {
     'https://storazaar.com/auth',
     'https://storazaar.com/',
     'https://storazaar.com/**', // wildcard for mobile apps
-    'https://storazaar.com/stripe-success-post-store', // specific redirect for Stripe success
+    'https://storazaar.com/post-your-store', // specific redirect for Stripe success
   ];
 
   static SupabaseClient get _supabase => Supabase.instance.client;

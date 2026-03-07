@@ -1,6 +1,4 @@
 
-
-
 import 'screens/auth/check_email_page.dart';
 import 'screens/auth/auth_page.dart';
 import 'screens/privacy_policy_page.dart';
@@ -27,7 +25,7 @@ import 'screens/subscription/subscription_page.dart';
 import 'screens/settings/settings_widgets/forgot_password_page.dart';
 import 'screens/auth/password_changed_page.dart';
 import 'screens/auth/create_new_password_page.dart';
-
+import 'screens/post_your_store/post_your_store_page.dart';
 import 'utils/utils_supabase/supabase_env.dart';
 import 'utils/deep_link_handler.dart';
 
@@ -85,12 +83,12 @@ class StorazaarApp extends StatelessWidget {
         '/settings/terms-conditions': (context) => const TermsConditionsSettingsPage(),
         '/privacy_settings': (context) => const PrivacyPolicyPage(),
         '/terms_conditions_settings': (context) => const TermsConditionsSettingsPage(),
-        // '/thanks-for-confirming': (context) => const ThanksForConfirmingPage(),
         '/password-changed': (context) => const PasswordChangedPage(),
         '/forgot-password': (context) => const ForgotPasswordPage(),
         '/create-new-password': (context) => const CreateNewPasswordPage(),
         '/subscription': (context) => SubscriptionPage(),
         '/auth': (context) => const AuthPage(),
+        '/post-your-store': (context) => const PostYourStorePage(),
       },
       builder: DevicePreview.appBuilder,
       useInheritedMediaQuery: true,

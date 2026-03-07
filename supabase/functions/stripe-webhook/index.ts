@@ -1,32 +1,54 @@
-// Follow this setup guide to integrate the Deno language server with your editor:
-// https://deno.land/manual/getting_started/setup_your_environment
-// This enables autocomplete, go to definition, etc.
+// @ts-ignore Deno/npm import works in Supabase Edge Functions
+import Stripe from "npm:stripe@14.0.0";
+// @ts-ignore Deno/npm import works in Supabase Edge Functions
+import { createClient } from "npm:@supabase/supabase-js@2.35.0";
 
-// Setup type definitions for built-in Supabase Runtime APIs
-import "@supabase/functions-js/edge-runtime.d.ts"
+// Removed STRIPE_API_VERSION constant
 
-console.log("Hello from Functions!")
+// @ts-ignore Deno global is available in Supabase Edge Functions
+const stripeSecret = Deno.env.get("STRIPE_SECRET_KEY");
+// @ts-ignore Deno global is available in Supabase Edge Functions
+const webhookSecret = Deno.env.get("STRIPE_WEBHOOK_SECRET");
+// @ts-ignore Deno global is available in Supabase Edge Functions
+const supabaseUrl = Deno.env.get("SUPABASE_URL");
+// @ts-ignore Deno global is available in Supabase Edge Functions
+const supabaseService = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-Deno.serve(async (req) => {
-  const { name } = await req.json()
-  const data = {
-    message: `Hello ${name}!`,
+if (!stripeSecret || !webhookSecret || !supabaseUrl || !supabaseService) {
+  throw new Error("Missing required webhook environment variables");
+}
+
+// Stripe constructor without apiVersion
+const stripe = new Stripe(stripeSecret);
+const cryptoProvider = Stripe.createSubtleCryptoProvider();
+const supabaseAdmin = createClient(supabaseUrl, supabaseService);
+
+// @ts-ignore Deno global is available in Supabase Edge Functions
+Deno.serve(async (request: Request) => {
+  try {
+    const signature = request.headers.get("stripe-signature");
+    if (!signature) return new Response("Missing signature", { status: 400 });
+
+    const body = await request.text();
+    const event = await stripe.webhooks.constructEventAsync(body, signature, webhookSecret, undefined, cryptoProvider);
+
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object as Stripe.Checkout.Session;
+      if (!session.client_reference_id || !session.customer) throw new Error("Missing session identifiers");
+
+      await supabaseAdmin
+        .from("orders")
+        .update({
+          status: "active",
+          stripe_subscription_id: session.subscription as string,
+          stripe_customer_id: String(session.customer),
+        })
+        .eq("id", session.client_reference_id);
+    }
+
+    return new Response("ok", { status: 200 });
+  } catch (err) {
+    console.error("stripe-webhook error:", err);
+    return new Response("Webhook error", { status: 500 });
   }
-
-  return new Response(
-    JSON.stringify(data),
-    { headers: { "Content-Type": "application/json" } },
-  )
-})
-
-/* To invoke locally:
-
-  1. Run `supabase start` (see: https://supabase.com/docs/reference/cli/supabase-start)
-  2. Make an HTTP request:
-
-  curl -i --location --request POST 'http://127.0.0.1:54321/functions/v1/stripe-webhook' \
-    --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-    --header 'Content-Type: application/json' \
-    --data '{"name":"Functions"}'
-
-*/
+});
