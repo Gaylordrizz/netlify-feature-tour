@@ -144,7 +144,7 @@ class _HomePageState extends State<HomePage> {
   Future<List<Map<String, dynamic>>> _searchStoresRPC(String query) async {
     final client = Supabase.instance.client;
     final response = await client.rpc('search_stores', params: {
-      'query': query,
+      'search_term': query,
     });
     if (response == null) return [];
     return List<Map<String, dynamic>>.from(response as List);
