@@ -70,7 +70,7 @@ class _AllStorazaarDocsPageState extends State<AllStorazaarDocsPage> {
                       IconButton(
                         icon: const Icon(Icons.arrow_back, color: Colors.black),
                         onPressed: () => Navigator.of(context).maybePop(),
-                        tooltip: 'Back',
+                        // tooltip removed
                       ),
                       const Text(
                         'Storazaar Docs',

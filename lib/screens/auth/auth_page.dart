@@ -63,6 +63,10 @@ class _AuthPageState extends State<AuthPage> {
 
   void _submit() async {
     if (_formKey.currentState!.validate()) {
+      if (!_isSignIn && _nameController.text.trim().isEmpty) {
+        showCustomSnackBar(context, 'Name is required to sign up.', positive: false);
+        return;
+      }
       final supabase = Supabase.instance.client;
       if (_isSignIn) {
         // Sign In logic using Supabase (no email confirmation check)

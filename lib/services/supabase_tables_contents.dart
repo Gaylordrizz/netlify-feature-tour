@@ -1,3 +1,104 @@
+/// Table: messages
+///
+/// CREATE TABLE public.messages (
+///   id uuid not null default gen_random_uuid (),
+///   community_id uuid not null,
+///   user_id uuid not null,
+///   content text not null,
+///   created_at timestamp with time zone null default now(),
+///   constraint messages_pkey primary key (id),
+///   constraint messages_community_id_fkey foreign KEY (community_id) references communities (id) on delete CASCADE,
+///   constraint messages_user_id_fkey foreign KEY (user_id) references profiles (id) on delete set null
+/// ) TABLESPACE pg_default;
+///
+/// create index IF not exists idx_messages_community_time on public.messages using btree (community_id, created_at desc) TABLESPACE pg_default;
+class Message {
+  final String id;
+  final String communityId;
+  final String userId;
+  final String content;
+  final DateTime? createdAt;
+
+  Message({
+    required this.id,
+    required this.communityId,
+    required this.userId,
+    required this.content,
+    this.createdAt,
+  });
+
+  factory Message.fromJson(Map<String, dynamic> json) => Message(
+        id: json['id'] as String,
+        communityId: json['community_id'] as String,
+        userId: json['user_id'] as String,
+        content: json['content'] as String,
+        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'community_id': communityId,
+        'user_id': userId,
+        'content': content,
+        'created_at': createdAt?.toIso8601String(),
+      };
+}
+/// Table: communities
+///
+/// CREATE TABLE public.communities (
+///   id uuid not null default gen_random_uuid (),
+///   name text not null,
+///   slug text not null,
+///   creator_id uuid null,
+///   created_at timestamp with time zone null default now(),
+///   constraint communities_pkey primary key (id),
+///   constraint communities_name_key unique (name),
+///   constraint communities_slug_key unique (slug),
+///   constraint communities_creator_id_fkey foreign KEY (creator_id) references profiles (id) on delete set null
+/// ) TABLESPACE pg_default;
+class Community {
+  final String id;
+  final String name;
+  final String slug;
+  final String? userId;
+  final DateTime? createdAt;
+  final bool? isUserRoom;
+  final int? messageCount;
+  final Map<String, dynamic>? settings;
+
+  Community({
+    required this.id,
+    required this.name,
+    required this.slug,
+    this.userId,
+    this.createdAt,
+    this.isUserRoom,
+    this.messageCount,
+    this.settings,
+  });
+
+  factory Community.fromJson(Map<String, dynamic> json) => Community(
+        id: json['id'] as String,
+        name: json['name'] as String,
+        slug: json['slug'] as String,
+        userId: json['user_id'] as String?,
+        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+        isUserRoom: json['is_user_room'] == null ? null : json['is_user_room'] as bool,
+        messageCount: json['message_count'] == null ? null : (json['message_count'] is int ? json['message_count'] as int : int.tryParse(json['message_count'].toString())),
+        settings: json['settings'] == null ? null : Map<String, dynamic>.from(json['settings'] as Map),
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'name': name,
+        'slug': slug,
+        'user_id': userId,
+        'created_at': createdAt?.toIso8601String(),
+        'is_user_room': isUserRoom,
+        'message_count': messageCount,
+        'settings': settings,
+      };
+}
 /// Table: analytics events
 
 // Table name constants for Supabase tables
@@ -22,6 +123,8 @@ class SupabaseTables {
   static const String userPhotos = 'user_photos';
   static const String invoices = 'invoices';
   static const String receipts = 'receipts';
+  static const String communities = 'communities';
+  static const String messages = 'messages';
 }
 /// Table: receipts
 ///
@@ -445,24 +548,27 @@ class ProductVisibilityCooldown {
       };
 }
 
+
 /// Table: products
 ///
 /// CREATE TABLE public.products (
-///   id uuid NOT NULL DEFAULT gen_random_uuid(),
-///   store_id uuid NOT NULL,
-///   name text NOT NULL,
-///   price numeric NOT NULL,
-///   product_url text NULL,
-///   image_url text NULL,
-///   created_at timestamp with time zone NOT NULL DEFAULT now(),
-///   updated_at timestamp with time zone NULL,
-///   public_id text NULL,
-///   PRIMARY KEY (id),
-///   FOREIGN KEY (store_id) REFERENCES stores (id) ON UPDATE CASCADE ON DELETE CASCADE
-/// )
+///   id uuid not null default gen_random_uuid (),
+///   store_id uuid not null,
+///   name text not null,
+///   price numeric not null,
+///   product_url text null,
+///   image_url text null,
+///   created_at timestamp with time zone not null default now(),
+///   updated_at timestamp with time zone null,
+///   public_id text null,
+///   description text null,
+///   category text null,
+///   constraint products_pkey primary key (id),
+///   constraint products_store_fk foreign KEY (store_id) references stores (id),
+///   constraint products_store_id_fkey foreign KEY (store_id) references stores (id) on update CASCADE on delete CASCADE
+/// ) TABLESPACE pg_default;
 ///
-/// Indexes:
-///   products_store_id_idx (store_id)
+/// create index IF not exists products_store_id_idx on public.products using btree (store_id) TABLESPACE pg_default;
 class Product {
   final String id;
   final String storeId;
@@ -529,6 +635,7 @@ class Profile {
   final String name;
   final bool isPaying;
   final DateTime? updatedAt;
+  final String? avatarUrl;
 
   Profile({
     required this.id,
@@ -537,6 +644,7 @@ class Profile {
     required this.name,
     required this.isPaying,
     this.updatedAt,
+    this.avatarUrl,
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) => Profile(
@@ -546,6 +654,7 @@ class Profile {
         name: json['name'] as String,
         isPaying: json['is_paying'] as bool,
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+        avatarUrl: json['avatar_url'] as String?,
       );
 
   Map<String, dynamic> toJson() => {
@@ -555,6 +664,7 @@ class Profile {
         'name': name,
         'is_paying': isPaying,
         'updated_at': updatedAt?.toIso8601String(),
+        'avatar_url': avatarUrl,
       };
 }
 
@@ -713,7 +823,18 @@ class StoreStats {
 /// Table: stores
 ///
 /// CREATE TABLE public.stores (
-///   id uuid NOT NULL DEFAULT gen_random_uuid(),
+///   id uuid not null default gen_random_uuid (),
+///   created_at timestamp with time zone not null default now(),
+///   owner_id uuid not null,
+///   name text not null,
+///   store_url text null,
+///   updated_at timestamp with time zone null,
+///   category text null,
+///   constraint stores_pkey primary key (id),
+///   constraint stores_owner_id_fkey foreign KEY (owner_id) references profiles (id) on update CASCADE on delete CASCADE
+/// ) TABLESPACE pg_default;
+///
+/// create index IF not exists stores_owner_id_idx on public.stores using btree (owner_id) TABLESPACE pg_default;
 ///   created_at timestamp with time zone NOT NULL DEFAULT now(),
 ///   owner_id uuid NOT NULL,
 ///   name text NOT NULL,

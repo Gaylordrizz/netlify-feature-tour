@@ -431,7 +431,7 @@ class _EditProductPageState extends State<EditProductPage> {
           leading: IconButton(
             icon: const Icon(Icons.arrow_back, color: Colors.black),
             onPressed: () => Navigator.of(context).pop(),
-            tooltip: 'Back',
+            // tooltip removed
           ),
           centerTitle: true,
           title: Text(

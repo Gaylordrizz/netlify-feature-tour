@@ -88,7 +88,24 @@ class StorazaarApp extends StatelessWidget {
         '/create-new-password': (context) => const CreateNewPasswordPage(),
         '/subscription': (context) => SubscriptionPage(),
         '/auth': (context) => const AuthPage(),
+        '/login': (context) => const AuthPage(),
+        '/signup': (context) => const AuthPage(),
         '/post-your-store': (context) => const PostYourStorePage(),
+      },
+      onGenerateRoute: (settings) {
+        if (settings.name == '/login') {
+          return MaterialPageRoute(
+            builder: (context) => const AuthPage(),
+            settings: const RouteSettings(arguments: {'signIn': true}),
+          );
+        }
+        if (settings.name == '/signup') {
+          return MaterialPageRoute(
+            builder: (context) => const AuthPage(),
+            settings: const RouteSettings(arguments: {'signUp': true}),
+          );
+        }
+        return null;
       },
       builder: DevicePreview.appBuilder,
       useInheritedMediaQuery: true,

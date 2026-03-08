@@ -6,6 +6,22 @@
   <meta content="IE=Edge" http-equiv="X-UA-Compatible">
   <meta name="description" content="Showcase your store and reach real customers on Storazaar. List up to 10 products, customize your profile, and track performance with built-in analytics. Shoppers can visit your shop directly via your profile link.">
 
+  <!-- SEO: Open Graph -->
+  <meta property="og:title" content="Storazaar | Discover Online Stores and Products">
+  <meta property="og:description" content="Showcase your store and reach real customers on Storazaar. List up to 10 products, customize your profile, and track performance with built-in analytics. Shoppers can visit your shop directly via your profile link.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://storazaar.com/">
+  <meta property="og:image" content="https://storazaar.com/assets/storazaar_logo.png">
+
+  <!-- SEO: Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Storazaar | Discover Online Stores and Products">
+  <meta name="twitter:description" content="Showcase your store and reach real customers on Storazaar. List up to 10 products, customize your profile, and track performance with built-in analytics. Shoppers can visit your shop directly via your profile link.">
+  <meta name="twitter:image" content="https://storazaar.com/assets/storazaar_logo.png">
+
+  <!-- SEO: Canonical -->
+  <link rel="canonical" href="https://storazaar.com/" />
+
   <title>Storazaar | Discover Online Stores and Products</title>
   
   <style>
@@ -15,13 +31,63 @@
       height: 100vh;
       overflow: hidden;
     }
+    #quick-links-box {
+      display: inline-block;
+      background: #fff;
+      border: 2px solid #bbb;
+      border-radius: 18px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.10);
+      padding: 18px 36px;
+      margin: 0 auto;
+    }
+    #quick-links-box a {
+      margin: 0 18px;
+      color: #888;
+      font-weight: bold;
+      text-decoration: underline;
+      font-size: 18px;
+      transition: background 0.2s, color 0.2s;
+      padding: 6px 16px;
+      border-radius: 8px;
+    }
+    #quick-links-box a:hover {
+      background: #888;
+      color: #fff;
+      text-decoration: none;
+    }
+    #quick-links-desc {
+      margin-top: 16px;
+      color: #444;
+      font-size: 15px;
+      line-height: 1.5;
+      max-width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+    }
   </style>
   
-  <link rel="icon" type="image/png" href="storazaar_logo.png"/>
+  <link rel="icon" type="image/png" href="assets/storazaar_logo.png"/>
   <link rel="manifest" href="manifest.json">
 </head>
 <body>
   <!-- Splash screen intentionally left blank for plain white background -->
+
+  <!-- Main title and description for SEO and user context -->
+  <div id="main-title-desc" style="position: absolute; left: 0; right: 0; top: 48px; text-align: center; z-index: 10;">
+    <h1 style="font-size: 2.2rem; font-weight: bold; color: #888; margin-bottom: 12px; margin-top: 0;">Storazaar</h1>
+    <div id="main-desc" style="color: #444; font-size: 1.1rem; max-width: 520px; margin: 0 auto 0 auto; line-height: 1.5;">
+      Showcase your store and reach real customers on Storazaar. List up to 10 products, customize your profile, and track performance with built-in analytics. Shoppers can visit your shop directly via your profile link.
+    </div>
+  </div>
+
+  <!-- Quick shortcut links for SEO and user navigation -->
+  <div id="quick-links" style="position: absolute; left: 0; right: 0; bottom: 32px; text-align: center; z-index: 10;">
+    <div id="quick-links-box">
+      <a href="/login">Login</a>
+      <a href="/signup">Sign Up</a>
+      <a href="https://www.facebook.com/people/Storazaar/61583888154705/#" target="_blank" rel="noopener">Facebook</a>
+    </div>
+  </div>
 
   <script src="flutter_bootstrap.js" async></script>
 </body>

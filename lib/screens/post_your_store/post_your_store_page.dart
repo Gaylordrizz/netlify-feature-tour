@@ -909,7 +909,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                       onPressed: () {
                         Navigator.of(context).maybePop();
                       },
-                      tooltip: 'Back',
+                      // tooltip removed
                     ),
                   ),
                   const Center(

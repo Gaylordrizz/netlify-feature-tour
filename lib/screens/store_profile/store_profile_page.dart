@@ -5,8 +5,10 @@ import '../../reusable_widgets/sidebar/sidebar.dart';
 import '../../reusable_widgets/snackbar.dart';
 import '../../reusable_widgets/footer/page_footer.dart';
 import '../../services/search_state.dart';
-// ignore: unused_import
+import '../../services/product_service_all.dart';
 import '../product_view/product_view_page.dart';
+import '../../services/pro_status_service.dart';
+import '../../state/app_state_provider.dart';
 
 /// StoreProfilePage
 ///
@@ -52,83 +54,112 @@ class StoreProfilePage extends StatefulWidget {
 }
 
 class _StoreProfilePageState extends State<StoreProfilePage> {
-    void _showStoreRatingDialog() {
-      int tempRating = _currentStoreRating.toInt();
-      showDialog(
-        context: context,
-        builder: (context) => StatefulBuilder(
-          builder: (context, setDialogState) => AlertDialog(
-            title: const Text('Rate this Store'),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Text('Tap a star to rate:'),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(5, (index) {
-                    return IconButton(
-                      icon: Icon(
-                        index < tempRating ? Icons.star : Icons.star_border,
-                        color: Colors.amber,
-                        size: 40,
-                      ),
-                      onPressed: () {
-                        setDialogState(() {
-                          tempRating = index + 1;
-                        });
-                      },
-                    );
-                  }),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  tempRating > 0 ? '$tempRating ${tempRating == 1 ? 'star' : 'stars'}' : 'No rating selected',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey.shade700,
-                  ),
-                ),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                style: TextButton.styleFrom(
-                  foregroundColor: Colors.blue,
-                ),
-                child: const Text('Cancel'),
+  List<Map<String, dynamic>> _products = [];
+  bool _loadingProducts = true;
+  String? _fetchError;
+  bool _isMenuOpen = false;
+  bool _showStoreRating = false;
+  double _currentStoreRating = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    _currentStoreRating = widget.initialRating ?? 0.0;
+    _fetchProducts();
+  }
+
+  Future<void> _fetchProducts() async {
+    setState(() {
+      _loadingProducts = true;
+      _fetchError = null;
+    });
+    try {
+      final products = await ProductService.fetchProductsByStoreDomain(widget.storeDomain);
+      setState(() {
+        _products = products;
+        _loadingProducts = false;
+      });
+    } catch (e) {
+      setState(() {
+        _fetchError = 'Failed to fetch products: $e';
+        _loadingProducts = false;
+      });
+    }
+  }
+
+  void _showStoreRatingDialog() {
+    int tempRating = _currentStoreRating.toInt();
+    showDialog(
+      context: context,
+      builder: (context) => StatefulBuilder(
+        builder: (context, setDialogState) => AlertDialog(
+          title: const Text('Rate this Store'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Text('Tap a star to rate:'),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: List.generate(5, (index) {
+                  return IconButton(
+                    icon: Icon(
+                      index < tempRating ? Icons.star : Icons.star_border,
+                      color: Colors.amber,
+                      size: 40,
+                    ),
+                    onPressed: () {
+                      setDialogState(() {
+                        tempRating = index + 1;
+                      });
+                    },
+                  );
+                }),
               ),
-              ElevatedButton(
-                onPressed: tempRating > 0
-                    ? () {
-                        setState(() {
-                          _currentStoreRating = tempRating.toDouble();
-                        });
-                        Navigator.pop(context);
-                        showCustomSnackBar(
-                          context,
-                          'Thank you for rating this store $tempRating stars!',
-                          positive: true,
-                        );
-                      }
-                    : null,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.amber,
-                  foregroundColor: Colors.black87,
+              const SizedBox(height: 8),
+              Text(
+                tempRating > 0 ? '$tempRating ${tempRating == 1 ? 'star' : 'stars'}' : 'No rating selected',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey.shade700,
                 ),
-                child: const Text('Submit'),
               ),
             ],
           ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              style: TextButton.styleFrom(
+                foregroundColor: Colors.blue,
+              ),
+              child: const Text('Cancel'),
+            ),
+            ElevatedButton(
+              onPressed: tempRating > 0
+                  ? () {
+                      setState(() {
+                        _currentStoreRating = tempRating.toDouble();
+                      });
+                      Navigator.pop(context);
+                      showCustomSnackBar(
+                        context,
+                        'Thank you for rating this store $tempRating stars!',
+                        positive: true,
+                      );
+                    }
+                  : null,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Colors.amber,
+                foregroundColor: Colors.black87,
+              ),
+              child: const Text('Submit'),
+            ),
+          ],
         ),
-      );
-    }
-  bool _isMenuOpen = false;
+      ),
+    );
+  }
   // ...existing code...
-  // Product ratings are always visible now
-  bool _showStoreRating = false; // store rating (banner)
-  double _currentStoreRating = 0.0;
 
   Future<void> _launchStore(String? domain) async {
     if (domain == null || domain.isEmpty) return;
@@ -146,31 +177,15 @@ class _StoreProfilePageState extends State<StoreProfilePage> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    _currentStoreRating = widget.initialRating ?? 0.0;
-  }
+  // Removed duplicate initState
 
   @override
   Widget build(BuildContext context) {
     final searchState = SearchState();
-    final images = widget.productImages ?? [];
+
     final width = MediaQuery.of(context).size.width;
     final height = MediaQuery.of(context).size.height;
     final crossAxisCount = width >= 900 ? 5 : (width >= 600 ? 4 : 3);
-    // Remove test/sample product tiles: Only show tiles if real product data is provided
-    // Only show product tiles if there are real product images
-    final productTiles = images
-      .where((img) => img.isNotEmpty)
-      .map<Widget>((imageUrl) => _ProductTile(
-          title: '',
-          imageUrl: imageUrl,
-          price: '',
-          rating: 0.0,
-          showRating: false,
-        ))
-      .toList();
 
     return Scaffold(
       drawer: const GlobalSidebarDrawer(),
@@ -367,8 +382,19 @@ class _StoreProfilePageState extends State<StoreProfilePage> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Product grid: only show if there are real products, otherwise show nothing or a message
-                    if (productTiles.isNotEmpty)
+                    // Product grid: fetch and show all products for this store
+                    if (_loadingProducts)
+                      const Center(child: CircularProgressIndicator())
+                    else if (_fetchError != null)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 24.0),
+                        child: Text(
+                          _fetchError!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: Colors.red, fontSize: 16),
+                        ),
+                      )
+                    else if (_products.isNotEmpty)
                       GridView.count(
                         shrinkWrap: true,
                         physics: const NeverScrollableScrollPhysics(),
@@ -376,7 +402,35 @@ class _StoreProfilePageState extends State<StoreProfilePage> {
                         crossAxisSpacing: 24,
                         mainAxisSpacing: 24,
                         childAspectRatio: 0.65,
-                        children: productTiles,
+                        children: _products.map((product) => GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProductViewPage(
+                                  productTitle: product['title']?.toString() ?? '',
+                                  productPrice: product['price'] != null ? '\$${product['price']}' : null,
+                                  productDescription: product['description']?.toString(),
+                                  storeName: product['store_domain']?.toString() ?? '',
+                                  storeDomain: product['store_domain']?.toString() ?? '',
+                                  productImages: product['images'] is List ? List<String>.from(product['images']) : (product['image'] != null ? [product['image'].toString()] : []),
+                                  initialRating: (product['rating'] as num?)?.toDouble() ?? 0.0,
+                                  category: product['category']?.toString(),
+                                  condition: product['condition']?.toString(),
+                                  brand: product['brand']?.toString(),
+                                  publicId: product['public_id']?.toString(),
+                                ),
+                              ),
+                            );
+                          },
+                          child: _ProductTile(
+                            title: product['title']?.toString() ?? '',
+                            imageUrl: product['image']?.toString() ?? '',
+                            price: product['price'] != null ? '\$${product['price']}' : '',
+                            rating: (product['rating'] as num?)?.toDouble() ?? 0.0,
+                            showRating: false,
+                          ),
+                        )).toList(),
                       )
                     else
                       Padding(
@@ -654,7 +708,14 @@ class _StoreProfilePageState extends State<StoreProfilePage> {
               ),
             ),
             // Footer
-            const PageFooter(),
+            FutureBuilder<bool>(
+              future: ProStatusService.isUserPro(),
+              builder: (context, snapshot) {
+                final isPro = snapshot.data == true;
+                final userTier = isPro ? UserTier.accountPaying : UserTier.accountFree;
+                return PageFooter(userTier: userTier);
+              },
+            ),
           ],
         ),
       ),

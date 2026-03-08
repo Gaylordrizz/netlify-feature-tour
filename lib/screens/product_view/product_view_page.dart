@@ -4,7 +4,9 @@ import '../../reusable_widgets/snackbar.dart';
 import '../../reusable_widgets/sidebar/sidebar.dart';
 import '../../reusable_widgets/footer/page_footer.dart';
 import '../../services/search_state.dart';
+import '../../services/pro_status_service.dart';
 import '../store_profile/store_profile_page.dart';
+import '../../state/app_state_provider.dart';
 
 class ProductViewPage extends StatefulWidget {
   final String productTitle;
@@ -191,7 +193,14 @@ class _ProductViewPageState extends State<ProductViewPage> {
             const SizedBox(height: 240),
             
             // Footer
-            const PageFooter(),
+            FutureBuilder<bool>(
+              future: ProStatusService.isUserPro(),
+              builder: (context, snapshot) {
+                final isPro = snapshot.data == true;
+                final userTier = isPro ? UserTier.accountPaying : UserTier.accountFree;
+                return PageFooter(userTier: userTier);
+              },
+            ),
           ],
             ),
           ),

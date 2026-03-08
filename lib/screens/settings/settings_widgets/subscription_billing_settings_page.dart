@@ -10,6 +10,8 @@ import '../../../reusable_widgets/footer/page_footer.dart';
 import '../../../reusable_widgets/snackbar.dart';
 import '../../subscription/invoice_page.dart';
 import '../../subscription/receipt_page.dart';
+import '../../../services/pro_status_service.dart';
+import '../../../state/app_state_provider.dart';
 
 class SubscriptionBillingSettingsPage extends StatefulWidget {
   const SubscriptionBillingSettingsPage({super.key});
@@ -33,12 +35,37 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
   }
 
   Future<void> fetchSubscription() async {
-  setState(() {
-    subscription = null;
-    loading = false;
-    error = null;
-  });
-}
+    setState(() {
+      loading = true;
+      error = null;
+    });
+    try {
+      final user = Supabase.instance.client.auth.currentUser;
+      if (user == null) {
+        setState(() {
+          error = 'User not logged in';
+          loading = false;
+        });
+        return;
+      }
+        // Fetch subscription info from Supabase (Stripe data)
+        final response = await Supabase.instance.client
+          .from('orders')
+          .select()
+          .eq('user_id', user.id)
+          .maybeSingle();
+      setState(() {
+        subscription = response;
+        loading = false;
+        error = null;
+      });
+    } catch (e) {
+      setState(() {
+        error = e.toString();
+        loading = false;
+      });
+    }
+  }
 
   Future<void> fetchInvoices() async {
     setState(() {
@@ -75,9 +102,6 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
   }
 
   Widget buildActiveCardTile() {
-    final cardType = subscription?['card_type'] ?? 'Visa';
-    final cardLast4 = subscription?['card_last4'] ?? '1234';
-    final cardExpiry = subscription?['card_expiry'] ?? '12/28';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -86,32 +110,10 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
       ),
       child: Row(
         children: [
-          Icon(Icons.credit_card, color: Colors.grey[600], size: 32),
-          const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '$cardType •••• $cardLast4',
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  'Expires $cardExpiry',
-                  style: TextStyle(
-                    fontSize: 13,
-                    color: Colors.grey.shade600,
-                  ),
-                ),
-              ],
-            ),
-          ),
+          // Card details removed as requested
+          Spacer(),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2), // 50% smaller
             decoration: BoxDecoration(
               color: Colors.green,
               border: Border.all(color: Colors.grey, width: 1.5),
@@ -122,7 +124,7 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
               style: TextStyle(
                 color: Colors.black,
                 fontWeight: FontWeight.bold,
-                fontSize: 13,
+                fontSize: 7,
               ),
             ),
           ),
@@ -153,6 +155,15 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
     if (loading) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
+      );
+    }
+    if (error != null) {
+      return Scaffold(
+        appBar: AppBar(
+          title: const Text('Manage Subscription'),
+          centerTitle: true,
+        ),
+        body: Center(child: Text(error!, style: const TextStyle(color: Colors.red))),
       );
     }
     // Always show the page, even if not logged in or error
@@ -204,32 +215,43 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      subscription?['plan_name'] ?? '',
+                      subscription?['plan_name'] ?? subscription?['stripe_plan'] ?? '',
                       style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
                     ),
                     const SizedBox(height: 8),
-                    if (subscription?['price'] != null)
+                    if (subscription?['price'] != null || subscription?['stripe_price'] != null)
                       Text(
-                        'Price: ${subscription?['price']}',
+                        'Price: ${subscription?['price'] ?? subscription?['stripe_price']}',
                         style: const TextStyle(fontSize: 18, color: Colors.black),
                       ),
                     const SizedBox(height: 8),
-                    if (subscription?['status'] != null)
+                    if (subscription?['status'] != null || subscription?['stripe_status'] != null)
                       Row(
                         children: [
                           const Text('Status: ', style: TextStyle(fontSize: 16, color: Colors.black)),
-                          Text(
-                            subscription?['status']?.toString() ?? '',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: subscription?['status'] == 'Active' ? Colors.green : Colors.red,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          Icon(
-                            subscription?['status'] == 'Active' ? Icons.check_circle : Icons.cancel,
-                            color: subscription?['status'] == 'Active' ? Colors.green : Colors.red,
-                            size: 18,
+                          Builder(
+                            builder: (context) {
+                              final status = (subscription?['status'] ?? subscription?['stripe_status'])?.toString() ?? '';
+                              final isActive = status.toLowerCase() == 'active';
+                              return Row(
+                                children: [
+                                  Text(
+                                    status,
+                                    style: TextStyle(
+                                      fontSize: 16,
+                                      color: isActive ? Colors.green : Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    isActive ? Icons.check_circle : Icons.cancel,
+                                    color: isActive ? Colors.green : Colors.red,
+                                    size: 18,
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ],
                       ),
@@ -250,19 +272,19 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                   children: [
                     const Text('Billing Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
                     const SizedBox(height: 12),
-                    if (subscription?['invoice_number'] != null)
-                      infoRow('Invoice Number:', subscription?['invoice_number'] ?? ''),
-                    if (subscription?['start_date'] != null) ... [
+                    if (subscription?['invoice_number'] != null || subscription?['stripe_invoice'] != null)
+                      infoRow('Invoice Number:', subscription?['invoice_number'] ?? subscription?['stripe_invoice'] ?? ''),
+                    if (subscription?['start_date'] != null || subscription?['stripe_start'] != null) ... [
                       const Divider(height: 24, thickness: 1, color: Colors.black12),
-                      infoRow('Date of Subscription:', subscription?['start_date'] ?? ''),
+                      infoRow('Date of Subscription:', subscription?['start_date'] ?? subscription?['stripe_start'] ?? ''),
                     ],
-                    if (subscription?['price'] != null) ... [
+                    if (subscription?['price'] != null || subscription?['stripe_price'] != null) ... [
                       const Divider(height: 24, thickness: 1, color: Colors.black12),
-                      infoRow('Price / Month:', subscription?['price']?.toString() ?? ''),
+                      infoRow('Price / Month:', (subscription?['price'] ?? subscription?['stripe_price'])?.toString() ?? ''),
                     ],
-                    if (subscription?['billing_cycle'] != null) ... [
+                    if (subscription?['billing_cycle'] != null || subscription?['stripe_interval'] != null) ... [
                       const Divider(height: 24, thickness: 1, color: Colors.black12),
-                      infoRow('Billing Cycle:', subscription?['billing_cycle'] ?? ''),
+                      infoRow('Billing Cycle:', subscription?['billing_cycle'] ?? subscription?['stripe_interval'] ?? ''),
                     ],
                     const Divider(height: 24, thickness: 1, color: Colors.black12),
                     const SizedBox(height: 12),
@@ -490,7 +512,14 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
             ),
             const SizedBox(height: 32),
             // Footer
-            const PageFooter(),
+            FutureBuilder<bool>(
+              future: ProStatusService.isUserPro(),
+              builder: (context, snapshot) {
+                final isPro = snapshot.data == true;
+                final userTier = isPro ? UserTier.accountPaying : UserTier.accountFree;
+                return PageFooter(userTier: userTier);
+              },
+            ),
           ],
         ),
       ),

@@ -572,7 +572,13 @@ class _GlobalHeaderState extends State<GlobalHeader> {
                             const SizedBox(width: 8),
                             Flexible(
                               child: Text(
-                                user?.email ?? '',
+                                (() {
+                                  final dynamic nameMeta = user?.userMetadata?['name'];
+                                  final String? name = nameMeta is String ? nameMeta : null;
+                                  return (name != null && name.trim().isNotEmpty)
+                                      ? name
+                                      : '';
+                                })(),
                                 style: const TextStyle(
                                   color: Colors.black,
                                   fontWeight: FontWeight.w500,

@@ -9,6 +9,7 @@ import '../../reusable_widgets/sidebar/sidebar.dart';
 import '../../reusable_widgets/footer/page_footer.dart';
 import '../../services/search_state.dart';
 import '../../services/pro_status_service.dart';
+import '../../state/app_state_provider.dart';
 // import '../post_your_store/post_your_store_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -303,7 +304,14 @@ class _SubscriptionPageState extends State<SubscriptionPage> {
                                 children: [
                                   subscriptionTile,
                                   const SizedBox(height: 32),
-                                  const PageFooter(),
+                                  FutureBuilder<bool>(
+                                    future: ProStatusService.isUserPro(),
+                                    builder: (context, snapshot) {
+                                      final isPro = snapshot.data == true;
+                                      final userTier = isPro ? UserTier.accountPaying : UserTier.accountFree;
+                                      return PageFooter(userTier: userTier);
+                                    },
+                                  ),
                                 ],
                               );
                             },

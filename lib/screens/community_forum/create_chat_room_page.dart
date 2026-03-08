@@ -1,10 +1,26 @@
 
 import 'package:flutter/material.dart';
-import 'chat_room_id_generator.dart';
+import '../../services/communities_logic.dart';
 import '../../reusable_widgets/snackbar.dart';
 import 'chat_room_profile_page.dart';
+import '../../services/avatar_color.dart';
 
 class CreateChatRoomPage extends StatefulWidget {
+  final String userName;
+  final String avatarUrl;
+  final String storeName;
+  final String storeThumbnailUrl;
+  final String domain;
+
+  const CreateChatRoomPage({
+    Key? key,
+    required this.userName,
+    required this.avatarUrl,
+    required this.storeName,
+    required this.storeThumbnailUrl,
+    required this.domain,
+  }) : super(key: key);
+
   @override
   State<CreateChatRoomPage> createState() => _CreateChatRoomPageState();
 }
@@ -120,7 +136,7 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel', style: TextStyle(color: Colors.grey)),
+              child: const Text('Cancel', style: TextStyle(color: Colors.black)),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -141,26 +157,38 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
     );
   }
 
-  void _actuallyCreateRoom() {
-    // Generate a random Room ID
-    final roomId = generateChatRoomId();
-    // TODO: Add backend logic to create chat room with roomId and real user/store info
-    showCustomSnackBar(context, 'Chat room created!', positive: true);
-    // Navigate to chat room profile page with placeholder/empty user and store info
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(
-        builder: (context) => ChatRoomProfilePage(
-          roomId: roomId,
-          roomName: _nameController.text.trim(),
-          userName: '',
-          storeName: '',
-          domain: '',
-          profilePhoto: '',
-          storeThumbnail: '',
-        ),
-      ),
-    );
+  Future<void> _actuallyCreateRoom() async {
+    final name = _nameController.text.trim();
+    final slug = name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
+    final creatorId = null; // TODO: Replace with real user id from auth
+    try {
+      final communityId = await CommunityService.createCommunity(
+        name: name,
+        slug: slug,
+        creatorId: creatorId,
+      );
+      if (communityId != null) {
+        showCustomSnackBar(context, 'Chat room created!', positive: true);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => ChatRoomProfilePage(
+              roomId: communityId,
+              roomName: name,
+              userName: widget.userName,
+              storeName: widget.storeName.isNotEmpty ? widget.storeName : '(No Store Yet)',
+              domain: widget.domain.isNotEmpty ? widget.domain : '(no-domain)',
+              profilePhoto: widget.avatarUrl,
+              storeThumbnail: widget.storeThumbnailUrl.isNotEmpty ? widget.storeThumbnailUrl : '',
+            ),
+          ),
+        );
+      } else {
+        showCustomSnackBar(context, 'Failed to create chat room.', positive: false);
+      }
+    } catch (e) {
+      showCustomSnackBar(context, 'Error: ${e.toString()}', positive: false);
+    }
   }
 
   void _createRoom() {
@@ -253,33 +281,59 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
                   child: Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      CircleAvatar(
-                        radius: 28,
-                        backgroundColor: Colors.grey.shade300,
-                        child: const Icon(Icons.person, color: Colors.white, size: 28),
-                      ),
+                      // Show colored initial avatar if avatarUrl starts with 'initial:'
+                      if (widget.avatarUrl.startsWith('initial:'))
+                        // Import getUserAvatar from services/avatar_color.dart
+                        // The initial is after 'initial:'
+                        // Use widget.userName for color consistency
+                        // Default radius: 28
+                        getUserAvatar(widget.userName, radius: 28)
+                      else if (widget.avatarUrl.isNotEmpty)
+                        CircleAvatar(
+                          radius: 28,
+                          backgroundImage: NetworkImage(widget.avatarUrl),
+                        )
+                      else
+                        CircleAvatar(
+                          radius: 28,
+                          backgroundColor: Colors.grey.shade300,
+                          child: const Icon(Icons.person, color: Colors.white, size: 28),
+                        ),
                       const SizedBox(width: 16),
-                      const Expanded(
+                      Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('(User Name)', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
-                            SizedBox(height: 2),
-                            Text('(Store Name)', style: TextStyle(fontSize: 14, color: Colors.black87)),
-                            SizedBox(height: 2),
-                            Text('(domain.com)', style: TextStyle(fontSize: 13, color: Colors.grey)),
+                            Text(widget.userName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
+                            const SizedBox(height: 2),
+                            Text(
+                              widget.storeName.isNotEmpty ? widget.storeName : '(No Store Yet)',
+                              style: const TextStyle(fontSize: 14, color: Colors.black87),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              widget.domain.isNotEmpty ? widget.domain : '(no-domain)',
+                              style: const TextStyle(fontSize: 13, color: Colors.grey),
+                            ),
                           ],
                         ),
                       ),
                       const SizedBox(width: 12),
                       ClipRRect(
                         borderRadius: BorderRadius.circular(8),
-                        child: Container(
-                          width: 48,
-                          height: 48,
-                          color: Colors.grey.shade200,
-                          child: const Icon(Icons.store, color: Colors.grey, size: 28),
-                        ),
+                        child: widget.storeThumbnailUrl.isNotEmpty
+                            ? Image.network(
+                                widget.storeThumbnailUrl,
+                                width: 48,
+                                height: 48,
+                                fit: BoxFit.cover,
+                              )
+                            : Container(
+                                width: 48,
+                                height: 48,
+                                color: Colors.grey.shade200,
+                                child: const Icon(Icons.store, color: Colors.grey, size: 28),
+                              ),
                       ),
                     ],
                   ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../services/avatar_color.dart';
 
 class ChatRoomProfilePage extends StatefulWidget {
   final String roomId;
@@ -28,6 +29,7 @@ class ChatRoomProfilePage extends StatefulWidget {
 class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTickerProviderStateMixin {
     final GlobalKey _accountTileKey = GlobalKey();
     OverlayEntry? _accountPopupOverlay;
+
 
     void _showAccountPopup() {
       if (_accountPopupOverlay != null) return;
@@ -71,7 +73,6 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       ListTile(
-                        dense: true,
                         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 0),
                         title: const Text('Delete Room',
                           style: TextStyle(
@@ -124,37 +125,14 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
       _accountPopupOverlay?.remove();
       _accountPopupOverlay = null;
     }
-  int _userCount = 1;
-  late AnimationController _dotController;
-  late Animation<double> _dotOpacity;
   @override
   void initState() {
     super.initState();
-    _userCount = 1 + (DateTime.now().second % 4); // Simulate 1-4 users
-    _dotController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 2),
-    )..repeat(reverse: true);
-    _dotOpacity = Tween<double>(begin: 0.4, end: 1.0).animate(CurvedAnimation(
-      parent: _dotController,
-      curve: Curves.easeInOut,
-    ));
-    // Simulate live user count changes
-    Future.doWhile(() async {
-      await Future.delayed(const Duration(seconds: 3));
-      if (!mounted) return false;
-      setState(() {
-        // Randomly change user count between 1 and 4
-        _userCount = 1 + (DateTime.now().millisecondsSinceEpoch % 4);
-      });
-      return true;
-    });
   }
 
   @override
   @override
   void dispose() {
-    _dotController.dispose();
     _removeAccountPopup();
     super.dispose();
   }
@@ -212,40 +190,7 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
                 const SizedBox(height: 8),
                 Text('Room ID: ${widget.roomId}', style: const TextStyle(fontSize: 14, color: Colors.grey)),
                 const SizedBox(height: 16),
-                // Live presence indicator
-                Row(
-                  children: [
-                    AnimatedBuilder(
-                      animation: _dotOpacity,
-                      builder: (context, child) => Opacity(
-                        opacity: _dotOpacity.value,
-                        child: child,
-                      ),
-                      child: Container(
-                        width: 14,
-                        height: 14,
-                        decoration: BoxDecoration(
-                          color: Colors.green,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.green.withOpacity(0.4),
-                              blurRadius: 8,
-                              spreadRadius: 1,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      _userCount == 1
-                          ? '1 person in chat room'
-                          : '$_userCount people in chat room',
-                      style: const TextStyle(fontSize: 15, color: Colors.black, fontWeight: FontWeight.w500),
-                    ),
-                  ],
-                ),
+                // ...existing code...
                 const SizedBox(height: 24),
                 // User account tile
                 GestureDetector(
@@ -276,10 +221,7 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        CircleAvatar(
-                          radius: 28,
-                          backgroundImage: AssetImage(widget.profilePhoto),
-                        ),
+                        getUserAvatar(widget.userName, radius: 28),
                         const SizedBox(width: 16),
                         Expanded(
                           child: Column(
@@ -308,7 +250,119 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
                   ),
                 ),
                 // End user account tile
-                // Additional chat room info or actions can go here
+
+                // Options widget below the room tile, hidden under a ... icon
+                Container(
+                  width: double.infinity,
+                  margin: const EdgeInsets.only(bottom: 24),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                    border: Border.all(color: Colors.grey.shade200, width: 1),
+                  ),
+                  child: Align(
+                    alignment: Alignment.centerRight,
+                    child: PopupMenuButton<String>(
+                      icon: const Icon(Icons.more_horiz, color: Colors.black, size: 28),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                      itemBuilder: (context) => [
+                        PopupMenuItem(
+                          value: 'edit',
+                          child: Row(
+                            children: const [
+                              Icon(Icons.edit, color: Colors.black),
+                              SizedBox(width: 10),
+                              Text('Edit Chat Room', style: TextStyle(color: Colors.black)),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'delete',
+                          child: Row(
+                            children: const [
+                              Icon(Icons.delete, color: Colors.black),
+                              SizedBox(width: 10),
+                              Text('Delete Room', style: TextStyle(color: Colors.black)),
+                            ],
+                          ),
+                        ),
+                      ],
+                      onSelected: (value) {
+                        if (value == 'edit') {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              final TextEditingController _nameController = TextEditingController(text: widget.roomName);
+                              return AlertDialog(
+                                title: const Text('Edit Chat Room'),
+                                content: TextField(
+                                  controller: _nameController,
+                                  cursorColor: Colors.black,
+                                  style: const TextStyle(color: Colors.black),
+                                  decoration: const InputDecoration(
+                                    labelText: 'Room Name',
+                                    labelStyle: TextStyle(color: Colors.black),
+                                    enabledBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black),
+                                    ),
+                                    focusedBorder: UnderlineInputBorder(
+                                      borderSide: BorderSide(color: Colors.black),
+                                    ),
+                                  ),
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () => Navigator.of(context).pop(),
+                                    child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+                                  ),
+                                  TextButton(
+                                    onPressed: () {
+                                      // TODO: Save new room name to backend
+                                      Navigator.of(context).pop();
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        const SnackBar(content: Text('Room name updated (not saved in backend).')),
+                                      );
+                                    },
+                                    child: const Text('Save', style: TextStyle(color: Colors.black)),
+                                  ),
+                                ],
+                              );
+                            },
+                          );
+                        } else if (value == 'delete') {
+                          showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                              title: const Text('Delete Chat Room'),
+                              content: const Text('Are you sure you want to delete this chat room? This action cannot be undone.'),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(),
+                                  child: const Text('Cancel', style: TextStyle(color: Colors.black)),
+                                ),
+                                TextButton(
+                                  onPressed: () {
+                                    // TODO: Add backend delete logic here
+                                    Navigator.of(context).pop();
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: const Text('Delete', style: TextStyle(color: Colors.red)),
+                                ),
+                              ],
+                            ),
+                          );
+                        }
+                      },
+                    ),
+                  ),
+                ),
               ],
             ),
           ),

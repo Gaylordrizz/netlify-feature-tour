@@ -358,7 +358,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                   Navigator.of(context).maybePop();
                 }
               },
-              tooltip: 'Back',
+              // tooltip removed
             ),
             title: const Text(
               'Account',
@@ -465,7 +465,24 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                               ],
                                             ),
                                           ),
-                                          // Removed edit icon button; edit now in dropdown
+                                          if (hasSubscription)
+                                            Container(
+                                              margin: const EdgeInsets.only(left: 12),
+                                              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                                              decoration: BoxDecoration(
+                                                color: Colors.green,
+                                                borderRadius: BorderRadius.circular(8),
+                                              ),
+                                              child: const Text(
+                                                'Pro',
+                                                style: TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 14,
+                                                  letterSpacing: 1.2,
+                                                ),
+                                              ),
+                                            ),
                                         ],
                                       ),
                                     ),
@@ -638,9 +655,15 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (_hasChatRoom) ...[
+                    if (_hasChatRoom)
                       ListTile(
-                        title: const Text('My Chat Room', style: TextStyle(fontWeight: FontWeight.w600)),
+                        leading: const Icon(Icons.forum, color: Colors.black),
+                        title: const Text(
+                          'My Chat Room',
+                          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        subtitle: _chatRoomDomain.isNotEmpty ? Text(_chatRoomDomain, style: const TextStyle(fontSize: 12, color: Colors.grey)) : null,
                         onTap: () {
                           _removeDropdown();
                           Navigator.push(
@@ -659,12 +682,12 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                           );
                         },
                       ),
+                    if (_hasChatRoom)
                       Container(
                         height: 1,
                         color: Colors.black,
                         margin: const EdgeInsets.symmetric(horizontal: 12),
                       ),
-                    ],
                     ListTile(
                       title: const Text('Edit'),
                       onTap: () {

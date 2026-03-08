@@ -1,14 +1,19 @@
 import 'package:flutter/material.dart';
 import '../../screens/storazaar_docs.dart/all_storazaar_docs.dart';
+import '../../state/app_state_provider.dart';
 
 class PageFooter extends StatelessWidget {
-  const PageFooter({super.key});
+  final UserTier? userTier;
+  const PageFooter({super.key, this.userTier});
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
     final isMobile = screenWidth < 700;
     final horizontalPadding = isMobile ? 12.0 : 40.0;
+    // Treat null userTier as not pro (show logo only for non-pro)
+    final isPro = userTier == UserTier.accountPaying;
+    // debugPrint('PageFooter: userTier=$userTier, isPro=$isPro');
     return Container(
       color: Colors.white,
       padding: EdgeInsets.symmetric(horizontal: horizontalPadding, vertical: 32),
@@ -18,7 +23,7 @@ class PageFooter extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Account Column
+              // ...existing code...
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +36,6 @@ class PageFooter extends StatelessWidget {
                   ],
                 ),
               ),
-              // Settings Column
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -46,7 +50,6 @@ class PageFooter extends StatelessWidget {
                   ],
                 ),
               ),
-              // System Column
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -59,7 +62,6 @@ class PageFooter extends StatelessWidget {
                   ],
                 ),
               ),
-              // Legal Column
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -86,32 +88,33 @@ class PageFooter extends StatelessWidget {
                   color: Colors.grey,
                 ),
               ),
-              GestureDetector(
-                onTap: () {
-                  Navigator.pushNamed(context, '/subscription');
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Image.asset(
-                      'assets/storazaar_logo.png',
-                      height: 18,
-                      width: 18,
-                      fit: BoxFit.contain,
-                    ),
-                    const SizedBox(width: 6),
-                    const Text(
-                      'Storazaar',
-                      style: TextStyle(
-                        fontSize: 13,
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w600,
-                        letterSpacing: 0.2,
+              if (!isPro)
+                GestureDetector(
+                  onTap: () {
+                    Navigator.pushNamed(context, '/subscription');
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Image.asset(
+                        'assets/storazaar_logo.png',
+                        height: 18,
+                        width: 18,
+                        fit: BoxFit.contain,
                       ),
-                    ),
-                  ],
+                      const SizedBox(width: 6),
+                      const Text(
+                        'Storazaar',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w600,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
             ],
           ),
           const SizedBox(height: 8),

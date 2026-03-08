@@ -23,6 +23,74 @@ class SupabaseRepo {
 // --- Supabase Table Helper Methods ---
 // These are ready-to-use static helpers for common table operations.
 class SupabaseTableHelpers {
+		// --- Communities ---
+		static Future<void> createCommunity({
+			required String name,
+			required String slug,
+			String? creatorId,
+			DateTime? createdAt,
+		}) async {
+			await repo.insert(SupabaseTables.communities, {
+				'name': name,
+				'slug': slug,
+				'creator_id': creatorId,
+				'created_at': createdAt?.toIso8601String(),
+			});
+		}
+
+		static Future<List<Map<String, dynamic>>> getAllCommunities() async {
+			return await repo.getAll(SupabaseTables.communities);
+		}
+
+		static Future<Map<String, dynamic>?> getCommunityById(String id) async {
+			return await repo.getById(SupabaseTables.communities, id);
+		}
+
+		static Future<void> updateCommunity({
+			required String id,
+			String? name,
+			String? slug,
+			String? creatorId,
+		}) async {
+			final data = <String, dynamic>{};
+			if (name != null) data['name'] = name;
+			if (slug != null) data['slug'] = slug;
+			if (creatorId != null) data['creator_id'] = creatorId;
+			await repo.update(SupabaseTables.communities, id, data);
+		}
+
+		static Future<void> deleteCommunity(String id) async {
+			await repo.delete(SupabaseTables.communities, id);
+		}
+
+		// --- Messages ---
+		static Future<void> createMessage({
+			required String communityId,
+			required String userId,
+			required String content,
+			DateTime? createdAt,
+		}) async {
+			await repo.insert(SupabaseTables.messages, {
+				'community_id': communityId,
+				'user_id': userId,
+				'content': content,
+				'created_at': createdAt?.toIso8601String(),
+			});
+		}
+
+		static Future<List<Map<String, dynamic>>> getMessagesForCommunity(String communityId, {int limit = 50}) async {
+			// Returns messages for a community, newest first
+			return await repo._db
+					.from(SupabaseTables.messages)
+					.select()
+					.eq('community_id', communityId)
+					.order('created_at', ascending: false)
+					.limit(limit);
+		}
+
+		static Future<void> deleteMessage(String id) async {
+			await repo.delete(SupabaseTables.messages, id);
+		}
 	static final repo = SupabaseRepo();
 
 	static Future<void> logAnalyticsEvent({
@@ -95,6 +163,11 @@ class SupabaseTableHelpers {
 		required num price,
 		String? productUrl,
 		String? imageUrl,
+		String? publicId,
+		String? description,
+		String? category,
+		DateTime? createdAt,
+		DateTime? updatedAt,
 	}) async {
 		await repo.insert(SupabaseTables.products, {
 			'store_id': storeId,
@@ -102,6 +175,11 @@ class SupabaseTableHelpers {
 			'price': price,
 			if (productUrl != null) 'product_url': productUrl,
 			if (imageUrl != null) 'image_url': imageUrl,
+			if (publicId != null) 'public_id': publicId,
+			if (description != null) 'description': description,
+			if (category != null) 'category': category,
+			if (createdAt != null) 'created_at': createdAt.toIso8601String(),
+			if (updatedAt != null) 'updated_at': updatedAt.toIso8601String(),
 		});
 	}
 
@@ -161,11 +239,17 @@ class SupabaseTableHelpers {
 		required String ownerId,
 		required String name,
 		String? storeUrl,
+		String? category,
+		DateTime? createdAt,
+		DateTime? updatedAt,
 	}) async {
 		await repo.insert(SupabaseTables.stores, {
 			'owner_id': ownerId,
 			'name': name,
 			if (storeUrl != null) 'store_url': storeUrl,
+			if (category != null) 'category': category,
+			if (createdAt != null) 'created_at': createdAt.toIso8601String(),
+			if (updatedAt != null) 'updated_at': updatedAt.toIso8601String(),
 		});
 	}
 

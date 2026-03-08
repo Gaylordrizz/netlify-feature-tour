@@ -6,7 +6,7 @@ import '../../reusable_widgets/sidebar/sidebar.dart';
 import '../../reusable_widgets/header/global_header.dart';
 import '../../services/search_state.dart';
 import '../../services/store_service.dart';
-import '../../services/product_service_all.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 // ignore: unused_import
 import '../../algorithem/algorithm_home_products.dart' as product_algo;
 // ignore: unused_import
@@ -74,9 +74,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  // Filter states
-
-  // Removed controller listeners so search only happens on Enter or search icon
 
   @override
   void initState() {
@@ -116,7 +113,7 @@ class _HomePageState extends State<HomePage> {
       _fetchError = null;
     });
     try {
-      final products = await ProductService.fetchAllProducts();
+      final products = await _searchProductsRPC(_productSearchQuery, _selectedCategory);
       final stores = await StoreService.fetchAllStores();
       setState(() {
         _products = products;
@@ -131,33 +128,30 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  List<Map<String, dynamic>> _filterProducts(String query) {
-    var products = _products;
-    if (query.isNotEmpty) {
-      products = products
-          .where((product) => product['title']?.toString().toLowerCase().contains(query.toLowerCase()) ?? false)
-          .toList();
-    }
-    // Category filter (now uses _selectedCategory)
-    if (_selectedCategory != null && _selectedCategory!.isNotEmpty) {
-      products = products
-          .where((product) => product['category']?.toString().toLowerCase() == _selectedCategory!.toLowerCase())
-          .toList();
-    }
-    return products;
+  Future<List<Map<String, dynamic>>> _searchProductsRPC(String query, String? category) async {
+    final client = Supabase.instance.client;
+    final response = await client.rpc('search_products', params: {
+      'query': query,
+      'category': category,
+    });
+    if (response == null) return [];
+    return List<Map<String, dynamic>>.from(response as List);
   }
 
-  List<Map<String, dynamic>> _filterStores(String query) {
-    var stores = _stores;
-    if (query.isNotEmpty) {
-      stores = stores
-          .where((store) =>
-              store['store_name']?.toLowerCase().contains(query.toLowerCase()) ?? false ||
-              store['domain']?.toLowerCase().contains(query.toLowerCase()) ?? false)
-          .toList();
-    }
-    return stores;
+  // Product filtering now handled by Supabase RPC
+  List<Map<String, dynamic>> _filterProducts(String query) => _products;
+
+  Future<List<Map<String, dynamic>>> _searchStoresRPC(String query) async {
+    final client = Supabase.instance.client;
+    final response = await client.rpc('search_stores', params: {
+      'query': query,
+    });
+    if (response == null) return [];
+    return List<Map<String, dynamic>>.from(response as List);
   }
+
+  // Store filtering now handled by Supabase RPC
+  List<Map<String, dynamic>> _filterStores(String query) => _stores;
 
   @override
   Widget build(BuildContext context) {
@@ -181,21 +175,60 @@ class _HomePageState extends State<HomePage> {
             title: 'WELCOME TO STORAZAAR',
             productSearchController: _searchState.productSearchController,
             storeSearchController: _searchState.storeSearchController,
-            onCategorySelected: (category) {
+            onCategorySelected: (category) async {
               setState(() {
                 _selectedCategory = category;
+                _loading = true;
               });
+              try {
+                final products = await _searchProductsRPC(_productSearchQuery, category);
+                setState(() {
+                  _products = products;
+                  _loading = false;
+                });
+              } catch (e) {
+                setState(() {
+                  _fetchError = 'Failed to filter products: $e';
+                  _loading = false;
+                });
+              }
             },
             // onFiltersApplied: (filters) {},
-            onProductSearch: (query) {
+            onProductSearch: (query) async {
               setState(() {
                 _productSearchQuery = query;
+                _loading = true;
               });
+              try {
+                final products = await _searchProductsRPC(query, _selectedCategory);
+                setState(() {
+                  _products = products;
+                  _loading = false;
+                });
+              } catch (e) {
+                setState(() {
+                  _fetchError = 'Failed to search products: $e';
+                  _loading = false;
+                });
+              }
             },
-            onStoreSearch: (query) {
+            onStoreSearch: (query) async {
               setState(() {
                 _storeSearchQuery = query;
+                _loading = true;
               });
+              try {
+                final stores = await _searchStoresRPC(query);
+                setState(() {
+                  _stores = stores;
+                  _loading = false;
+                });
+              } catch (e) {
+                setState(() {
+                  _fetchError = 'Failed to search stores: $e';
+                  _loading = false;
+                });
+              }
             },
           ),
             body: _loading
