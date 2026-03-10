@@ -24,7 +24,7 @@ class StoreService {
     final response = await _client
         .from('stores')
         .select()
-        .eq('user_id', userId);
+        .eq('owner_id', userId);
     if (response.isNotEmpty) {
       return response[0];
     }
@@ -35,7 +35,7 @@ class StoreService {
     final response = await _client
         .from('stores')
         .update(data)
-        .eq('user_id', userId);
+        .eq('owner_id', userId);
     if (response.error != null) {
       throw Exception('Failed to update store: \\${response.error!.message}');
     }

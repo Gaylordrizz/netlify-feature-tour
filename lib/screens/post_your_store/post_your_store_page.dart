@@ -452,14 +452,14 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
       final storeResp = await Supabase.instance.client
           .from('stores')
           .select()
-          .eq('user_id', user.id)
+          .eq('owner_id', user.id)
           .maybeSingle();
       // Fetch products
       // ignore: unused_local_variable
       final productsResp = await Supabase.instance.client
           .from('products')
           .select()
-          .eq('user_id', user.id)
+          .eq('owner_id', user.id)
           .order('created_at', ascending: false);
       setState(() {
         _loadingSupabaseData = false;
@@ -517,7 +517,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
 
     final storeId = generateStoreId();
     final response = await Supabase.instance.client.from('stores').insert({
-      'user_id': user.id,
+      'owner_id': user.id,
       'store_id': storeId,
       'store_name': _storeNameController.text,
       'domain': _domainController.text,
@@ -616,13 +616,13 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     final storeResp = await Supabase.instance.client
         .from('stores')
         .select('store_id')
-        .eq('user_id', user.id)
+        .eq('owner_id', user.id)
         .maybeSingle();
     final storeId = storeResp != null && storeResp['store_id'] != null
         ? storeResp['store_id']
         : null;
     final response = await Supabase.instance.client.from('products').insert({
-      'user_id': user.id,
+      'owner_id': user.id,
       'store_id': storeId,
       'store_domain': _domainController.text,
       'title': product.titleController.text,
