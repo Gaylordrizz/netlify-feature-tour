@@ -198,6 +198,7 @@ class Community {
   final String name;
   final String slug;
   final String? userId;
+  final String? creatorId;
   final DateTime? createdAt;
   final bool? isUserRoom;
   final int? messageCount;
@@ -208,6 +209,7 @@ class Community {
     required this.name,
     required this.slug,
     this.userId,
+    this.creatorId,
     this.createdAt,
     this.isUserRoom,
     this.messageCount,
@@ -219,6 +221,7 @@ class Community {
         name: json['name'] as String,
         slug: json['slug'] as String,
         userId: json['user_id'] as String?,
+        creatorId: json['creator_id'] as String?,
         createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
         isUserRoom: json['is_user_room'] == null ? null : json['is_user_room'] as bool,
         messageCount: json['message_count'] == null ? null : (json['message_count'] is int ? json['message_count'] as int : int.tryParse(json['message_count'].toString())),
@@ -230,6 +233,7 @@ class Community {
         'name': name,
         'slug': slug,
         'user_id': userId,
+        'creator_id': creatorId,
         'created_at': createdAt?.toIso8601String(),
         'is_user_room': isUserRoom,
         'message_count': messageCount,
@@ -702,6 +706,7 @@ class ProductVisibilityCooldown {
 ///   public_id text null,
 ///   description text null,
 ///   category text null,
+///   condition text not null default 'New'::text,
 ///   constraint products_pkey primary key (id),
 ///   constraint products_store_fk foreign KEY (store_id) references stores (id),
 ///   constraint products_store_id_fkey foreign KEY (store_id) references stores (id) on update CASCADE on delete CASCADE
@@ -715,6 +720,9 @@ class Product {
   final num price;
   final String? productUrl;
   final String? imageUrl;
+  final String? description;
+  final String? category;
+  final String condition;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final String? publicId;
@@ -726,6 +734,9 @@ class Product {
     required this.price,
     this.productUrl,
     this.imageUrl,
+    this.description,
+    this.category,
+    this.condition = 'New',
     required this.createdAt,
     this.updatedAt,
     this.publicId,
@@ -738,6 +749,9 @@ class Product {
         price: num.parse(json['price'].toString()),
         productUrl: json['product_url'] as String?,
         imageUrl: json['image_url'] as String?,
+        description: json['description'] as String?,
+        category: json['category'] as String?,
+        condition: (json['condition'] as String?) ?? 'New',
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
         publicId: json['public_id'] as String?,
@@ -750,6 +764,9 @@ class Product {
         'price': price,
         'product_url': productUrl,
         'image_url': imageUrl,
+        'description': description,
+        'category': category,
+        'condition': condition,
         'created_at': createdAt.toIso8601String(),
         'updated_at': updatedAt?.toIso8601String(),
         'public_id': publicId,
@@ -991,6 +1008,7 @@ class Store {
   final String ownerId;
   final String name;
   final String? storeUrl;
+  final String? category;
   final DateTime? updatedAt;
 
   Store({
@@ -999,6 +1017,7 @@ class Store {
     required this.ownerId,
     required this.name,
     this.storeUrl,
+    this.category,
     this.updatedAt,
   });
 
@@ -1008,6 +1027,7 @@ class Store {
         ownerId: json['owner_id'] as String,
         name: json['name'] as String,
         storeUrl: json['store_url'] as String?,
+        category: json['category'] as String?,
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       );
 
@@ -1017,6 +1037,7 @@ class Store {
         'owner_id': ownerId,
         'name': name,
         'store_url': storeUrl,
+        'category': category,
         'updated_at': updatedAt?.toIso8601String(),
       };
 }

@@ -8,6 +8,7 @@ import '../../services/search_state.dart';
 import '../store_backend/store_backend_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/draft_store_service.dart';
+import '../../services/supabase_repo.dart';
 import '../../reusable_widgets/snackbar.dart';
 // --- Validators from apply_form_requirements.dart ---
 
@@ -447,19 +448,20 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
         });
         return;
       }
-      // Fetch store (assuming one store per user)
-      // ignore: unused_local_variable
+        // Fetch store (assuming one store per user)
       final storeResp = await Supabase.instance.client
           .from('stores')
-          .select()
+          .select('id')
           .eq('owner_id', user.id)
           .maybeSingle();
+
+        final storeId = storeResp != null ? storeResp['id'] : null;
       // Fetch products
       // ignore: unused_local_variable
       final productsResp = await Supabase.instance.client
           .from('products')
           .select()
-          .eq('owner_id', user.id)
+          .eq('store_id', storeId)
           .order('created_at', ascending: false);
       setState(() {
         _loadingSupabaseData = false;
@@ -598,65 +600,33 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
         'product_${DateTime.now().millisecondsSinceEpoch}.jpg',
       );
     }
-    List<String?> additionalImageUrls = [];
-    for (int i = 0; i < product.additionalImageBytes.length; i++) {
-      final bytes = product.additionalImageBytes[i];
-      if (bytes != null) {
-        final url = await _uploadProductImage(
-          bytes,
-          'product_${DateTime.now().millisecondsSinceEpoch}_$i.jpg',
-        );
-        additionalImageUrls.add(url);
-      } else {
-        additionalImageUrls.add(null);
-      }
-    }
-
     // Fetch store_id from the store (assume only one store per user)
     final storeResp = await Supabase.instance.client
         .from('stores')
-        .select('store_id')
+      .select('id')
         .eq('owner_id', user.id)
         .maybeSingle();
-    final storeId = storeResp != null && storeResp['store_id'] != null
-        ? storeResp['store_id']
+    final storeId = storeResp != null && storeResp['id'] != null
+      ? storeResp['id']
         : null;
-    final response = await Supabase.instance.client.from('products').insert({
-      'owner_id': user.id,
-      'store_id': storeId,
-      'store_domain': _domainController.text,
-      'title': product.titleController.text,
-      'price': double.tryParse(product.priceController.text) ?? 0.0,
-      'description': product.descriptionController.text,
-      'condition': product.productCondition,
-      'free_shipping': product.isFreeShipping,
-      'main_image_url': mainImageUrl,
-      'additional_image_urls': additionalImageUrls,
-      'created_at': DateTime.now().toIso8601String(),
-      'public_id': generateProductId(),
-    });
-
-    if (response == null) {
-      throw Exception('Failed to save product: Null response');
-    } else if (response is String && response.toLowerCase().contains('error')) {
-      throw Exception('Failed to save product: $response');
-    } else if (response is Map &&
-        response.containsKey('error') &&
-        response['error'] != null) {
-      throw Exception('Failed to save product: ${response['error']}');
-    } else if (response is Map &&
-        response.containsKey('status') &&
-        response['status'] != 201) {
-      throw Exception(
-        'Failed to save product: ${response['status']} ${response['statusText'] ?? ''}',
-      );
-    } else if (response is Map &&
-        response.containsKey('data') &&
-        response['data'] == null) {
-      throw Exception(
-        'Failed to save product: Unknown error, no data returned',
-      );
+    if (storeId == null) {
+      throw Exception('Failed to save product: Store not found for user');
     }
+
+    await SupabaseTableHelpers.createProduct(
+      storeId: storeId as String,
+      name: product.titleController.text,
+      price: double.tryParse(product.priceController.text) ?? 0.0,
+      productUrl: _domainController.text.trim().isEmpty
+          ? null
+          : _domainController.text.trim(),
+      imageUrl: mainImageUrl,
+      publicId: generateProductId(),
+      description: product.descriptionController.text,
+      category: _selectedCategory,
+      condition: product.productCondition.isEmpty ? 'New' : product.productCondition,
+      createdAt: DateTime.now(),
+    );
   }
 
   @override
@@ -1889,6 +1859,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     if (product.priceController.text.trim().isEmpty) return false;
     if (product.descriptionController.text.trim().isEmpty) return false;
     if (product.estimatedArrivalController.text.trim().isEmpty) return false;
+    if (product.productCondition.isEmpty) return false;
     if (product.productImageBytes == null || product.productImageBytes!.isEmpty) return false;
     final price = double.tryParse(product.priceController.text);
     if (price == null || price <= 0) return false;

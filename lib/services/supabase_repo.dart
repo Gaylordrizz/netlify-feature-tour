@@ -16,8 +16,23 @@ class SupabaseRepo {
 	  Future<void> update(String table, String id, Map<String, dynamic> data) =>
 		  _db.from(table).update(data).eq('id', id);
 
+	  Future<void> updateBy(
+		  String table,
+		  String keyColumn,
+		  dynamic keyValue,
+		  Map<String, dynamic> data,
+	  ) =>
+		  _db.from(table).update(data).eq(keyColumn, keyValue);
+
 	  Future<void> delete(String table, String id) =>
 		  _db.from(table).delete().eq('id', id);
+
+	  Future<void> upsert(
+		  String table,
+		  Map<String, dynamic> data, {
+		  String? onConflict,
+	  }) =>
+		  _db.from(table).upsert(data, onConflict: onConflict);
 }
 
 // --- Supabase Table Helper Methods ---
@@ -253,7 +268,12 @@ class SupabaseTableHelpers {
 		if (impressions != null) data['impressions'] = impressions;
 		if (clicks != null) data['clicks'] = clicks;
 		if (ratingAvg != null) data['rating_avg'] = ratingAvg;
-		await repo.update(SupabaseTables.productStats, productId, data);
+		await repo.updateBy(
+			SupabaseTables.productStats,
+			'product_id',
+			productId,
+			data,
+		);
 	}
 
 	static Future<void> updateProductVisibilityCooldown({
@@ -274,6 +294,7 @@ class SupabaseTableHelpers {
 		String? publicId,
 		String? description,
 		String? category,
+		String condition = 'New',
 		DateTime? createdAt,
 		DateTime? updatedAt,
 	}) async {
@@ -286,6 +307,7 @@ class SupabaseTableHelpers {
 			if (publicId != null) 'public_id': publicId,
 			if (description != null) 'description': description,
 			if (category != null) 'category': category,
+			'condition': condition,
 			if (createdAt != null) 'created_at': createdAt.toIso8601String(),
 			if (updatedAt != null) 'updated_at': updatedAt.toIso8601String(),
 		});
@@ -340,7 +362,12 @@ class SupabaseTableHelpers {
 		if (impressions != null) data['impressions'] = impressions;
 		if (clicks != null) data['clicks'] = clicks;
 		if (visits != null) data['visits'] = visits;
-		await repo.update(SupabaseTables.storeStats, storeId, data);
+		await repo.updateBy(
+			SupabaseTables.storeStats,
+			'store_id',
+			storeId,
+			data,
+		);
 	}
 
 	static Future<void> createStore({
@@ -378,11 +405,15 @@ class SupabaseTableHelpers {
 		required String productId,
 		DateTime? savedAt,
 	}) async {
-		await repo.insert(SupabaseTables.userSavedProducts, {
+		await repo.upsert(
+			SupabaseTables.userSavedProducts,
+			{
 			'user_id': userId,
 			'product_id': productId,
 			'saved_at': (savedAt ?? DateTime.now()).toIso8601String(),
-		});
+			},
+			onConflict: 'user_id,product_id',
+		);
 	}
 
 	static Future<void> addUserSavedStore({
@@ -390,11 +421,15 @@ class SupabaseTableHelpers {
 		required String storeId,
 		DateTime? savedAt,
 	}) async {
-		await repo.insert(SupabaseTables.userSavedStores, {
+		await repo.upsert(
+			SupabaseTables.userSavedStores,
+			{
 			'user_id': userId,
 			'store_id': storeId,
 			'saved_at': (savedAt ?? DateTime.now()).toIso8601String(),
-		});
+			},
+			onConflict: 'user_id,store_id',
+		);
 	}
 
 	static Future<void> addUserStoreHistory({

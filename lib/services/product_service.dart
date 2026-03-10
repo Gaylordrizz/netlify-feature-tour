@@ -12,10 +12,24 @@ class ProductService {
   static final _client = Supabase.instance.client;
 
   static Future<List<Map<String, dynamic>>> fetchUserProducts(String userId) async {
+    final stores = await _client
+        .from('stores')
+        .select('id')
+        .eq('owner_id', userId);
+
+    final storeIds = (stores as List)
+        .map((row) => row['id'])
+        .whereType<String>()
+        .toList();
+
+    if (storeIds.isEmpty) {
+      return [];
+    }
+
     final response = await _client
         .from('products')
         .select()
-        .eq('user_id', userId)
+        .inFilter('store_id', storeIds)
         .order('created_at', ascending: false);
     return List<Map<String, dynamic>>.from(response);
   }
