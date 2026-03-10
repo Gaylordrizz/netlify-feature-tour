@@ -1,9 +1,10 @@
 
 import 'package:flutter/material.dart';
-import '../../services/communities_logic.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../reusable_widgets/snackbar.dart';
-import 'chat_room_profile_page.dart';
 import '../../services/avatar_color.dart';
+import '../../services/loading_spinner.dart';
+import '../../services/supabase_repo.dart';
 
 class CreateChatRoomPage extends StatefulWidget {
   final String userName;
@@ -63,11 +64,12 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
     super.dispose();
   }
 
-  void _showGuidelinesPopup() {
-    showDialog(
+  Future<void> _showGuidelinesPopup() async {
+    // Use a local context for dialog
+    final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
-      builder: (context) {
+      builder: (dialogContext) {
         return AlertDialog(
           title: const Text('Storazaar Community Guidelines'),
           content: const SingleChildScrollView(
@@ -138,7 +140,7 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
             TextButton(
               child: const Text('Cancel', style: TextStyle(color: Colors.black)),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(dialogContext).pop(false);
               },
             ),
             TextButton(
@@ -147,49 +149,57 @@ class _CreateChatRoomPageState extends State<CreateChatRoomPage> {
                 style: TextStyle(color: Colors.blue),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
-                _actuallyCreateRoom();
+                Navigator.of(dialogContext).pop(true);
               },
             ),
           ],
         );
       },
     );
+    if (result != true) return;
+    if (!mounted) return;
+    // Show loading spinner and await async operation
+    final loaderContext = await showDialog<BuildContext>(
+      context: context,
+      barrierDismissible: false,
+      builder: (loaderDialogContext) {
+        // Return the dialog context so we can pop it later
+        Future.microtask(() => Navigator.of(loaderDialogContext).pop(loaderDialogContext));
+        return const PageLoadingSpinner();
+      },
+    );
+    if (!mounted) return;
+    // Insert into user_chat_rooms table using helper
+    final name = _nameController.text.trim();
+    final creatorId = Supabase.instance.client.auth.currentUser?.id;
+    String? message;
+    bool positive = false;
+    if (creatorId == null) {
+      message = 'User not authenticated.';
+    } else {
+      try {
+        await SupabaseTableHelpers.createUserChatRoom(
+          creatorId: creatorId,
+          roomName: name,
+          description: null,
+          isPrivate: false,
+        );
+        message = 'Chat room created!';
+        positive = true;
+      } catch (e) {
+        message = 'Error: ${e.toString()}';
+      }
+    }
+    if (!mounted) return;
+    // Remove loading spinner
+    if (loaderContext != null) {
+      Navigator.of(loaderContext).pop();
+    }
+    if (!mounted) return;
+    showCustomSnackBar(context, message, positive: positive);
   }
 
-  Future<void> _actuallyCreateRoom() async {
-    final name = _nameController.text.trim();
-    final slug = name.toLowerCase().replaceAll(RegExp(r'[^a-z0-9]+'), '-');
-    final creatorId = null; // TODO: Replace with real user id from auth
-    try {
-      final communityId = await CommunityService.createCommunity(
-        name: name,
-        slug: slug,
-        creatorId: creatorId,
-      );
-      if (communityId != null) {
-        showCustomSnackBar(context, 'Chat room created!', positive: true);
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => ChatRoomProfilePage(
-              roomId: communityId,
-              roomName: name,
-              userName: widget.userName,
-              storeName: widget.storeName.isNotEmpty ? widget.storeName : '(No Store Yet)',
-              domain: widget.domain.isNotEmpty ? widget.domain : '(no-domain)',
-              profilePhoto: widget.avatarUrl,
-              storeThumbnail: widget.storeThumbnailUrl.isNotEmpty ? widget.storeThumbnailUrl : '',
-            ),
-          ),
-        );
-      } else {
-        showCustomSnackBar(context, 'Failed to create chat room.', positive: false);
-      }
-    } catch (e) {
-      showCustomSnackBar(context, 'Error: ${e.toString()}', positive: false);
-    }
-  }
+
 
   void _createRoom() {
     final name = _nameController.text.trim();

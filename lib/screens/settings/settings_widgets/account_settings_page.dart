@@ -1,4 +1,3 @@
-import '../../../services/loading_spinner.dart';
 import 'package:flutter/material.dart';
 import '../../../reusable_widgets/sidebar/sidebar.dart';
 import 'subscription_billing_settings_page.dart';
@@ -10,7 +9,6 @@ import '../../product_view/product_view_page.dart';
 // ignore: unused_import
 import '../../store_profile/store_profile_page.dart';
 import '../../../reusable_widgets/footer/page_footer.dart';
-import '../../community_forum/chat_room_profile_page.dart';
 
 // Placeholder infinite scroll for saved products
 class _InfiniteScrollProducts extends StatefulWidget {
@@ -188,14 +186,56 @@ class AccountSettingsPage extends StatefulWidget {
 
 class _AccountSettingsPageState extends State<AccountSettingsPage> {
   // TODO: Replace with real chat room/user info from backend
-  final bool _hasChatRoom = false;
-  final String _chatRoomId = '';
-  final String _chatRoomName = '';
-  final String _chatRoomUserName = '';
-  final String _chatRoomStoreName = '';
-  final String _chatRoomDomain = '';
-  final String _chatRoomProfilePhoto = '';
-  final String _chatRoomStoreThumbnail = '';
+  bool _hasChatRoom = false;
+  // Removed unused _chatRoomDomain
+  bool _subscriptionCancelled = false;
+  bool _hasAnySubscription = false;
+
+  Map<String, dynamic>? _userChatRoom;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchUserChatRoom();
+    _fetchHasAnySubscription();
+  }
+
+  Future<void> _fetchHasAnySubscription() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+    final subs = await Supabase.instance.client
+        .from('subscriptions')
+        .select()
+        .eq('user_id', user.id);
+    setState(() {
+      _hasAnySubscription = subs.isNotEmpty;
+    });
+  }
+
+  Future<void> _fetchUserChatRoom() async {
+    final user = Supabase.instance.client.auth.currentUser;
+    if (user == null) return;
+    // Check if user is paying (Pro)
+    final isPro = await ProStatusService.isUserPro();
+    if (!isPro) return;
+    // Fetch chat room where creator_id == user.id
+    final rooms = await Supabase.instance.client
+        .from('communities')
+        .select()
+        .eq('creator_id', user.id)
+        .eq('is_user_room', true);
+    if (rooms.isNotEmpty && rooms[0]['id'] != null) {
+      setState(() {
+        _hasChatRoom = true;
+        _userChatRoom = rooms[0];
+      });
+    } else {
+      setState(() {
+        _hasChatRoom = false;
+        _userChatRoom = null;
+      });
+    }
+  }
     final GlobalKey _avatarKey = GlobalKey();
     OverlayEntry? _dropdownOverlay;
 
@@ -338,6 +378,13 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    // Listen for navigation arguments to set _subscriptionCancelled
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args is Map && args['subscriptionCancelled'] == true && !_subscriptionCancelled) {
+      setState(() {
+        _subscriptionCancelled = true;
+      });
+    }
     final user = Supabase.instance.client.auth.currentUser;
     String userName = user?.userMetadata?['name'] ?? user?.email?.split('@').first ?? '';
     String userEmail = user?.email ?? '';
@@ -470,13 +517,14 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                                               margin: const EdgeInsets.only(left: 12),
                                               padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                                               decoration: BoxDecoration(
-                                                color: Colors.green,
+                                                color: Colors.transparent,
                                                 borderRadius: BorderRadius.circular(8),
+                                                border: Border.all(color: Colors.green, width: 3),
                                               ),
                                               child: const Text(
                                                 'Pro',
                                                 style: TextStyle(
-                                                  color: Colors.white,
+                                                  color: Colors.black,
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 14,
                                                   letterSpacing: 1.2,
@@ -624,8 +672,9 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
     double left = avatarPosition.dx - dropdownWidth - 16;
     if (left < 8) left = 8;
     double top = avatarPosition.dy;
+    // Capture the root context for navigation
     _dropdownOverlay = OverlayEntry(
-      builder: (context) => Stack(
+      builder: (overlayContext) => Stack(
         children: [
           Positioned.fill(
             child: GestureDetector(
@@ -655,31 +704,16 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    if (_hasChatRoom)
+                    // --- Added My Chat Room option ---
+                    if (_userChatRoom != null && !_subscriptionCancelled)
                       ListTile(
-                        leading: const Icon(Icons.forum, color: Colors.black),
                         title: const Text(
                           'My Chat Room',
                           style: TextStyle(fontWeight: FontWeight.w600, color: Colors.black),
                           overflow: TextOverflow.ellipsis,
                         ),
-                        subtitle: _chatRoomDomain.isNotEmpty ? Text(_chatRoomDomain, style: const TextStyle(fontSize: 12, color: Colors.grey)) : null,
                         onTap: () {
-                          _removeDropdown();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ChatRoomProfilePage(
-                                roomId: _chatRoomId,
-                                roomName: _chatRoomName,
-                                userName: _chatRoomUserName,
-                                storeName: _chatRoomStoreName,
-                                domain: _chatRoomDomain,
-                                profilePhoto: _chatRoomProfilePhoto,
-                                storeThumbnail: _chatRoomStoreThumbnail,
-                              ),
-                            ),
-                          );
+                          // Do nothing for now
                         },
                       ),
                     if (_hasChatRoom)
@@ -688,6 +722,7 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                         color: Colors.black,
                         margin: const EdgeInsets.symmetric(horizontal: 12),
                       ),
+                    // --- End My Chat Room option ---
                     ListTile(
                       title: const Text('Edit'),
                       onTap: () {
@@ -702,25 +737,105 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                       color: Colors.black,
                       margin: const EdgeInsets.symmetric(horizontal: 12),
                     ),
-                    if (hasSubscription) ...[
-                      ListTile(
-                        title: const Text('Manage Subscription'),
-                        onTap: () {
-                          _removeDropdown();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const SubscriptionBillingSettingsPage(),
-                            ),
+                    if ((_hasAnySubscription || hasSubscription) && !_subscriptionCancelled)
+                      ...[
+                        ListTile(
+                          title: const Text('Manage Subscription'),
+                          onTap: () async {
+                            _removeDropdown();
+                            // Removed unnecessary showDialog that caused dimming
+                            await Navigator.of(context).push(
+                              MaterialPageRoute(
+                                builder: (context) => const SubscriptionBillingSettingsPage(),
+                              ),
+                            );
+                            if (context.mounted) {
+                            }
+                          },
+                        ),
+                        Container(
+                          height: 1,
+                          color: Colors.black,
+                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                        ),
+                      ],
+                    // --- Delete Account option ---
+                    ListTile(
+                      title: const Text(
+                        'Delete Account',
+                        style: TextStyle(color: Colors.black),
+                      ),
+                      onTap: () async {
+                        _removeDropdown();
+                        final user = Supabase.instance.client.auth.currentUser;
+                        if (user == null) return;
+                        final confirm = await showDialog<bool>(
+                          context: context,
+                          barrierDismissible: false,
+                          builder: (context) {
+                            final hasBlockingAssets = _hasAnySubscription;
+                            return AlertDialog(
+                              title: const Text('Delete Account'),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: const [
+                                  Text('Are you sure you want to delete your account? This action cannot be undone.'),
+                                  SizedBox(height: 16),
+                                  Text(
+                                    'If you have a subscription, a store, products, and or a chat room, please delete those things before you delete your Storazaar account.',
+                                    style: TextStyle(color: Colors.red, fontWeight: FontWeight.bold),
+                                  ),
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.of(context).pop(false),
+                                  child: const Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: hasBlockingAssets ? null : () => Navigator.of(context).pop(true),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: hasBlockingAssets ? Colors.grey : Colors.red,
+                                  ),
+                                  child: const Text('Delete'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                        if (confirm == true) {
+                          showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (context) => const SizedBox.shrink(),
                           );
-                        },
-                      ),
-                      Container(
-                        height: 1,
-                        color: Colors.black,
-                        margin: const EdgeInsets.symmetric(horizontal: 12),
-                      ),
-                    ],
+                          try {
+                            // Delete user from Supabase Auth
+                            await Supabase.instance.client.functions.invoke('delete_user', body: {'user_id': user.id});
+                            await Supabase.instance.client.auth.signOut();
+                            if (context.mounted) {
+                              Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(content: Text('Account deleted successfully.')),
+                              );
+                            }
+                          } catch (e) {
+                            if (context.mounted) {
+                              Navigator.of(context).pop();
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(content: Text('Failed to delete account: \$e')),
+                              );
+                            }
+                          }
+                        }
+                      },
+                    ),
+                    Container(
+                      height: 1,
+                      color: Colors.black,
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
+                    ),
                     ListTile(
                       title: const Text('Logout'),
                       onTap: () async {
@@ -728,11 +843,10 @@ class _AccountSettingsPageState extends State<AccountSettingsPage> {
                         showDialog(
                           context: context,
                           barrierDismissible: false,
-                          builder: (context) => Center(child: PageLoadingSpinner()),
+                          builder: (context) => const SizedBox.shrink(),
                         );
                         await Supabase.instance.client.auth.signOut();
                         if (mounted) {
-                          Navigator.of(context).pop(); // Remove spinner dialog
                           Navigator.pushNamedAndRemoveUntil(context, '/', (route) => false);
                         }
                       },

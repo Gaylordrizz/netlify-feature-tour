@@ -24,9 +24,11 @@ class StoreService {
     final response = await _client
         .from('stores')
         .select()
-        .eq('user_id', userId)
-        .maybeSingle();
-    return response;
+        .eq('user_id', userId);
+    if (response.isNotEmpty) {
+      return response[0];
+    }
+    return null;
   }
 
   static Future<void> updateUserStore(String userId, Map<String, dynamic> data) async {

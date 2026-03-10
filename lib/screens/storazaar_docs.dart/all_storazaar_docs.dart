@@ -63,19 +63,33 @@ class _AllStorazaarDocsPageState extends State<AllStorazaarDocsPage> {
               ),
             ),
             backgroundColor: Colors.transparent,
-            title: isMobile
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            centerTitle: true,
+            title: Stack(
+              alignment: Alignment.center,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back, color: Colors.black),
+                      onPressed: () => Navigator.of(context).maybePop(),
+                      // No tooltip
+                    ),
+                  ],
+                ),
+                const Text(
+                  'Storazaar Docs',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+                if (isMobile)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.arrow_back, color: Colors.black),
-                        onPressed: () => Navigator.of(context).maybePop(),
-                        // tooltip removed
-                      ),
-                      const Text(
-                        'Storazaar Docs',
-                        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
-                      ),
                       Builder(
                         builder: (context) => IconButton(
                           icon: const Icon(Icons.menu, color: Colors.black),
@@ -84,14 +98,11 @@ class _AllStorazaarDocsPageState extends State<AllStorazaarDocsPage> {
                         ),
                       ),
                     ],
-                  )
-                : const Text(
-                    'Storazaar Docs',
-                    style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold, fontSize: 18),
                   ),
-            centerTitle: !isMobile,
-            leading: null, // handled in title for mobile
-            actions: null, // handled in title for mobile
+              ],
+            ),
+            leading: null, // handled in title row
+            actions: null, // handled in title row
           ),
           drawer: isMobile
               ? Drawer(

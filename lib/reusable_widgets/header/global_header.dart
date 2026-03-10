@@ -588,8 +588,7 @@ class _GlobalHeaderState extends State<GlobalHeader> {
                                 maxLines: 1,
                               ),
                             ),
-                            const SizedBox(width: 4),
-                            const Icon(Icons.arrow_drop_down, color: Colors.black),
+                            // Removed down arrow icon
                           ],
                         ),
                       ),

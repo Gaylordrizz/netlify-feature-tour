@@ -5,6 +5,7 @@ import 'screens/privacy_policy_page.dart';
 import 'package:device_preview/device_preview.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/generated/app_localizations.dart';
@@ -29,10 +30,14 @@ import 'screens/post_your_store/post_your_store_page.dart';
 import 'utils/utils_supabase/supabase_env.dart';
 import 'utils/deep_link_handler.dart';
 
+// Add for Flutter web path URL strategy
+
+
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  usePathUrlStrategy(); // Enable path URL strategy for Flutter web
   await SupabaseUtils.initialize();
   runApp(
     DevicePreview(
@@ -92,21 +97,28 @@ class StorazaarApp extends StatelessWidget {
         '/signup': (context) => const AuthPage(),
         '/post-your-store': (context) => const PostYourStorePage(),
       },
-      onGenerateRoute: (settings) {
-        if (settings.name == '/login') {
-          return MaterialPageRoute(
-            builder: (context) => const AuthPage(),
-            settings: const RouteSettings(arguments: {'signIn': true}),
-          );
-        }
-        if (settings.name == '/signup') {
-          return MaterialPageRoute(
-            builder: (context) => const AuthPage(),
-            settings: const RouteSettings(arguments: {'signUp': true}),
-          );
-        }
-        return null;
-      },
+         onGenerateRoute: (settings) {
+           // Always show PostYourStorePage for any /post-your-store route, even with query params
+           if (settings.name != null && settings.name!.startsWith('/post-your-store')) {
+             return MaterialPageRoute(
+               builder: (context) => const PostYourStorePage(),
+               settings: settings,
+             );
+           }
+           if (settings.name == '/login') {
+             return MaterialPageRoute(
+               builder: (context) => const AuthPage(),
+               settings: const RouteSettings(arguments: {'signIn': true}),
+             );
+           }
+           if (settings.name == '/signup') {
+             return MaterialPageRoute(
+               builder: (context) => const AuthPage(),
+               settings: const RouteSettings(arguments: {'signUp': true}),
+             );
+           }
+           return null;
+         },
       builder: DevicePreview.appBuilder,
       useInheritedMediaQuery: true,
     );

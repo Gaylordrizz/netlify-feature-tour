@@ -16,21 +16,33 @@ class AddBillingInfoPage extends StatelessWidget {
     Widget build(BuildContext context) {
         return Scaffold(
             backgroundColor: Colors.white,
-            appBar: AppBar(
-                title: const Text('Add Billing Info'),
-                foregroundColor: Colors.black,
-                elevation: 1,
-                flexibleSpace: Container(
-                    decoration: const BoxDecoration(
-                        gradient: LinearGradient(
-                            colors: [Color(0xFFFFC0CB), Color(0xFFFFD700)],
-                            begin: Alignment.topLeft,
-                            end: Alignment.bottomRight,
+                        appBar: AppBar(
+                                centerTitle: true,
+                                leading: IconButton(
+                                    icon: const Icon(Icons.arrow_back, color: Colors.black),
+                                    onPressed: () => Navigator.of(context).maybePop(),
+                                    // No tooltip
+                                ),
+                                title: const Text(
+                                    'Add Billing Info',
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                    ),
+                                ),
+                                foregroundColor: Colors.black,
+                                elevation: 1,
+                                flexibleSpace: Container(
+                                        decoration: const BoxDecoration(
+                                                gradient: LinearGradient(
+                                                        colors: [Color(0xFFFFC0CB), Color(0xFFFFD700)],
+                                                        begin: Alignment.topLeft,
+                                                        end: Alignment.bottomRight,
+                                                ),
+                                        ),
+                                ),
+                                backgroundColor: Colors.transparent,
                         ),
-                    ),
-                ),
-                backgroundColor: Colors.transparent,
-            ),
             body: SingleChildScrollView(
                 child: Center(
                     child: Padding(

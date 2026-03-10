@@ -1,5 +1,9 @@
 {
   "devDependencies": {
     "netlify-plugin-flutter": "latest"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.35.0",
+    "stripe": "^20.4.1"
   }
 }

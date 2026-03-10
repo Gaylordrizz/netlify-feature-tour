@@ -1,3 +1,140 @@
+/// Table: user_chat_rooms
+///
+/// CREATE TABLE public.user_chat_rooms (
+///   id uuid not null default gen_random_uuid (),
+///   creator_id uuid not null,
+///   room_name text not null,
+///   description text null,
+///   is_private boolean not null default false,
+///   created_at timestamp with time zone not null default now(),
+///   message_count integer not null default 0,
+///   last_message_at timestamp with time zone null default now(),
+///   constraint user_chat_rooms_pkey primary key (id),
+///   constraint user_chat_rooms_creator_id_fkey foreign KEY (creator_id) references auth.users (id) on delete CASCADE
+/// ) TABLESPACE pg_default;
+class UserChatRoom {
+  final String id;
+  final String creatorId;
+  final String roomName;
+  final String? description;
+  final bool isPrivate;
+  final DateTime createdAt;
+  final int messageCount;
+  final DateTime? lastMessageAt;
+
+  UserChatRoom({
+    required this.id,
+    required this.creatorId,
+    required this.roomName,
+    this.description,
+    required this.isPrivate,
+    required this.createdAt,
+    required this.messageCount,
+    this.lastMessageAt,
+  });
+
+  factory UserChatRoom.fromJson(Map<String, dynamic> json) => UserChatRoom(
+        id: json['id'] as String,
+        creatorId: json['creator_id'] as String,
+        roomName: json['room_name'] as String,
+        description: json['description'] as String?,
+        isPrivate: json['is_private'] as bool,
+        createdAt: DateTime.parse(json['created_at'] as String),
+        messageCount: json['message_count'] is int ? json['message_count'] as int : int.parse(json['message_count'].toString()),
+        lastMessageAt: json['last_message_at'] != null ? DateTime.parse(json['last_message_at'] as String) : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'creator_id': creatorId,
+        'room_name': roomName,
+        'description': description,
+        'is_private': isPrivate,
+        'created_at': createdAt.toIso8601String(),
+        'message_count': messageCount,
+        'last_message_at': lastMessageAt?.toIso8601String(),
+      };
+}
+/// Table: subscriptions
+///
+/// CREATE TABLE public.subscriptions (
+///   id uuid not null default gen_random_uuid (),
+///   user_id uuid not null,
+///   status text not null,
+///   price_id text null,
+///   quantity integer null default 1,
+///   cancel_at_period_end boolean null default false,
+///   current_period_start timestamp with time zone null default timezone ('utc'::text, now()),
+///   current_period_end timestamp with time zone null,
+///   created_at timestamp with time zone null default timezone ('utc'::text, now()),
+///   updated_at timestamp with time zone null default timezone ('utc'::text, now()),
+///   constraint subscriptions_pkey primary key (id),
+///   constraint subscriptions_user_id_fkey foreign KEY (user_id) references auth.users (id) on delete CASCADE,
+///   constraint subscriptions_status_check check (
+///     (
+///       status = any (
+///         array[
+///           'active'::text,
+///           'trailing'::text,
+///           'past_due'::text,
+///           'canceled'::text,
+///           'unpaid'::text
+///         ]
+///       )
+///     )
+///   )
+/// ) TABLESPACE pg_default;
+class Subscription {
+  final String id;
+  final String userId;
+  final String status;
+  final String? priceId;
+  final int? quantity;
+  final bool? cancelAtPeriodEnd;
+  final DateTime? currentPeriodStart;
+  final DateTime? currentPeriodEnd;
+  final DateTime? createdAt;
+  final DateTime? updatedAt;
+
+  Subscription({
+    required this.id,
+    required this.userId,
+    required this.status,
+    this.priceId,
+    this.quantity,
+    this.cancelAtPeriodEnd,
+    this.currentPeriodStart,
+    this.currentPeriodEnd,
+    this.createdAt,
+    this.updatedAt,
+  });
+
+  factory Subscription.fromJson(Map<String, dynamic> json) => Subscription(
+        id: json['id'] as String,
+        userId: json['user_id'] as String,
+        status: json['status'] as String,
+        priceId: json['price_id'] as String?,
+        quantity: json['quantity'] == null ? null : (json['quantity'] is int ? json['quantity'] as int : int.tryParse(json['quantity'].toString())),
+        cancelAtPeriodEnd: json['cancel_at_period_end'] as bool?,
+        currentPeriodStart: json['current_period_start'] != null ? DateTime.parse(json['current_period_start'] as String) : null,
+        currentPeriodEnd: json['current_period_end'] != null ? DateTime.parse(json['current_period_end'] as String) : null,
+        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+        updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
+      );
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'user_id': userId,
+        'status': status,
+        'price_id': priceId,
+        'quantity': quantity,
+        'cancel_at_period_end': cancelAtPeriodEnd,
+        'current_period_start': currentPeriodStart?.toIso8601String(),
+        'current_period_end': currentPeriodEnd?.toIso8601String(),
+        'created_at': createdAt?.toIso8601String(),
+        'updated_at': updatedAt?.toIso8601String(),
+      };
+}
 /// Table: messages
 ///
 /// CREATE TABLE public.messages (
@@ -103,6 +240,8 @@ class Community {
 
 // Table name constants for Supabase tables
 class SupabaseTables {
+    static const String userChatRooms = 'user_chat_rooms';
+  static const String subscriptions = 'subscriptions';
   static const String analyticsEvents = 'analytics events';
   static const String passwordResetCodes = 'password_reset_codes';
   static const String productFlags = 'product flags';

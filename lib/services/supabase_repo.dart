@@ -23,6 +23,114 @@ class SupabaseRepo {
 // --- Supabase Table Helper Methods ---
 // These are ready-to-use static helpers for common table operations.
 class SupabaseTableHelpers {
+				// --- User Chat Rooms ---
+				static Future<void> createUserChatRoom({
+					required String creatorId,
+					required String roomName,
+					String? description,
+					bool isPrivate = false,
+					DateTime? createdAt,
+					int messageCount = 0,
+					DateTime? lastMessageAt,
+				}) async {
+					await repo.insert(SupabaseTables.userChatRooms, {
+						'creator_id': creatorId,
+						'room_name': roomName,
+						'description': description,
+						'is_private': isPrivate,
+						'created_at': (createdAt ?? DateTime.now()).toIso8601String(),
+						'message_count': messageCount,
+						'last_message_at': lastMessageAt?.toIso8601String(),
+					});
+				}
+
+				static Future<List<Map<String, dynamic>>> getAllUserChatRooms() async {
+					return await repo.getAll(SupabaseTables.userChatRooms);
+				}
+
+				static Future<Map<String, dynamic>?> getUserChatRoomById(String id) async {
+					return await repo.getById(SupabaseTables.userChatRooms, id);
+				}
+
+				static Future<void> updateUserChatRoom({
+					required String id,
+					String? roomName,
+					String? description,
+					bool? isPrivate,
+					int? messageCount,
+					DateTime? lastMessageAt,
+				}) async {
+					final data = <String, dynamic>{};
+					if (roomName != null) data['room_name'] = roomName;
+					if (description != null) data['description'] = description;
+					if (isPrivate != null) data['is_private'] = isPrivate;
+					if (messageCount != null) data['message_count'] = messageCount;
+					if (lastMessageAt != null) data['last_message_at'] = lastMessageAt.toIso8601String();
+					await repo.update(SupabaseTables.userChatRooms, id, data);
+				}
+
+				static Future<void> deleteUserChatRoom(String id) async {
+					await repo.delete(SupabaseTables.userChatRooms, id);
+				}
+			// --- Subscriptions ---
+			static Future<void> createSubscription({
+				required String userId,
+				required String status,
+				String? priceId,
+				int? quantity,
+				bool? cancelAtPeriodEnd,
+				DateTime? currentPeriodStart,
+				DateTime? currentPeriodEnd,
+				DateTime? createdAt,
+				DateTime? updatedAt,
+			}) async {
+				await repo.insert(SupabaseTables.subscriptions, {
+					'user_id': userId,
+					'status': status,
+					'price_id': priceId,
+					'quantity': quantity,
+					'cancel_at_period_end': cancelAtPeriodEnd,
+					'current_period_start': currentPeriodStart?.toIso8601String(),
+					'current_period_end': currentPeriodEnd?.toIso8601String(),
+					'created_at': createdAt?.toIso8601String(),
+					'updated_at': updatedAt?.toIso8601String(),
+				});
+			}
+
+			static Future<List<Map<String, dynamic>>> getAllSubscriptions() async {
+				return await repo.getAll(SupabaseTables.subscriptions);
+			}
+
+			static Future<Map<String, dynamic>?> getSubscriptionById(String id) async {
+				return await repo.getById(SupabaseTables.subscriptions, id);
+			}
+
+			static Future<void> updateSubscription({
+				required String id,
+				String? status,
+				String? priceId,
+				int? quantity,
+				bool? cancelAtPeriodEnd,
+				DateTime? currentPeriodStart,
+				DateTime? currentPeriodEnd,
+				DateTime? createdAt,
+				DateTime? updatedAt,
+			}) async {
+				final data = <String, dynamic>{};
+				if (status != null) data['status'] = status;
+				if (priceId != null) data['price_id'] = priceId;
+				if (quantity != null) data['quantity'] = quantity;
+				if (cancelAtPeriodEnd != null) data['cancel_at_period_end'] = cancelAtPeriodEnd;
+				if (currentPeriodStart != null) data['current_period_start'] = currentPeriodStart.toIso8601String();
+				if (currentPeriodEnd != null) data['current_period_end'] = currentPeriodEnd.toIso8601String();
+				if (createdAt != null) data['created_at'] = createdAt.toIso8601String();
+				if (updatedAt != null) data['updated_at'] = updatedAt.toIso8601String();
+				await repo.update(SupabaseTables.subscriptions, id, data);
+			}
+
+			static Future<void> deleteSubscription(String id) async {
+				await repo.delete(SupabaseTables.subscriptions, id);
+			}
 		// --- Communities ---
 		static Future<void> createCommunity({
 			required String name,

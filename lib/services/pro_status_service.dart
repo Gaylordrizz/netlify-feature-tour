@@ -11,9 +11,8 @@ class ProStatusService {
           .from('orders')
           .select('status')
           .eq('user_id', userId)
-          .eq('status', 'active')
-          .maybeSingle();
-      return data != null;
+          .eq('status', 'active');
+      return data.isNotEmpty;
     } catch (e) {
       print("Error checking pro status: $e");
       return false;

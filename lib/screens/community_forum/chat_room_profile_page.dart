@@ -1,5 +1,55 @@
 import 'package:flutter/material.dart';
 import '../../services/avatar_color.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+
+// Custom Snackbar Widget
+void showCustomSnackbar(BuildContext context, String message, {bool success = true}) {
+  final overlay = Overlay.of(context);
+  final overlayEntry = OverlayEntry(
+    builder: (context) => Positioned(
+      bottom: 40,
+      left: 24,
+      right: 24,
+      child: Material(
+        color: Colors.transparent,
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.15),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                success ? Icons.check_circle : Icons.cancel,
+                color: success ? Colors.green : Colors.red,
+                size: 22,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  message,
+                  style: const TextStyle(color: Colors.black, fontSize: 16, fontWeight: FontWeight.w500),
+                  textAlign: TextAlign.left,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    ),
+  );
+  overlay.insert(overlayEntry);
+  Future.delayed(const Duration(seconds: 2), () => overlayEntry.remove());
+}
 
 class ChatRoomProfilePage extends StatefulWidget {
   final String roomId;
@@ -9,7 +59,6 @@ class ChatRoomProfilePage extends StatefulWidget {
   final String domain;
   final String profilePhoto;
   final String storeThumbnail;
-
 
   const ChatRoomProfilePage({
     Key? key,
@@ -29,7 +78,28 @@ class ChatRoomProfilePage extends StatefulWidget {
 class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTickerProviderStateMixin {
     final GlobalKey _accountTileKey = GlobalKey();
     OverlayEntry? _accountPopupOverlay;
+    late String _roomName;
 
+    Future<bool> _updateRoomName(String newName) async {
+      final supabase = Supabase.instance.client;
+      try {
+        final response = await supabase
+            .from('communities')
+            .update({'name': newName})
+            .eq('id', widget.roomId)
+            .select();
+        if (response.isNotEmpty) {
+          setState(() {
+            _roomName = newName;
+          });
+          return true;
+        } else {
+          return false;
+        }
+      } catch (e) {
+        return false;
+      }
+    }
 
     void _showAccountPopup() {
       if (_accountPopupOverlay != null) return;
@@ -128,6 +198,7 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
   @override
   void initState() {
     super.initState();
+    _roomName = widget.roomName;
   }
 
   @override
@@ -180,7 +251,7 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
                   children: [
                     Expanded(
                       child: Text(
-                        widget.roomName,
+                        _roomName,
                         style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
                       ),
                     ),
@@ -229,7 +300,7 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
                             children: [
                               Text(widget.userName, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.black)),
                               const SizedBox(height: 2),
-                              Text(widget.storeName, style: const TextStyle(fontSize: 14, color: Colors.black87)),
+                              Text(_roomName, style: const TextStyle(fontSize: 13, color: Colors.grey)),
                               const SizedBox(height: 2),
                               Text(widget.domain, style: const TextStyle(fontSize: 13, color: Colors.grey)),
                             ],
@@ -299,7 +370,7 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
                           showDialog(
                             context: context,
                             builder: (context) {
-                              final TextEditingController _nameController = TextEditingController(text: widget.roomName);
+                              final TextEditingController _nameController = TextEditingController(text: _roomName);
                               return AlertDialog(
                                 title: const Text('Edit Chat Room'),
                                 content: TextField(
@@ -323,12 +394,21 @@ class _ChatRoomProfilePageState extends State<ChatRoomProfilePage> with SingleTi
                                     child: const Text('Cancel', style: TextStyle(color: Colors.black)),
                                   ),
                                   TextButton(
-                                    onPressed: () {
-                                      // TODO: Save new room name to backend
-                                      Navigator.of(context).pop();
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(content: Text('Room name updated (not saved in backend).')),
-                                      );
+                                    onPressed: () async {
+                                      final newName = _nameController.text.trim();
+                                      if (newName.isNotEmpty && newName != _roomName) {
+                                        // Disable button while updating
+                                        FocusScope.of(context).unfocus();
+                                        final updated = await _updateRoomName(newName);
+                                        if (updated) {
+                                          Navigator.of(context).pop();
+                                          showCustomSnackbar(context, 'Room name updated!', success: true);
+                                        } else {
+                                          showCustomSnackbar(context, 'Failed to update room name.', success: false);
+                                        }
+                                      } else {
+                                        Navigator.of(context).pop();
+                                      }
                                     },
                                     child: const Text('Save', style: TextStyle(color: Colors.black)),
                                   ),

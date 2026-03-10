@@ -7,8 +7,10 @@ class SubscriptionService {
     final response = await _client
         .from('subscriptions')
         .select()
-        .eq('user_id', userId)
-        .maybeSingle();
-    return response;
+        .eq('user_id', userId);
+    if (response.isNotEmpty) {
+      return response[0];
+    }
+    return null;
   }
 }

@@ -7,7 +7,6 @@ import 'payment_methods_settings_page.dart';
 import 'help_support_settings_page.dart';
 
 import '../../../reusable_widgets/footer/page_footer.dart';
-import '../../../reusable_widgets/snackbar.dart';
 import '../../subscription/invoice_page.dart';
 import '../../subscription/receipt_page.dart';
 import '../../../services/pro_status_service.dart';
@@ -17,24 +16,27 @@ class SubscriptionBillingSettingsPage extends StatefulWidget {
   const SubscriptionBillingSettingsPage({super.key});
 
   @override
-  State<SubscriptionBillingSettingsPage> createState() => _SubscriptionBillingSettingsPageState();
+  State<SubscriptionBillingSettingsPage> createState() =>
+      _SubscriptionBillingSettingsPageState();
 }
 
-class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSettingsPage> {
-    bool _showCancelButton = false;
+class _SubscriptionBillingSettingsPageState
+    extends State<SubscriptionBillingSettingsPage> {
+  bool _showCancelButton = false;
   Map<String, dynamic>? subscription;
+  String? _cancellationStatus; // null, 'pending', 'cancelled', etc.
   List<Invoice>? invoices;
+  List<Receipt>? receipts;
   bool loading = true;
   String? error;
 
   @override
   void initState() {
     super.initState();
-    fetchSubscription();
-    fetchInvoices();
+    fetchSubscriptionAndInvoicesAndReceipts();
   }
 
-  Future<void> fetchSubscription() async {
+  Future<void> fetchSubscriptionAndInvoicesAndReceipts() async {
     setState(() {
       loading = true;
       error = null;
@@ -48,24 +50,47 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
         });
         return;
       }
-        // Fetch subscription info from Supabase (Stripe data)
-        final response = await Supabase.instance.client
-          .from('orders')
+      final subResponse = await Supabase.instance.client
+          .from('subscriptions')
           .select()
           .eq('user_id', user.id)
           .maybeSingle();
+      subscription = subResponse;
+
+      final invoiceResponse = await Supabase.instance.client
+          .from(SupabaseTables.invoices)
+          .select()
+          .eq('user_id', user.id)
+          .order('created_at', ascending: false);
+        invoices = invoiceResponse
+          .whereType<Map<String, dynamic>>()
+          .map((json) => Invoice.fromJson(json))
+          .toList();
+
+      final receiptResponse = await Supabase.instance.client
+          .from(SupabaseTables.receipts)
+          .select()
+          .eq('user_id', user.id)
+          .order('created_at', ascending: false);
+        receipts = receiptResponse
+          .whereType<Map<String, dynamic>>()
+          .map((json) => Receipt.fromJson(json))
+          .toList();
+
       setState(() {
-        subscription = response;
         loading = false;
         error = null;
       });
     } catch (e) {
       setState(() {
-        error = e.toString();
+        invoices = <Invoice>[];
+        receipts = <Receipt>[];
         loading = false;
+        error = null;
       });
     }
   }
+
 
   Future<void> fetchInvoices() async {
     setState(() {
@@ -82,13 +107,13 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
         return;
       }
       final response = await Supabase.instance.client
-        .from(SupabaseTables.invoices)
-        .select()
-        .eq('user_id', user.id)
-        .order('created_at', ascending: false);
+          .from(SupabaseTables.invoices)
+          .select()
+          .eq('user_id', user.id)
+          .order('created_at', ascending: false);
       invoices = (response as List)
-        .map((json) => Invoice.fromJson(json as Map<String, dynamic>))
-        .toList();
+          .map((json) => Invoice.fromJson(json as Map<String, dynamic>))
+          .toList();
       setState(() {
         loading = false;
         error = null;
@@ -102,6 +127,11 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
   }
 
   Widget buildActiveCardTile() {
+    // Show only masked card reference (**** **** **** 4242)
+    final last4 =
+      (subscription?['card_last4'] as String?) ??
+      (subscription?['stripe_card_last4'] as String?) ??
+      '4242';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -110,10 +140,19 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
       ),
       child: Row(
         children: [
-          // Card details removed as requested
-          Spacer(),
+          Icon(Icons.credit_card, color: Colors.green, size: 28),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Text(
+              '**** **** **** $last4',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2), // 50% smaller
+            padding: const EdgeInsets.symmetric(
+              horizontal: 5,
+              vertical: 2,
+            ), // 50% smaller
             decoration: BoxDecoration(
               color: Colors.green,
               border: Border.all(color: Colors.grey, width: 1.5),
@@ -140,10 +179,16 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
         children: [
           SizedBox(
             width: 170,
-            child: Text(label, style: const TextStyle(fontSize: 15, color: Colors.black)),
+            child: Text(
+              label,
+              style: const TextStyle(fontSize: 15, color: Colors.black),
+            ),
           ),
           Expanded(
-            child: Text(value, style: const TextStyle(fontSize: 15, color: Colors.black)),
+            child: Text(
+              value,
+              style: const TextStyle(fontSize: 15, color: Colors.black),
+            ),
           ),
         ],
       ),
@@ -152,20 +197,11 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
 
   @override
   Widget build(BuildContext context) {
-    if (loading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
-    }
-    if (error != null) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Manage Subscription'),
-          centerTitle: true,
-        ),
-        body: Center(child: Text(error!, style: const TextStyle(color: Colors.red))),
-      );
-    }
+    // Loading spinner removed
+    // if (loading) {
+    //   return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    // }
+    // Don't show a big error, just show empty states if error
     // Always show the page, even if not logged in or error
     return Scaffold(
       appBar: AppBar(
@@ -203,7 +239,7 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
             ),
             const SizedBox(height: 32),
             // Current Plan Section
-            if (subscription != null) ... [
+            if (subscription != null) ...[
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -215,40 +251,81 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      subscription?['plan_name'] ?? subscription?['stripe_plan'] ?? '',
-                      style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+                      // Display subscription status as the plan name (or use a real plan name if you have one)
+                      subscription?['status']?.toString().toUpperCase() ?? '',
+                      style: const TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
                     const SizedBox(height: 8),
-                    if (subscription?['price'] != null || subscription?['stripe_price'] != null)
+                    if (subscription?['price_id'] != null)
                       Text(
-                        'Price: ${subscription?['price'] ?? subscription?['stripe_price']}',
-                        style: const TextStyle(fontSize: 18, color: Colors.black),
+                        'Price ID: \\${subscription?['price_id']}',
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.black,
+                        ),
+                      ),
+                    if (subscription?['quantity'] != null)
+                      Text(
+                        'Quantity: \\${subscription?['quantity']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.black,
+                        ),
                       ),
                     const SizedBox(height: 8),
-                    if (subscription?['status'] != null || subscription?['stripe_status'] != null)
+                    // Status row
+                    if (subscription?['status'] != null || _cancellationStatus != null)
                       Row(
                         children: [
-                          const Text('Status: ', style: TextStyle(fontSize: 16, color: Colors.black)),
+                          const Text(
+                            'Status: ',
+                            style: TextStyle(fontSize: 16, color: Colors.black),
+                          ),
                           Builder(
                             builder: (context) {
-                              final status = (subscription?['status'] ?? subscription?['stripe_status'])?.toString() ?? '';
+                              final status =
+                                  _cancellationStatus ??
+                                  (subscription?['status']?.toString() ?? '');
                               final isActive = status.toLowerCase() == 'active';
+                              final isPending = status.toLowerCase() == 'pending';
+                              final isCancelled = status.toLowerCase() == 'cancelled' || status.toLowerCase() == 'canceled';
+                              Color iconColor;
+                              IconData iconData;
+                              if (isActive) {
+                                iconColor = Colors.green;
+                                iconData = Icons.check_circle;
+                              } else if (isPending) {
+                                iconColor = Colors.amber;
+                                iconData = Icons.settings;
+                              } else if (isCancelled) {
+                                iconColor = Colors.red;
+                                iconData = Icons.cancel;
+                              } else {
+                                iconColor = Colors.black;
+                                iconData = Icons.help_outline;
+                              }
                               return Row(
                                 children: [
                                   Text(
                                     status,
                                     style: TextStyle(
                                       fontSize: 16,
-                                      color: isActive ? Colors.green : Colors.black,
+                                      color: isActive
+                                          ? Colors.green
+                                          : isPending
+                                          ? Colors.amber.shade800
+                                          : isCancelled
+                                          ? Colors.red
+                                          : Colors.black,
                                       fontWeight: FontWeight.bold,
                                     ),
                                   ),
                                   const SizedBox(width: 4),
-                                  Icon(
-                                    isActive ? Icons.check_circle : Icons.cancel,
-                                    color: isActive ? Colors.green : Colors.red,
-                                    size: 18,
-                                  ),
+                                  Icon(iconData, color: iconColor, size: 18),
                                 ],
                               );
                             },
@@ -270,23 +347,44 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Billing Information', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Billing Information',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 12),
-                    if (subscription?['invoice_number'] != null || subscription?['stripe_invoice'] != null)
-                      infoRow('Invoice Number:', subscription?['invoice_number'] ?? subscription?['stripe_invoice'] ?? ''),
-                    if (subscription?['start_date'] != null || subscription?['stripe_start'] != null) ... [
-                      const Divider(height: 24, thickness: 1, color: Colors.black12),
-                      infoRow('Date of Subscription:', subscription?['start_date'] ?? subscription?['stripe_start'] ?? ''),
-                    ],
-                    if (subscription?['price'] != null || subscription?['stripe_price'] != null) ... [
-                      const Divider(height: 24, thickness: 1, color: Colors.black12),
-                      infoRow('Price / Month:', (subscription?['price'] ?? subscription?['stripe_price'])?.toString() ?? ''),
-                    ],
-                    if (subscription?['billing_cycle'] != null || subscription?['stripe_interval'] != null) ... [
-                      const Divider(height: 24, thickness: 1, color: Colors.black12),
-                      infoRow('Billing Cycle:', subscription?['billing_cycle'] ?? subscription?['stripe_interval'] ?? ''),
-                    ],
-                    const Divider(height: 24, thickness: 1, color: Colors.black12),
+                    if (subscription?['current_period_start'] != null)
+                      infoRow(
+                        'Current Period Start:',
+                        subscription?['current_period_start']?.toString() ?? '',
+                      ),
+                    if (subscription?['current_period_end'] != null)
+                      infoRow(
+                        'Current Period End:',
+                        subscription?['current_period_end']?.toString() ?? '',
+                      ),
+                    if (subscription?['cancel_at_period_end'] != null)
+                      infoRow(
+                        'Cancel At Period End:',
+                        (subscription?['cancel_at_period_end']?.toString() ?? ''),
+                      ),
+                    if (subscription?['created_at'] != null)
+                      infoRow(
+                        'Created At:',
+                        subscription?['created_at']?.toString() ?? '',
+                      ),
+                    if (subscription?['updated_at'] != null)
+                      infoRow(
+                        'Updated At:',
+                        subscription?['updated_at']?.toString() ?? '',
+                      ),
+                    const Divider(
+                      height: 24,
+                      thickness: 1,
+                      color: Colors.black12,
+                    ),
                     const SizedBox(height: 12),
                     buildActiveCardTile(),
                     const SizedBox(height: 12),
@@ -294,14 +392,22 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => PaymentMethodsSettingsPage()),
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                const PaymentMethodsSettingsPage(),
+                          ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       child: const Text('Update Payment Method'),
                     ),
@@ -319,7 +425,13 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text('Subscription Actions', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                    const Text(
+                      'Subscription Actions',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const SizedBox(height: 12),
                     ElevatedButton(
                       onPressed: () {
@@ -327,18 +439,21 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                           context,
                           MaterialPageRoute(
                             builder: (context) => ReceiptPage(
-                              receipts: (invoices ?? [])
-                                .whereType<Receipt>()
-                                .toList(),
+                              receipts: receipts ?? [],
                             ),
                           ),
-                      );
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       child: const Text('View Receipts'),
                     ),
@@ -348,15 +463,21 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => InvoicePage(invoices: invoices ?? []),
+                            builder: (context) =>
+                                InvoicePage(invoices: invoices ?? []),
                           ),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blue,
                         foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 18,
+                          vertical: 10,
+                        ),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       child: const Text('View Invoices'),
                     ),
@@ -375,43 +496,65 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                               showDialog(
                                 context: context,
                                 builder: (context) {
-                                  final TextEditingController confirmController = TextEditingController();
+                                  final TextEditingController
+                                  confirmController = TextEditingController();
                                   return StatefulBuilder(
                                     builder: (context, setDialogState) {
-                                      final bool isConfirmed = confirmController.text == 'Cancel Subscription';
+                                      final bool isConfirmed =
+                                          confirmController.text ==
+                                          'Cancel Subscription';
                                       return AlertDialog(
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                                        title: const Text('Cancel Subscription'),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            16,
+                                          ),
+                                        ),
+                                        title: const Text(
+                                          'Cancel Subscription',
+                                        ),
                                         content: Column(
                                           mainAxisSize: MainAxisSize.min,
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             const Text(
                                               'Are you sure you want to cancel your subscription?\n\n'
                                               'If you continue, your subscription will be canceled and you will not be charged for the next billing cycle anymore.\n\n'
                                               'If you cancel, your Storazaar account will still be accessible.\n\n'
-                                              'Please note: all of your store information and listed products will be immediately and permanently deleted and cannot be recovered.'
+                                              'Please note: all of your store information and listed products will be immediately and permanently deleted and cannot be recovered.',
                                             ),
                                             const SizedBox(height: 18),
                                             const Text(
                                               'To confirm, type "Cancel Subscription" below:',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                             ),
                                             const SizedBox(height: 8),
                                             TextField(
                                               controller: confirmController,
-                                              onChanged: (val) => setDialogState(() {}),
+                                              onChanged: (val) =>
+                                                  setDialogState(() {}),
                                               cursorColor: Colors.black,
                                               decoration: const InputDecoration(
                                                 border: OutlineInputBorder(
-                                                  borderSide: BorderSide(color: Colors.black),
+                                                  borderSide: BorderSide(
+                                                    color: Colors.black,
+                                                  ),
                                                 ),
-                                                enabledBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(color: Colors.black),
-                                                ),
-                                                focusedBorder: OutlineInputBorder(
-                                                  borderSide: BorderSide(color: Colors.black, width: 2),
-                                                ),
+                                                enabledBorder:
+                                                    OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Colors.black,
+                                                      ),
+                                                    ),
+                                                focusedBorder:
+                                                    OutlineInputBorder(
+                                                      borderSide: BorderSide(
+                                                        color: Colors.black,
+                                                        width: 2,
+                                                      ),
+                                                    ),
                                                 hintText: 'Cancel Subscription',
                                               ),
                                             ),
@@ -419,26 +562,80 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                                         ),
                                         actions: [
                                           TextButton(
-                                            onPressed: () => Navigator.pop(context),
-                                            child: const Text('Keep Subscription', style: TextStyle(color: Colors.blue)),
+                                            onPressed: () =>
+                                                Navigator.pop(context),
+                                            child: const Text(
+                                              'Keep Subscription',
+                                              style: TextStyle(
+                                                color: Colors.blue,
+                                              ),
+                                            ),
                                           ),
                                           ElevatedButton(
                                             onPressed: isConfirmed
-                                                ? () {
-                                                    Navigator.pop(context);
-                                                    // TODO: Add cancellation logic here
-                                                    showCustomSnackBar(
-                                                      context,
-                                                      'Subscription canceled. All store data deleted.',
-                                                      positive: false,
-                                                    );
+                                                ? () async {
+                                                    Navigator.pop(context); // Close confirmation dialog
+                                                    setState(() {
+                                                      _cancellationStatus = 'pending';
+                                                    });
+                                                    try {
+                                                      // Use new unified subscriptions Edge Function
+                                                      await Supabase
+                                                          .instance
+                                                          .client
+                                                          .functions
+                                                          .invoke(
+                                                            'subscriptions',
+                                                            body: { 'action': 'cancel' },
+                                                          );
+                                                      await Supabase
+                                                          .instance
+                                                          .client
+                                                          .auth
+                                                          .signOut();
+                                                      if (context.mounted) {
+                                                        // Pop dialogs (including spinner) but do not pop the main Account page
+                                                        var nav = Navigator.of(context, rootNavigator: true);
+                                                        int popCount = 0;
+                                                        while (nav.canPop() && popCount < 10) {
+                                                          nav.pop();
+                                                          popCount++;
+                                                        }
+                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                          const SnackBar(
+                                                            content: Text(
+                                                              'Subscription canceled and all data deleted.',
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+                                                    } catch (e) {
+                                                      if (context.mounted) {
+                                                        Navigator.of(
+                                                          context,
+                                                        ).pop();
+                                                        ScaffoldMessenger.of(
+                                                          context,
+                                                        ).showSnackBar(
+                                                          SnackBar(
+                                                            content: Text(
+                                                              'Failed to cancel subscription: \$e',
+                                                            ),
+                                                          ),
+                                                        );
+                                                      }
+                                                    }
                                                   }
                                                 : null,
                                             style: ElevatedButton.styleFrom(
-                                              backgroundColor: isConfirmed ? Colors.red : Colors.grey,
+                                              backgroundColor: isConfirmed
+                                                  ? Colors.red
+                                                  : Colors.grey,
                                               foregroundColor: Colors.white,
                                             ),
-                                            child: const Text('Cancel Subscription'),
+                                            child: const Text(
+                                              'Cancel Subscription',
+                                            ),
                                           ),
                                         ],
                                       );
@@ -449,8 +646,13 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                             },
                             style: OutlinedButton.styleFrom(
                               foregroundColor: Colors.grey.shade800,
-                              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
-                              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 18,
+                                vertical: 10,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
                             ),
                             child: const Text('Cancel Subscription'),
                           ),
@@ -458,7 +660,7 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                 ),
               ),
               const SizedBox(height: 32),
-            ] else ... [
+            ] else ...[
               Container(
                 padding: const EdgeInsets.all(20),
                 decoration: BoxDecoration(
@@ -487,7 +689,13 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                     children: [
                       Icon(Icons.help_outline, color: Colors.black, size: 22),
                       SizedBox(width: 8),
-                      Text('Help', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+                      Text(
+                        'Help',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -498,11 +706,18 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const HelpSupportSettingsPage(),
+                              builder: (context) =>
+                                  const HelpSupportSettingsPage(),
                             ),
                           );
                         },
-                        child: const Text('Contact Support', style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold)),
+                        child: const Text(
+                          'Contact Support',
+                          style: TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                       // Help button removed
                     ],
@@ -516,7 +731,9 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
               future: ProStatusService.isUserPro(),
               builder: (context, snapshot) {
                 final isPro = snapshot.data == true;
-                final userTier = isPro ? UserTier.accountPaying : UserTier.accountFree;
+                final userTier = isPro
+                    ? UserTier.accountPaying
+                    : UserTier.accountFree;
                 return PageFooter(userTier: userTier);
               },
             ),
@@ -525,5 +742,4 @@ class _SubscriptionBillingSettingsPageState extends State<SubscriptionBillingSet
       ),
     );
   }
-
 }
