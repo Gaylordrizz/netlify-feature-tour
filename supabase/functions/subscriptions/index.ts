@@ -21,6 +21,23 @@ async function getUserEmail(supabaseAdmin: SupabaseClient, userId: string) {
 	return data.email;
 }
 
+async function demoteUserFromPro(
+	supabaseAdmin: SupabaseClient,
+	userId: string,
+	updatedAtIso: string,
+) {
+	await supabaseAdmin
+		.from("orders")
+		.update({ status: "canceled" })
+		.eq("user_id", userId)
+		.eq("status", "active");
+
+	await supabaseAdmin
+		.from("profiles")
+		.update({ is_paying: false, updated_at: updatedAtIso })
+		.eq("id", userId);
+}
+
 // @ts-ignore Deno global is available in Supabase Edge Functions
 Deno.serve(async (req: Request) => {
 	// Read env vars inside the handler
@@ -147,40 +164,51 @@ Deno.serve(async (req: Request) => {
 				.eq("status", "active")
 				.maybeSingle();
 
-			if (subError || !subscription?.id) {
-				return new Response(
-					JSON.stringify({ error: "Could not find active subscription" }),
-					{ headers: { ...corsHeaders, "Content-Type": "application/json" }, status: 400 }
-				);
+			if (subError) {
+				throw new Error(`Could not fetch active subscription: ${subError.message}`);
 			}
 
-			// Update subscription status to canceled
-			await supabaseAdmin
-				.from("subscriptions")
-				.update({ status: "canceled", updated_at: new Date().toISOString(), cancel_at_period_end: true })
-				.eq("id", subscription.id);
+			const nowIso = new Date().toISOString();
 
-			// Optionally, cancel Stripe subscription if you store the Stripe subscription ID in the subscriptions table
-			// If you want to cancel the Stripe subscription, you need to store and retrieve the Stripe subscription ID
-			// Example:
-			// const { data: subRow } = await supabaseAdmin
-			//     .from("subscriptions")
-			//     .select("stripe_subscription_id")
-			//     .eq("id", subscription.id)
-			//     .maybeSingle();
-			// if (subRow?.stripe_subscription_id) {
-			//     try {
-			//         await stripe.subscriptions.cancel(subRow.stripe_subscription_id);
-			//     } catch (err) {
-			//         console.error("Stripe cancel error", err);
-			//     }
-			// }
+			// Cancel active Stripe subscriptions for this user via orders table linkage.
+			const { data: activeOrders, error: activeOrdersError } = await supabaseAdmin
+				.from("orders")
+				.select("id, stripe_subscription_id")
+				.eq("user_id", user.id)
+				.eq("status", "active");
+
+			if (activeOrdersError) {
+				throw new Error(`Could not fetch active orders: ${activeOrdersError.message}`);
+			}
+
+			for (const order of activeOrders ?? []) {
+				if (order?.stripe_subscription_id) {
+					try {
+						await stripe.subscriptions.cancel(order.stripe_subscription_id);
+					} catch (stripeErr) {
+						console.error("Stripe cancel error", stripeErr);
+					}
+				}
+			}
+
+			if (subscription?.id) {
+				await supabaseAdmin
+					.from("subscriptions")
+					.update({
+						status: "canceled",
+						updated_at: nowIso,
+						cancel_at_period_end: true,
+					})
+					.eq("id", subscription.id);
+			}
+
+			await demoteUserFromPro(supabaseAdmin, user.id, nowIso);
 
 			// Delete user's store (if any)
 			const { data: store } = await supabaseAdmin
 				.from("stores")
 				.select("id")
-				.eq("user_id", user.id)
+				.eq("owner_id", user.id)
 				.maybeSingle();
 
 			if (store?.id) {

@@ -707,9 +707,11 @@ class ProductVisibilityCooldown {
 ///   description text null,
 ///   category text null,
 ///   condition text not null default 'New'::text,
+///   estimated_shipping_days integer null default 3,
 ///   constraint products_pkey primary key (id),
 ///   constraint products_store_fk foreign KEY (store_id) references stores (id),
-///   constraint products_store_id_fkey foreign KEY (store_id) references stores (id) on update CASCADE on delete CASCADE
+///   constraint products_store_id_fkey foreign KEY (store_id) references stores (id) on update CASCADE on delete CASCADE,
+///   constraint check_shipping_duration check ((estimated_shipping_days >= 0))
 /// ) TABLESPACE pg_default;
 ///
 /// create index IF not exists products_store_id_idx on public.products using btree (store_id) TABLESPACE pg_default;
@@ -723,6 +725,7 @@ class Product {
   final String? description;
   final String? category;
   final String condition;
+  final int? estimatedShippingDays;
   final DateTime createdAt;
   final DateTime? updatedAt;
   final String? publicId;
@@ -737,6 +740,7 @@ class Product {
     this.description,
     this.category,
     this.condition = 'New',
+    this.estimatedShippingDays = 3,
     required this.createdAt,
     this.updatedAt,
     this.publicId,
@@ -752,6 +756,11 @@ class Product {
         description: json['description'] as String?,
         category: json['category'] as String?,
         condition: (json['condition'] as String?) ?? 'New',
+        estimatedShippingDays: json['estimated_shipping_days'] == null
+            ? null
+            : (json['estimated_shipping_days'] is int
+                ? json['estimated_shipping_days'] as int
+                : int.tryParse(json['estimated_shipping_days'].toString())),
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
         publicId: json['public_id'] as String?,
@@ -767,6 +776,7 @@ class Product {
         'description': description,
         'category': category,
         'condition': condition,
+        'estimated_shipping_days': estimatedShippingDays,
         'created_at': createdAt.toIso8601String(),
         'updated_at': updatedAt?.toIso8601String(),
         'public_id': publicId,
@@ -986,22 +996,19 @@ class StoreStats {
 ///   store_url text null,
 ///   updated_at timestamp with time zone null,
 ///   category text null,
+///   subheading text null,
+///   about_store text null,
+///   facebook_link text null,
+///   instagram_link text null,
+///   contact_email text null,
+///   contact_address text null,
+///   postal_code text null,
+///   contact_phone text null,
 ///   constraint stores_pkey primary key (id),
 ///   constraint stores_owner_id_fkey foreign KEY (owner_id) references profiles (id) on update CASCADE on delete CASCADE
 /// ) TABLESPACE pg_default;
 ///
 /// create index IF not exists stores_owner_id_idx on public.stores using btree (owner_id) TABLESPACE pg_default;
-///   created_at timestamp with time zone NOT NULL DEFAULT now(),
-///   owner_id uuid NOT NULL,
-///   name text NOT NULL,
-///   store_url text NULL,
-///   updated_at timestamp with time zone NULL,
-///   PRIMARY KEY (id),
-///   FOREIGN KEY (owner_id) REFERENCES profiles (id) ON UPDATE CASCADE ON DELETE CASCADE
-/// )
-///
-/// Indexes:
-///   stores_owner_id_idx (owner_id)
 class Store {
   final String id;
   final DateTime createdAt;
@@ -1009,6 +1016,14 @@ class Store {
   final String name;
   final String? storeUrl;
   final String? category;
+  final String? subheading;
+  final String? aboutStore;
+  final String? facebookLink;
+  final String? instagramLink;
+  final String? contactEmail;
+  final String? contactAddress;
+  final String? postalCode;
+  final String? contactPhone;
   final DateTime? updatedAt;
 
   Store({
@@ -1018,6 +1033,14 @@ class Store {
     required this.name,
     this.storeUrl,
     this.category,
+    this.subheading,
+    this.aboutStore,
+    this.facebookLink,
+    this.instagramLink,
+    this.contactEmail,
+    this.contactAddress,
+    this.postalCode,
+    this.contactPhone,
     this.updatedAt,
   });
 
@@ -1028,6 +1051,14 @@ class Store {
         name: json['name'] as String,
         storeUrl: json['store_url'] as String?,
         category: json['category'] as String?,
+        subheading: json['subheading'] as String?,
+        aboutStore: json['about_store'] as String?,
+        facebookLink: json['facebook_link'] as String?,
+        instagramLink: json['instagram_link'] as String?,
+        contactEmail: json['contact_email'] as String?,
+        contactAddress: json['contact_address'] as String?,
+        postalCode: json['postal_code'] as String?,
+        contactPhone: json['contact_phone'] as String?,
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       );
 
@@ -1038,6 +1069,14 @@ class Store {
         'name': name,
         'store_url': storeUrl,
         'category': category,
+        'subheading': subheading,
+        'about_store': aboutStore,
+        'facebook_link': facebookLink,
+        'instagram_link': instagramLink,
+        'contact_email': contactEmail,
+        'contact_address': contactAddress,
+        'postal_code': postalCode,
+        'contact_phone': contactPhone,
         'updated_at': updatedAt?.toIso8601String(),
       };
 }

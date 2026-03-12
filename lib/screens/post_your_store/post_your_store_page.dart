@@ -622,6 +622,9 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
       throw Exception('Failed to save product: Store not found for user');
     }
 
+    final int estimatedShippingDays =
+        int.tryParse(product.estimatedArrivalController.text.trim()) ?? 3;
+
     await SupabaseTableHelpers.createProduct(
       storeId: storeId,
       name: product.titleController.text,
@@ -634,6 +637,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
       description: product.descriptionController.text,
       category: _selectedCategory,
       condition: product.productCondition.isEmpty ? 'New' : product.productCondition,
+      estimatedShippingDays: estimatedShippingDays,
       createdAt: DateTime.now(),
     );
   }
@@ -677,6 +681,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
           _products[index].additionalImagePaths[imgIdx - 1] = file.path;
           _products[index].additionalImageBytes[imgIdx - 1] = file.bytes;
         }
+        _saveDraft();
       });
       _checkFormCompleteAndUpdate();
       showCustomSnackBar(
@@ -722,6 +727,52 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     // (handled in _pickProductImage already via setState)
   }
 
+  void _removeProductSegment(int index) {
+    if (_products.length <= 1) {
+      showCustomSnackBar(
+        context,
+        'At least one product form is required.',
+        positive: false,
+      );
+      return;
+    }
+    final removedProduct = _products.removeAt(index);
+    removedProduct.dispose();
+    setState(() {});
+    _saveDraft();
+    _checkFormCompleteAndUpdate();
+    showCustomSnackBar(context, 'Product form deleted.', positive: true);
+  }
+
+  void _discardUnfinishedProducts({
+    bool showMessage = false,
+    bool ensureAtLeastOneForm = false,
+  }) {
+    final unfinishedProducts = _products
+        .where((product) => product.finishedProductId == null)
+        .toList();
+    if (unfinishedProducts.isEmpty) return;
+
+    setState(() {
+      _products.removeWhere((product) => product.finishedProductId == null);
+      if (ensureAtLeastOneForm && _products.isEmpty) {
+        _products.add(ProductFormData());
+        _setupProductListeners(0);
+      }
+    });
+
+    for (final product in unfinishedProducts) {
+      product.dispose();
+    }
+
+    _saveDraft();
+    _checkFormCompleteAndUpdate();
+
+    if (showMessage && mounted) {
+      showCustomSnackBar(context, 'Unfinished product forms were discarded.');
+    }
+  }
+
 
   // ignore: unused_element
   Future<void> _pickThumbnailImage() async {
@@ -752,15 +803,6 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.single;
       if (file.bytes != null) {
-        final decoded = await decodeImageFromList(file.bytes!);
-        final isLandscape = decoded.width > decoded.height;
-        if (!isLandscape) {
-          showCustomSnackBar(
-            context,
-            'Warning: Banner image is portrait. Landscape images look best!',
-            positive: false,
-          );
-        }
         setState(() {
           _bannerImagePath = file.path;
           _bannerImageBytes = file.bytes;
@@ -799,6 +841,19 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
       showCustomSnackBar(context, 'Please fill all required fields.', positive: false);
       return;
     }
+
+    // Discard unfinished product segments only when the user is actually submitting.
+    _discardUnfinishedProducts(showMessage: false, ensureAtLeastOneForm: false);
+
+    if (_products.isEmpty) {
+      showCustomSnackBar(
+        context,
+        'Please finish at least one product before submitting.',
+        positive: false,
+      );
+      return;
+    }
+
     try {
       generateStoreId();
       await _saveStoreToSupabase();
@@ -940,7 +995,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                     borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: const Text(
-                                    'Thank you for subscribing to Storazaar! Your subscription helps us improve the platform.\n\nPlease fill in the required fields to create your store, and add info of your 1st product.\nPlease note the domain of your store must be your exact domain, not a link.\nYou will be required to create your store profile and at least 1 product to continue.',
+                                    'Thank you for subscribing to Storazaar! Your subscription helps us improve the platform.\n\nPlease fill in the required fields to create your store, and add info of your 1st product.\nPlease note the domain of your store must be your exact domain, not a link. Eg: example.store, example.com\nYou will be required to create your store profile and at least 1 product to continue.',
                                     style: TextStyle(
                                       fontSize: 16,
                                       color: Colors.black,
@@ -1217,84 +1272,87 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                           ),
                           const SizedBox(height: 12),
                           Center(
-                            child: Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                border: Border.all(
-                                  color: Colors.black,
-                                  width: 1,
+                            child: GestureDetector(
+                              onTap: _pickThumbnailImage,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  border: Border.all(
+                                    color: Colors.black,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(14),
                                 ),
-                                borderRadius: BorderRadius.circular(14),
-                              ),
-                              constraints: const BoxConstraints(
-                                maxWidth: 440,
-                                minHeight: 110,
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(10.0),
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        color: Colors.grey.shade200,
-                                        borderRadius: BorderRadius.circular(12),
-                                        border: Border.all(
-                                          color: _thumbnailImageBytes != null
-                                              ? Colors.green
-                                              : Colors.grey.shade400,
-                                          width: 1.2,
+                                constraints: const BoxConstraints(
+                                  maxWidth: 440,
+                                  minHeight: 110,
+                                ),
+                                child: Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.all(10.0),
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.grey.shade200,
+                                          borderRadius: BorderRadius.circular(12),
+                                          border: Border.all(
+                                            color: _thumbnailImageBytes != null
+                                                ? Colors.green
+                                                : Colors.grey.shade400,
+                                            width: 1.2,
+                                          ),
+                                        ),
+                                        width: 80,
+                                        height: 80,
+                                        child: _thumbnailImageBytes != null
+                                            ? ClipRRect(
+                                                borderRadius: BorderRadius.circular(12),
+                                                child: Image.memory(
+                                                  _thumbnailImageBytes!,
+                                                  fit: BoxFit.cover,
+                                                  width: 80,
+                                                  height: 80,
+                                                ),
+                                              )
+                                            : Icon(
+                                                Icons.add_photo_alternate,
+                                                size: 38,
+                                                color: Colors.grey.shade600,
+                                              ),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 8.0),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          mainAxisAlignment: MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              _storeNameController.text.isNotEmpty ? _storeNameController.text : 'Store Name',
+                                              style: const TextStyle(
+                                                fontSize: 18,
+                                                fontWeight: FontWeight.bold,
+                                                color: Colors.black,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                            const SizedBox(height: 7),
+                                            Text(
+                                              _domainController.text.isNotEmpty ? _domainController.text : 'domain',
+                                              style: const TextStyle(
+                                                fontSize: 15,
+                                                color: Colors.black87,
+                                              ),
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ],
                                         ),
                                       ),
-                                      width: 80,
-                                      height: 80,
-                                      child: _thumbnailImageBytes != null
-                                          ? ClipRRect(
-                                              borderRadius: BorderRadius.circular(12),
-                                              child: Image.memory(
-                                                _thumbnailImageBytes!,
-                                                fit: BoxFit.cover,
-                                                width: 80,
-                                                height: 80,
-                                              ),
-                                            )
-                                          : Icon(
-                                              Icons.add_photo_alternate,
-                                              size: 38,
-                                              color: Colors.grey.shade600,
-                                            ),
                                     ),
-                                  ),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 20.0, horizontal: 8.0),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            _storeNameController.text.isNotEmpty ? _storeNameController.text : 'Store Name',
-                                            style: const TextStyle(
-                                              fontSize: 18,
-                                              fontWeight: FontWeight.bold,
-                                              color: Colors.black,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          const SizedBox(height: 7),
-                                          Text(
-                                            _domainController.text.isNotEmpty ? _domainController.text : 'domain',
-                                            style: const TextStyle(
-                                              fontSize: 15,
-                                              color: Colors.black87,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             ),
                           ),
@@ -1514,7 +1572,14 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
-        color: Colors.amberAccent,
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFFFFB6D5),
+            Color(0xFFFFD700),
+          ],
+          begin: Alignment.centerLeft,
+          end: Alignment.centerRight,
+        ),
         borderRadius: BorderRadius.circular(8),
       ),
       child: Row(
@@ -1827,36 +1892,53 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
             ],
           ),
           const SizedBox(height: 10),
-          Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: (product.isFinishing || product.finishedProductId != null)
-                  ? null
-                  : () async {
-                      if (_isProductComplete(product)) {
-                        setState(() {
-                          product.isFinishing = true;
-                        });
-                        await Future.delayed(const Duration(seconds: 5));
-                        setState(() {
-                          product.isFinishing = false;
-                          product.finishedProductId = generateProductId();
-                        });
-                        showCustomSnackBar(context, 'Product ${index + 1} finished!', positive: true);
-                      } else {
-                        showCustomSnackBar(context, 'Please complete all required product fields before finishing.', positive: false);
-                      }
-                    },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green,
-                foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              OutlinedButton.icon(
+                onPressed: () => _removeProductSegment(index),
+                icon: const Icon(Icons.delete_outline, color: Colors.black),
+                label: const Text('Delete'),
+                style: OutlinedButton.styleFrom(
+                  backgroundColor: Colors.white,
+                  foregroundColor: Colors.black,
+                  side: BorderSide(color: Colors.black),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 ),
-                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
               ),
-              child: const Text('Finish Product', style: TextStyle(fontWeight: FontWeight.bold)),
-            ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                onPressed: (product.isFinishing || product.finishedProductId != null)
+                    ? null
+                    : () async {
+                        if (_isProductComplete(product)) {
+                          setState(() {
+                            product.isFinishing = true;
+                          });
+                          await Future.delayed(const Duration(seconds: 5));
+                          setState(() {
+                            product.isFinishing = false;
+                            product.finishedProductId = generateProductId();
+                          });
+                          showCustomSnackBar(context, 'Product ${index + 1} finished!', positive: true);
+                        } else {
+                          showCustomSnackBar(context, 'Please complete all required product fields before finishing.', positive: false);
+                        }
+                      },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                ),
+                child: const Text('Finish Product', style: TextStyle(fontWeight: FontWeight.bold)),
+              ),
+            ],
           ),
         ],
       ),

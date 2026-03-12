@@ -62,7 +62,7 @@ class _SubscriptionBillingSettingsPageState
           .select()
           .eq('user_id', user.id)
           .order('created_at', ascending: false);
-        invoices = invoiceResponse
+      invoices = invoiceResponse
           .whereType<Map<String, dynamic>>()
           .map((json) => Invoice.fromJson(json))
           .toList();
@@ -72,7 +72,7 @@ class _SubscriptionBillingSettingsPageState
           .select()
           .eq('user_id', user.id)
           .order('created_at', ascending: false);
-        receipts = receiptResponse
+      receipts = receiptResponse
           .whereType<Map<String, dynamic>>()
           .map((json) => Receipt.fromJson(json))
           .toList();
@@ -90,7 +90,6 @@ class _SubscriptionBillingSettingsPageState
       });
     }
   }
-
 
   Future<void> fetchInvoices() async {
     setState(() {
@@ -129,9 +128,9 @@ class _SubscriptionBillingSettingsPageState
   Widget buildActiveCardTile() {
     // Show only masked card reference (**** **** **** 4242)
     final last4 =
-      (subscription?['card_last4'] as String?) ??
-      (subscription?['stripe_card_last4'] as String?) ??
-      '4242';
+        (subscription?['card_last4'] as String?) ??
+        (subscription?['stripe_card_last4'] as String?) ??
+        '4242';
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -278,7 +277,8 @@ class _SubscriptionBillingSettingsPageState
                       ),
                     const SizedBox(height: 8),
                     // Status row
-                    if (subscription?['status'] != null || _cancellationStatus != null)
+                    if (subscription?['status'] != null ||
+                        _cancellationStatus != null)
                       Row(
                         children: [
                           const Text(
@@ -291,8 +291,11 @@ class _SubscriptionBillingSettingsPageState
                                   _cancellationStatus ??
                                   (subscription?['status']?.toString() ?? '');
                               final isActive = status.toLowerCase() == 'active';
-                              final isPending = status.toLowerCase() == 'pending';
-                              final isCancelled = status.toLowerCase() == 'cancelled' || status.toLowerCase() == 'canceled';
+                              final isPending =
+                                  status.toLowerCase() == 'pending';
+                              final isCancelled =
+                                  status.toLowerCase() == 'cancelled' ||
+                                  status.toLowerCase() == 'canceled';
                               Color iconColor;
                               IconData iconData;
                               if (isActive) {
@@ -368,7 +371,8 @@ class _SubscriptionBillingSettingsPageState
                     if (subscription?['cancel_at_period_end'] != null)
                       infoRow(
                         'Cancel At Period End:',
-                        (subscription?['cancel_at_period_end']?.toString() ?? ''),
+                        (subscription?['cancel_at_period_end']?.toString() ??
+                            ''),
                       ),
                     if (subscription?['created_at'] != null)
                       infoRow(
@@ -438,9 +442,8 @@ class _SubscriptionBillingSettingsPageState
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => ReceiptPage(
-                              receipts: receipts ?? [],
-                            ),
+                            builder: (context) =>
+                                ReceiptPage(receipts: receipts ?? []),
                           ),
                         );
                       },
@@ -574,46 +577,98 @@ class _SubscriptionBillingSettingsPageState
                                           ElevatedButton(
                                             onPressed: isConfirmed
                                                 ? () async {
-                                                    Navigator.pop(context); // Close confirmation dialog
+                                                    Navigator.pop(
+                                                      context,
+                                                    ); // Close confirmation dialog
                                                     setState(() {
-                                                      _cancellationStatus = 'pending';
+                                                      _cancellationStatus =
+                                                          'pending';
                                                     });
                                                     try {
-                                                      // Use new unified subscriptions Edge Function
-                                                      await Supabase
+                                                      final session = Supabase
+                                                          .instance
+                                                          .client
+                                                          .auth
+                                                          .currentSession;
+                                                      final jwt =
+                                                          session?.accessToken;
+                                                      if (jwt == null ||
+                                                          jwt.isEmpty) {
+                                                        throw Exception(
+                                                          'Session token not available.',
+                                                        );
+                                                      }
+
+                                                      // Use unified subscriptions Edge Function with auth header.
+                                                      final response = await Supabase
                                                           .instance
                                                           .client
                                                           .functions
                                                           .invoke(
                                                             'subscriptions',
-                                                            body: { 'action': 'cancel' },
+                                                            headers: {
+                                                              'Content-Type':
+                                                                  'application/json',
+                                                              'Authorization':
+                                                                  'Bearer $jwt',
+                                                            },
+                                                            body: {
+                                                              'action':
+                                                                  'cancel',
+                                                            },
                                                           );
-                                                      await Supabase
-                                                          .instance
-                                                          .client
-                                                          .auth
-                                                          .signOut();
-                                                      if (context.mounted) {
-                                                        // Pop dialogs (including spinner) but do not pop the main Account page
-                                                        var nav = Navigator.of(context, rootNavigator: true);
-                                                        int popCount = 0;
-                                                        while (nav.canPop() && popCount < 10) {
-                                                          nav.pop();
-                                                          popCount++;
+
+                                                      final data =
+                                                          response.data;
+                                                      final bool success =
+                                                          data
+                                                              is Map<
+                                                                String,
+                                                                dynamic
+                                                              > &&
+                                                          data['success'] ==
+                                                              true;
+                                                      if (!success) {
+                                                        throw Exception(
+                                                          'Cancellation request did not complete successfully.',
+                                                        );
+                                                      }
+
+                                                      await fetchSubscriptionAndInvoicesAndReceipts();
+
+                                                      if (mounted) {
+                                                        final bool isStillPro =
+                                                            await ProStatusService.isUserPro();
+                                                        if (isStillPro) {
+                                                          throw Exception(
+                                                            'Subscription cancel is pending sync. Please refresh and try again.',
+                                                          );
                                                         }
-                                                        ScaffoldMessenger.of(context).showSnackBar(
+                                                      }
+
+                                                      if (context.mounted) {
+                                                        setState(() {
+                                                          _showCancelButton =
+                                                              false;
+                                                          _cancellationStatus =
+                                                              'canceled';
+                                                        });
+                                                        ScaffoldMessenger.of(
+                                                          context,
+                                                        ).showSnackBar(
                                                           const SnackBar(
                                                             content: Text(
-                                                              'Subscription canceled and all data deleted.',
+                                                              'Subscription canceled. Your account is now non-Pro.',
                                                             ),
                                                           ),
                                                         );
                                                       }
                                                     } catch (e) {
                                                       if (context.mounted) {
-                                                        Navigator.of(
-                                                          context,
-                                                        ).pop();
+                                                        setState(() {
+                                                          _cancellationStatus =
+                                                              null;
+                                                        });
                                                         ScaffoldMessenger.of(
                                                           context,
                                                         ).showSnackBar(
