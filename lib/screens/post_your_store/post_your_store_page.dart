@@ -448,21 +448,27 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
         });
         return;
       }
-        // Fetch store (assuming one store per user)
+      // Fetch store (assuming one store per user)
       final storeResp = await Supabase.instance.client
           .from('stores')
           .select('id')
           .eq('owner_id', user.id)
           .maybeSingle();
 
-        final storeId = storeResp != null ? storeResp['id'] : null;
-      // Fetch products
-      // ignore: unused_local_variable
-      final productsResp = await Supabase.instance.client
-          .from('products')
-          .select()
-          .eq('store_id', storeId)
-          .order('created_at', ascending: false);
+      final dynamic rawStoreId = storeResp != null ? storeResp['id'] : null;
+      final String? storeId = (rawStoreId is String && rawStoreId.isNotEmpty)
+          ? rawStoreId
+          : null;
+
+      // Avoid querying UUID columns with null/invalid values.
+      if (storeId != null) {
+        // ignore: unused_local_variable
+        final productsResp = await Supabase.instance.client
+            .from('products')
+            .select()
+            .eq('store_id', storeId)
+            .order('created_at', ascending: false);
+      }
       setState(() {
         _loadingSupabaseData = false;
       });
@@ -603,18 +609,21 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     // Fetch store_id from the store (assume only one store per user)
     final storeResp = await Supabase.instance.client
         .from('stores')
-      .select('id')
+        .select('id')
         .eq('owner_id', user.id)
         .maybeSingle();
-    final storeId = storeResp != null && storeResp['id'] != null
-      ? storeResp['id']
+
+    final dynamic rawStoreId = storeResp != null ? storeResp['id'] : null;
+    final String? storeId = (rawStoreId is String && rawStoreId.isNotEmpty)
+        ? rawStoreId
         : null;
+
     if (storeId == null) {
       throw Exception('Failed to save product: Store not found for user');
     }
 
     await SupabaseTableHelpers.createProduct(
-      storeId: storeId as String,
+      storeId: storeId,
       name: product.titleController.text,
       price: double.tryParse(product.priceController.text) ?? 0.0,
       productUrl: _domainController.text.trim().isEmpty
