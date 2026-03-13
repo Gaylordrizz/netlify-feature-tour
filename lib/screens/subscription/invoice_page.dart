@@ -21,15 +21,15 @@ class InvoicePage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final invoice = invoices[index];
                 return ListTile(
-                  title: Text(invoice.invoiceNumber ?? 'Invoice'),
+                  title: Text(invoice.invoiceNumber.isNotEmpty ? invoice.invoiceNumber : 'Invoice'),
                   subtitle: Text('${invoice.amountDue} ${invoice.currency}'),
                   trailing: Icon(Icons.picture_as_pdf, color: Colors.red),
                   onTap: () {
-                    if (invoice.invoicePdf != null && invoice.invoicePdf!.isNotEmpty) {
+                    if (invoice.invoicePdf.isNotEmpty) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => InvoicePdfViewer(pdfUrl: invoice.invoicePdf!),
+                          builder: (context) => InvoicePdfViewer(pdfUrl: invoice.invoicePdf),
                         ),
                       );
                     } else {

@@ -49,11 +49,11 @@ class SupabaseTableHelpers {
     await repo.insert(SupabaseTables.userChatRooms, {
       'creator_id': creatorId,
       'room_name': roomName,
-      'description': description,
+      'description': description ?? '',
       'is_private': isPrivate,
       'created_at': (createdAt ?? DateTime.now()).toIso8601String(),
       'message_count': messageCount,
-      'last_message_at': lastMessageAt?.toIso8601String(),
+      'last_message_at': (lastMessageAt ?? DateTime.now()).toIso8601String(),
     });
   }
 
@@ -91,8 +91,8 @@ class SupabaseTableHelpers {
   static Future<void> createSubscription({
     required String userId,
     required String status,
-    String? priceId,
-    int? quantity,
+    String priceId = '',
+    int quantity = 1,
     bool? cancelAtPeriodEnd,
     DateTime? currentPeriodStart,
     DateTime? currentPeriodEnd,
@@ -160,8 +160,8 @@ class SupabaseTableHelpers {
     await repo.insert(SupabaseTables.communities, {
       'name': name,
       'slug': slug,
-      'creator_id': creatorId,
-      'created_at': createdAt?.toIso8601String(),
+      if (creatorId != null) 'creator_id': creatorId,
+      if (createdAt != null) 'created_at': createdAt.toIso8601String(),
     });
   }
 
@@ -201,7 +201,7 @@ class SupabaseTableHelpers {
       'community_id': communityId,
       'user_id': userId,
       'content': content,
-      'created_at': createdAt?.toIso8601String(),
+      if (createdAt != null) 'created_at': createdAt.toIso8601String(),
     });
   }
 
@@ -304,6 +304,7 @@ class SupabaseTableHelpers {
     String? category,
     String condition = 'New',
     int? estimatedShippingDays,
+    bool freeShippingCheck = false,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) async {
@@ -311,14 +312,14 @@ class SupabaseTableHelpers {
       'store_id': storeId,
       'name': name,
       'price': price,
-      if (productUrl != null) 'product_url': productUrl,
-      if (imageUrl != null) 'image_url': imageUrl,
-      if (publicId != null) 'public_id': publicId,
-      if (description != null) 'description': description,
-      if (category != null) 'category': category,
+      'product_url': productUrl ?? '',
+      'image_url': imageUrl ?? '',
+      'public_id': publicId ?? '',
+      'description': description ?? '',
+      'category': category ?? 'Uncategorized',
       'condition': condition,
-      if (estimatedShippingDays != null)
-        'estimated_shipping_days': estimatedShippingDays,
+      'estimated_shipping_days': estimatedShippingDays ?? 3,
+      'free_shipping_check': freeShippingCheck,
       if (createdAt != null) 'created_at': createdAt.toIso8601String(),
       if (updatedAt != null) 'updated_at': updatedAt.toIso8601String(),
     });
@@ -395,16 +396,16 @@ class SupabaseTableHelpers {
     await repo.insert(SupabaseTables.stores, {
       'owner_id': ownerId,
       'name': name,
-      if (storeUrl != null) 'store_url': storeUrl,
-      if (category != null) 'category': category,
-      if (subheading != null) 'subheading': subheading,
-      if (aboutStore != null) 'about_store': aboutStore,
-      if (facebookLink != null) 'facebook_link': facebookLink,
-      if (instagramLink != null) 'instagram_link': instagramLink,
-      if (contactEmail != null) 'contact_email': contactEmail,
-      if (contactAddress != null) 'contact_address': contactAddress,
-      if (postalCode != null) 'postal_code': postalCode,
-      if (contactPhone != null) 'contact_phone': contactPhone,
+      'store_url': storeUrl ?? '',
+      'category': category ?? 'Uncategorized',
+      'subheading': subheading ?? '',
+      'about_store': aboutStore ?? '',
+      'facebook_link': facebookLink ?? '',
+      'instagram_link': instagramLink ?? '',
+      'contact_email': contactEmail ?? '',
+      'contact_address': contactAddress ?? '',
+      'postal_code': postalCode ?? '',
+      'contact_phone': contactPhone ?? '',
       if (createdAt != null) 'created_at': createdAt.toIso8601String(),
       if (updatedAt != null) 'updated_at': updatedAt.toIso8601String(),
     });
@@ -474,24 +475,24 @@ class SupabaseTableHelpers {
 
   static Future<void> createOrder({
     String? userId,
-    String? stripeSessionId,
-    String? stripePaymentIntentId,
-    String? stripeSubscriptionId,
+    String stripeSessionId = '',
+    String stripePaymentIntentId = '',
+    String stripeSubscriptionId = '',
     required int amount,
     String currency = 'usd',
     String status = 'pending',
     DateTime? createdAt,
-    String? stripeCustomerId,
+    String stripeCustomerId = '',
   }) async {
     await repo.insert(SupabaseTables.orders, {
-      'user_id': userId,
+      if (userId != null) 'user_id': userId,
       'stripe_session_id': stripeSessionId,
       'stripe_payment_intent_id': stripePaymentIntentId,
       'stripe_subscription_id': stripeSubscriptionId,
       'amount': amount,
       'currency': currency,
       'status': status,
-      'created_at': createdAt?.toIso8601String(),
+      if (createdAt != null) 'created_at': createdAt.toIso8601String(),
       'stripe_customer_id': stripeCustomerId,
     });
   }
@@ -537,20 +538,20 @@ class SupabaseTableHelpers {
     await repo.insert(SupabaseTables.userPhotos, {
       'user_id': userId,
       'file_path': filePath,
-      'description': description,
-      'is_public': isPublic,
-      'created_at': createdAt?.toIso8601String(),
+      'description': description ?? '',
+      'is_public': isPublic ?? false,
+      if (createdAt != null) 'created_at': createdAt.toIso8601String(),
     });
   }
 
   static Future<void> createInvoice({
     required String userId,
     required String stripeInvoiceId,
-    String? invoiceNumber,
+    String invoiceNumber = '',
     required int amountDue,
     required String currency,
     required String status,
-    String? invoicePdf,
+    String invoicePdf = '',
     DateTime? createdAt,
   }) async {
     await repo.insert(SupabaseTables.invoices, {
@@ -561,18 +562,18 @@ class SupabaseTableHelpers {
       'currency': currency,
       'status': status,
       'invoice_pdf': invoicePdf,
-      'created_at': createdAt?.toIso8601String(),
+      if (createdAt != null) 'created_at': createdAt.toIso8601String(),
     });
   }
 
   static Future<void> createReceipt({
     required String userId,
     required String stripeInvoiceId,
-    String? receiptNumber,
+    String receiptNumber = '',
     required int amount,
     required String currency,
     required String status,
-    String? receiptPdf,
+    String receiptPdf = '',
     DateTime? createdAt,
   }) async {
     await repo.insert(SupabaseTables.receipts, {
@@ -583,7 +584,7 @@ class SupabaseTableHelpers {
       'currency': currency,
       'status': status,
       'receipt_pdf': receiptPdf,
-      'created_at': createdAt?.toIso8601String(),
+      if (createdAt != null) 'created_at': createdAt.toIso8601String(),
     });
   }
 }

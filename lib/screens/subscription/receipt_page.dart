@@ -21,15 +21,15 @@ class ReceiptPage extends StatelessWidget {
               itemBuilder: (context, index) {
                 final receipt = receipts[index];
                 return ListTile(
-                  title: Text(receipt.receiptNumber ?? 'Receipt'),
+                  title: Text(receipt.receiptNumber.isNotEmpty ? receipt.receiptNumber : 'Receipt'),
                   subtitle: Text('${receipt.amount} ${receipt.currency}'),
                   trailing: Icon(Icons.picture_as_pdf, color: Colors.red),
                   onTap: () {
-                    if (receipt.receiptPdf != null && receipt.receiptPdf!.isNotEmpty) {
+                    if (receipt.receiptPdf.isNotEmpty) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ReceiptPdfViewer(pdfUrl: receipt.receiptPdf!),
+                          builder: (context) => ReceiptPdfViewer(pdfUrl: receipt.receiptPdf),
                         ),
                       );
                     } else {

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import '../../services/store_id.dart';
 import '../../services/product_id.dart';
 import 'package:flutter/material.dart';
@@ -15,9 +17,6 @@ import '../../reusable_widgets/snackbar.dart';
 String? validateStoreName(String? value) {
   if (value == null || value.isEmpty) {
     return 'Store name is required';
-  }
-  if (value.length < 1) {
-    return 'Store name must be at least 1 character';
   }
   return null;
 }
@@ -156,7 +155,7 @@ String? validateProductPrice(String? value) {
 
 String? validateEstimatedArrival(String? value) {
   if (value == null || value.isEmpty) {
-    return 'Estimated arrival is required';
+    return null;
   }
   final arrivalRegex = RegExp(r'^[0-9]+$');
   if (!arrivalRegex.hasMatch(value)) {
@@ -202,15 +201,65 @@ class ProductFormData {
   }
 }
 
+class _ValidationIssue {
+  const _ValidationIssue(this.fieldId, this.message);
+
+  final String fieldId;
+  final String message;
+}
+
 class _PostYourStorePageState extends State<PostYourStorePage> {
+      final ScrollController _formScrollController = ScrollController();
+      String? _invalidFieldId;
+
+      static const String _fidStoreName = 'store_name';
+      static const String _fidStoreDomain = 'store_domain';
+      static const String _fidStoreCategory = 'store_category';
+      static const String _fidStoreSubheading = 'store_subheading';
+      static const String _fidAboutStore = 'about_store';
+      static const String _fidStoreBanner = 'store_banner';
+      static const String _fidStoreThumbnail = 'store_thumbnail';
+      static const String _fidProductPhoto = 'product_photo';
+      static const String _fidProductTitle = 'product_title';
+      static const String _fidProductDescription = 'product_description';
+      static const String _fidProductCondition = 'product_condition';
+      static const String _fidProductPrice = 'product_price';
+      static const String _fidEstimatedShippingDays = 'estimated_shipping_days';
+
+      final Map<String, GlobalKey> _fieldKeys = {
+        _fidStoreName: GlobalKey(),
+        _fidStoreDomain: GlobalKey(),
+        _fidStoreCategory: GlobalKey(),
+        _fidStoreSubheading: GlobalKey(),
+        _fidAboutStore: GlobalKey(),
+        _fidStoreBanner: GlobalKey(),
+        _fidStoreThumbnail: GlobalKey(),
+        _fidProductPhoto: GlobalKey(),
+        _fidProductTitle: GlobalKey(),
+        _fidProductDescription: GlobalKey(),
+        _fidProductCondition: GlobalKey(),
+        _fidProductPrice: GlobalKey(),
+        _fidEstimatedShippingDays: GlobalKey(),
+      };
+
       bool _canShowSubmit = false;
       void _handleFinishForm() {
-        if (_isFormComplete()) {
+        if (_formCompleted) {
           setState(() {
             _canShowSubmit = true;
+            _invalidFieldId = null;
           });
         } else {
-          showCustomSnackBar(context, 'Please fill all required fields before finishing the form.', positive: false);
+          final issue = _firstFailingFieldIssue();
+          final message = issue?.message ??
+              'Please fill all required fields before finishing the form.';
+          if (issue != null) {
+            setState(() {
+              _invalidFieldId = issue.fieldId;
+            });
+            _scrollToField(issue.fieldId);
+          }
+          showCustomSnackBar(context, message, positive: false);
         }
       }
     Widget _buildTextField({
@@ -226,6 +275,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
       List<TextInputFormatter>? inputFormatters,
       String? Function(String?)? validator,
       bool isPostalCode = false,
+      String? fieldId,
     }) {
       final isRequired = (validator != null);
       // Remove (Required) from individual field labels for required sections
@@ -269,6 +319,11 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
             ),
             validator: validator,
             onChanged: (_) {
+              if (fieldId != null && _invalidFieldId == fieldId) {
+                setState(() {
+                  _invalidFieldId = null;
+                });
+              }
               if (isRequired) setState(() {});
             },
           ),
@@ -650,6 +705,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
 
   @override
   void dispose() {
+    _formScrollController.dispose();
     _storeNameController.dispose();
     _domainController.dispose();
     _subheadingController.dispose();
@@ -673,13 +729,26 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     );
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.single;
+      final bytes = await _resolvePickedFileBytes(result, file);
+      if (bytes == null || bytes.isEmpty) {
+        if (!mounted) return;
+        showCustomSnackBar(
+          context,
+          'Could not read the selected image. Please try another file.',
+          positive: false,
+        );
+        return;
+      }
       setState(() {
         if (imgIdx == 0) {
           _products[index].productImagePath = file.path;
-          _products[index].productImageBytes = file.bytes;
+          _products[index].productImageBytes = bytes;
+          if (_invalidFieldId == _fidProductPhoto) {
+            _invalidFieldId = null;
+          }
         } else {
           _products[index].additionalImagePaths[imgIdx - 1] = file.path;
-          _products[index].additionalImageBytes[imgIdx - 1] = file.bytes;
+          _products[index].additionalImageBytes[imgIdx - 1] = bytes;
         }
         _saveDraft();
       });
@@ -749,12 +818,12 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     bool ensureAtLeastOneForm = false,
   }) {
     final unfinishedProducts = _products
-        .where((product) => product.finishedProductId == null)
+        .where((product) => !_isProductComplete(product))
         .toList();
     if (unfinishedProducts.isEmpty) return;
 
     setState(() {
-      _products.removeWhere((product) => product.finishedProductId == null);
+      _products.removeWhere((product) => !_isProductComplete(product));
       if (ensureAtLeastOneForm && _products.isEmpty) {
         _products.add(ProductFormData());
         _setupProductListeners(0);
@@ -783,9 +852,22 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     if (!mounted) return;
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.single;
+      final bytes = await _resolvePickedFileBytes(result, file);
+      if (bytes == null || bytes.isEmpty) {
+        if (!mounted) return;
+        showCustomSnackBar(
+          context,
+          'Could not read the selected image. Please try another file.',
+          positive: false,
+        );
+        return;
+      }
       setState(() {
         _thumbnailImagePath = file.path;
-        _thumbnailImageBytes = file.bytes;
+        _thumbnailImageBytes = bytes;
+        if (_invalidFieldId == _fidStoreThumbnail) {
+          _invalidFieldId = null;
+        }
         _saveDraft();
       });
       _checkFormCompleteAndUpdate();
@@ -802,50 +884,141 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
     if (!mounted) return;
     if (result != null && result.files.isNotEmpty) {
       final file = result.files.single;
-      if (file.bytes != null) {
+      final bytes = await _resolvePickedFileBytes(result, file);
+      if (bytes != null && bytes.isNotEmpty) {
         setState(() {
           _bannerImagePath = file.path;
-          _bannerImageBytes = file.bytes;
+          _bannerImageBytes = bytes;
+          if (_invalidFieldId == _fidStoreBanner) {
+            _invalidFieldId = null;
+          }
           _saveDraft();
         });
         _checkFormCompleteAndUpdate();
         showCustomSnackBar(context, 'Banner image selected');
+      } else {
+        showCustomSnackBar(
+          context,
+          'Could not read the selected image. Please try another file.',
+          positive: false,
+        );
       }
     }
   }
 
-  // ignore: unused_element
-  bool _isFormComplete() {
-    // Only require required fields: store name, domain, subheading, about, category, thumbnail, banner, at least 1 product (with required fields)
-    if (_storeNameController.text.trim().isEmpty) return false;
-    if (_domainController.text.trim().isEmpty) return false;
-    if (_subheadingController.text.trim().isEmpty) return false;
-    if (_aboutController.text.trim().isEmpty) return false;
-    if (_thumbnailImageBytes == null || _thumbnailImageBytes!.isEmpty) return false;
-    if (_bannerImageBytes == null || _bannerImageBytes!.isEmpty) return false;
-    if (_selectedCategory == null || _selectedCategory!.isEmpty) return false;
-    if (_products.isEmpty) return false;
-    final firstProduct = _products[0];
-    if (firstProduct.titleController.text.trim().isEmpty) return false;
-    if (firstProduct.priceController.text.trim().isEmpty) return false;
-    if (firstProduct.descriptionController.text.trim().isEmpty) return false;
-    if (firstProduct.productImageBytes == null || firstProduct.productImageBytes!.isEmpty) return false;
-    if (firstProduct.productCondition.isEmpty) return false;
-    if (firstProduct.estimatedArrivalController.text.trim().isEmpty) return false;
-    return true;
+  Future<Uint8List?> _resolvePickedFileBytes(
+    FilePickerResult result,
+    PlatformFile file,
+  ) async {
+    if (file.bytes != null && file.bytes!.isNotEmpty) {
+      return file.bytes;
+    }
+
+    // Fallback for pickers that expose file bytes through a stream.
+    final stream = file.readStream;
+    if (stream != null) {
+      final builder = BytesBuilder(copy: false);
+      await for (final chunk in stream) {
+        builder.add(chunk);
+      }
+      final fallbackBytes = builder.takeBytes();
+      if (fallbackBytes.isNotEmpty) return fallbackBytes;
+    }
+
+    // Keep result parameter for potential future fallbacks without breaking call sites.
+    final _ = result;
+    return null;
   }
+
+  void _scrollToField(String fieldId) {
+    final contextForField = _fieldKeys[fieldId]?.currentContext;
+    if (contextForField == null) return;
+    Scrollable.ensureVisible(
+      contextForField,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOut,
+      alignment: 0.2,
+    );
+  }
+
+  _ValidationIssue? _firstFailingFieldIssue() {
+    if (_storeNameController.text.trim().isEmpty) {
+      return const _ValidationIssue(_fidStoreName, 'Store name is required.');
+    }
+    if (_domainController.text.trim().isEmpty) {
+      return const _ValidationIssue(_fidStoreDomain, 'Store domain is required.');
+    }
+    if (_selectedCategory == null || _selectedCategory!.isEmpty) {
+      return const _ValidationIssue(_fidStoreCategory, 'Store category is required.');
+    }
+    if (_subheadingController.text.trim().isEmpty) {
+      return const _ValidationIssue(_fidStoreSubheading, 'Store subheading is required.');
+    }
+    if (_aboutController.text.trim().isEmpty) {
+      return const _ValidationIssue(_fidAboutStore, 'About store is required.');
+    }
+    if (_bannerImageBytes == null || _bannerImageBytes!.isEmpty) {
+      return const _ValidationIssue(_fidStoreBanner, 'Store banner photo is required.');
+    }
+    if (_thumbnailImageBytes == null || _thumbnailImageBytes!.isEmpty) {
+      return const _ValidationIssue(_fidStoreThumbnail, 'Store thumbnail photo is required.');
+    }
+    if (_products.isEmpty) {
+      return const _ValidationIssue(_fidProductPhoto, 'At least one product is required.');
+    }
+
+    if (_products.any(_isProductComplete)) {
+      return null;
+    }
+
+    final firstProduct = _products[0];
+    if (firstProduct.productImageBytes == null || firstProduct.productImageBytes!.isEmpty) {
+      return const _ValidationIssue(_fidProductPhoto, 'Product photo is required.');
+    }
+    if (firstProduct.titleController.text.trim().isEmpty) {
+      return const _ValidationIssue(_fidProductTitle, 'Product title is required.');
+    }
+    if (firstProduct.descriptionController.text.trim().isEmpty) {
+      return const _ValidationIssue(_fidProductDescription, 'Product description is required.');
+    }
+    if (firstProduct.productCondition.isEmpty) {
+      return const _ValidationIssue(_fidProductCondition, 'Product condition is required.');
+    }
+    if (firstProduct.priceController.text.trim().isEmpty) {
+      return const _ValidationIssue(_fidProductPrice, 'Product price is required.');
+    }
+    return null;
+  }
+
+  String? _firstFailingFieldMessage() {
+    return _firstFailingFieldIssue()?.message;
+  }
+
+  bool get _formCompleted => _firstFailingFieldMessage() == null;
+
+  // Temporary bridge so existing callers keep working until todo 4 rewires usage.
+  bool _isFormComplete() => _formCompleted;
 
   // ignore: unused_element
   Future<void> _submitStore() async {
     if (!_isFormComplete()) {
-      showCustomSnackBar(context, 'Please fill all required fields.', positive: false);
+      final issue = _firstFailingFieldIssue();
+      final message = issue?.message ??
+          'Please fill all required fields.';
+      if (issue != null) {
+        setState(() {
+          _invalidFieldId = issue.fieldId;
+        });
+        _scrollToField(issue.fieldId);
+      }
+      showCustomSnackBar(context, message, positive: false);
       return;
     }
 
     // Discard unfinished product segments only when the user is actually submitting.
     _discardUnfinishedProducts(showMessage: false, ensureAtLeastOneForm: false);
 
-    if (_products.isEmpty) {
+    if (!_products.any(_isProductComplete)) {
       showCustomSnackBar(
         context,
         'Please finish at least one product before submitting.',
@@ -976,6 +1149,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                           ),
                         )
                       : SingleChildScrollView(
+                          controller: _formScrollController,
                           padding: const EdgeInsets.all(24.0),
                           child: Column(
                             children: [
@@ -1029,8 +1203,17 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-                                    _buildTextField(
+                                    Container(
+                                      key: _fieldKeys[_fidStoreName],
+                                      decoration: BoxDecoration(
+                                        border: _invalidFieldId == _fidStoreName
+                                            ? Border.all(color: Colors.red, width: 1.5)
+                                            : null,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: _buildTextField(
                                       controller: _storeNameController,
+                                      fieldId: _fidStoreName,
                                       label: 'Store Name',
                                       hint: 'Enter your store name',
                                       maxLength: 40,
@@ -1043,9 +1226,19 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                         return null;
                                       },
                                     ),
+                                    ),
                                     const SizedBox(height: 16),
-                                    _buildTextField(
+                                    Container(
+                                      key: _fieldKeys[_fidStoreDomain],
+                                      decoration: BoxDecoration(
+                                        border: _invalidFieldId == _fidStoreDomain
+                                            ? Border.all(color: Colors.red, width: 1.5)
+                                            : null,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: _buildTextField(
                                       controller: _domainController,
+                                      fieldId: _fidStoreDomain,
                                       label: 'Store Domain',
                                       hint: 'e.g. mystore',
                                       maxLength: 30,
@@ -1057,6 +1250,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                         }
                                         return null;
                                       },
+                                    ),
                                     ),
                                     const SizedBox(height: 16),
                                     const Padding(
@@ -1073,7 +1267,15 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                         ],
                                       ),
                                     ),
-                                    DropdownButtonFormField<String>(
+                                    Container(
+                                      key: _fieldKeys[_fidStoreCategory],
+                                      decoration: BoxDecoration(
+                                        border: _invalidFieldId == _fidStoreCategory
+                                            ? Border.all(color: Colors.red, width: 1.5)
+                                            : null,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: DropdownButtonFormField<String>(
                                       value: _selectedCategory,
                                       decoration: InputDecoration(
                                         border: OutlineInputBorder(
@@ -1107,6 +1309,9 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                       onChanged: (value) {
                                         setState(() {
                                           _selectedCategory = value;
+                                          if (_invalidFieldId == _fidStoreCategory) {
+                                            _invalidFieldId = null;
+                                          }
                                         });
                                       },
                                       validator: (value) {
@@ -1116,9 +1321,19 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                         return null;
                                       },
                                     ),
+                                    ),
                                     const SizedBox(height: 16),
-                                    _buildTextField(
+                                    Container(
+                                      key: _fieldKeys[_fidStoreSubheading],
+                                      decoration: BoxDecoration(
+                                        border: _invalidFieldId == _fidStoreSubheading
+                                            ? Border.all(color: Colors.red, width: 1.5)
+                                            : null,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: _buildTextField(
                                       controller: _subheadingController,
+                                      fieldId: _fidStoreSubheading,
                                       label: 'Store Subheading',
                                       hint: 'Short tagline for your store',
                                       maxLength: 60,
@@ -1130,9 +1345,19 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                         return null;
                                       },
                                     ),
+                                    ),
                                     const SizedBox(height: 16),
-                                    _buildTextField(
+                                    Container(
+                                      key: _fieldKeys[_fidAboutStore],
+                                      decoration: BoxDecoration(
+                                        border: _invalidFieldId == _fidAboutStore
+                                            ? Border.all(color: Colors.red, width: 1.5)
+                                            : null,
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: _buildTextField(
                                       controller: _aboutController,
+                                      fieldId: _fidAboutStore,
                                       label: 'About Store',
                                       hint: 'Describe your store...',
                                       maxLength: 200,
@@ -1144,6 +1369,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                         }
                                         return null;
                                       },
+                                    ),
                                     ),
                                     const SizedBox(height: 16),
                                     _buildTextField(
@@ -1173,6 +1399,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                     ),
                     // Store Banner Photo Section
                     Padding(
+                      key: _fieldKeys[_fidStoreBanner],
                       padding: const EdgeInsets.only(bottom: 24.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -1196,9 +1423,11 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                     color: Colors.grey.shade200,
                                     borderRadius: BorderRadius.circular(16),
                                     border: Border.all(
-                                      color: _bannerImageBytes != null
-                                          ? Colors.green
-                                          : Colors.grey.shade400,
+                                      color: _invalidFieldId == _fidStoreBanner
+                                          ? Colors.red
+                                          : _bannerImageBytes != null
+                                              ? Colors.green
+                                              : Colors.grey.shade400,
                                       width: 2,
                                     ),
                                   ),
@@ -1260,6 +1489,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
 
                     // Store Thumbnail: horizontal rectangle with square photo, name, domain, thin black border
                     Padding(
+                      key: _fieldKeys[_fidStoreThumbnail],
                       padding: const EdgeInsets.only(bottom: 32.0),
                       child: Column(
                         children: [
@@ -1278,8 +1508,10 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                 decoration: BoxDecoration(
                                   color: Colors.white,
                                   border: Border.all(
-                                    color: Colors.black,
-                                    width: 1,
+                                    color: _invalidFieldId == _fidStoreThumbnail
+                                        ? Colors.red
+                                        : Colors.black,
+                                    width: _invalidFieldId == _fidStoreThumbnail ? 1.5 : 1,
                                   ),
                                   borderRadius: BorderRadius.circular(14),
                                 ),
@@ -1405,7 +1637,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                             _buildTextField(
                                               controller:
                                                   _contactEmailController,
-                                              label: 'Contact Email (optional)',
+                                              label: 'Email (optional)',
                                               hint: 'your@email.com',
                                               maxLength: 60,
                                               currentLength:
@@ -1417,8 +1649,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                             _buildTextField(
                                               controller:
                                                   _contactAddressController,
-                                              label:
-                                                  'Contact Address (optional)',
+                                              label: 'Address (optional)',
                                               hint: 'Street, City, Country',
                                               maxLength: 100,
                                               currentLength:
@@ -1437,7 +1668,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                             _buildTextField(
                                               controller:
                                                   _contactPhoneController,
-                                              label: 'Contact Phone (optional)',
+                                              label: 'Phone (optional)',
                                               hint: 'Phone number',
                                               maxLength: 20,
                                               currentLength:
@@ -1606,6 +1837,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
 
   // ignore: unused_element
   Widget _buildProductForm(int index, ProductFormData product) {
+    final isPrimaryProduct = index == 0;
     return Container(
       margin: const EdgeInsets.only(bottom: 24),
       padding: const EdgeInsets.all(16),
@@ -1629,6 +1861,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
               ),
               const SizedBox(height: 8),
               Row(
+                key: isPrimaryProduct ? _fieldKeys[_fidProductPhoto] : null,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: List.generate(5, (imgIdx) {
                   final imgBytes = imgIdx == 0
@@ -1650,9 +1883,11 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                                   color: Colors.grey.shade200,
                                   borderRadius: BorderRadius.circular(12),
                                   border: Border.all(
-                                    color: isUploaded
-                                        ? Colors.green
-                                        : Colors.grey.shade400,
+                                    color: isPrimaryProduct && imgIdx == 0 && _invalidFieldId == _fidProductPhoto
+                                        ? Colors.red
+                                        : isUploaded
+                                            ? Colors.green
+                                            : Colors.grey.shade400,
                                     width: 2,
                                   ),
                                 ),
@@ -1737,6 +1972,7 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
 
           // Product Condition Dropdown
           Padding(
+            key: isPrimaryProduct ? _fieldKeys[_fidProductCondition] : null,
             padding: const EdgeInsets.only(bottom: 12.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1758,8 +1994,10 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                     ),
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(12),
-                      borderSide: const BorderSide(
-                        color: Colors.black,
+                      borderSide: BorderSide(
+                        color: isPrimaryProduct && _invalidFieldId == _fidProductCondition
+                            ? Colors.red
+                            : Colors.black,
                         width: 1.5,
                       ),
                     ),
@@ -1780,6 +2018,9 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
                   onChanged: (value) {
                     setState(() {
                       product.productCondition = value ?? '';
+                      if (isPrimaryProduct && _invalidFieldId == _fidProductCondition) {
+                        _invalidFieldId = null;
+                      }
                     });
                   },
                   validator: (value) {
@@ -1793,84 +2034,152 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
             ),
           ),
           // Product Title
-          _buildTextField(
-            controller: product.titleController,
-            label: 'Product Title',
-            hint: 'Enter product name',
-            maxLength: 50,
-            currentLength: product.titleLength,
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Product title is required';
-              }
-              return null;
-            },
+          Container(
+            key: isPrimaryProduct ? _fieldKeys[_fidProductTitle] : null,
+            decoration: BoxDecoration(
+              border: isPrimaryProduct && _invalidFieldId == _fidProductTitle
+                  ? Border.all(color: Colors.red, width: 1.5)
+                  : null,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: _buildTextField(
+              controller: product.titleController,
+              fieldId: isPrimaryProduct ? _fidProductTitle : null,
+              label: 'Product Title',
+              hint: 'Enter product name',
+              maxLength: 50,
+              currentLength: product.titleLength,
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Product title is required';
+                }
+                return null;
+              },
+            ),
+          ),
+
+          const SizedBox(height: 16),
+
+          Container(
+            key: isPrimaryProduct ? _fieldKeys[_fidProductDescription] : null,
+            decoration: BoxDecoration(
+              border: isPrimaryProduct && _invalidFieldId == _fidProductDescription
+                  ? Border.all(color: Colors.red, width: 1.5)
+                  : null,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: _buildTextField(
+              controller: product.descriptionController,
+              fieldId: isPrimaryProduct ? _fidProductDescription : null,
+              label: 'Product Description',
+              hint: 'Describe the product',
+              maxLength: 1000,
+              currentLength: product.descriptionLength,
+              maxLines: 6,
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Product description is required';
+                }
+                return null;
+              },
+            ),
           ),
 
           const SizedBox(height: 16),
 
           // Product Price
-          const Text(
-            'Price',
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-          ),
-          const SizedBox(height: 8),
-          TextFormField(
-            controller: product.priceController,
-            keyboardType: TextInputType.number,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
-            ],
-            cursorColor: Colors.black,
-            decoration: InputDecoration(
-              hintText: '0.00',
-              prefixText: '\$ ',
-              border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.black, width: 1.5),
-              ),
-              enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.black, width: 1.5),
-              ),
-              focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Colors.black, width: 2),
-              ),
-              filled: true,
-              fillColor: Colors.grey.shade50,
+          Container(
+            key: isPrimaryProduct ? _fieldKeys[_fidProductPrice] : null,
+            decoration: BoxDecoration(
+              border: isPrimaryProduct && _invalidFieldId == _fidProductPrice
+                  ? Border.all(color: Colors.red, width: 1.5)
+                  : null,
+              borderRadius: BorderRadius.circular(12),
             ),
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Product price is required';
-              }
-              final price = double.tryParse(value);
-              if (price == null || price <= 0) {
-                return 'Please enter a valid price';
-              }
-              return null;
-            },
-            onChanged: (_) {
-              setState(() {});
-            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Price',
+                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                TextFormField(
+                  controller: product.priceController,
+                  keyboardType: TextInputType.number,
+                  inputFormatters: [
+                    FilteringTextInputFormatter.allow(RegExp(r'^\d*\.?\d{0,2}')),
+                  ],
+                  cursorColor: Colors.black,
+                  decoration: InputDecoration(
+                    hintText: '0.00',
+                    prefixText: '\$ ',
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.black, width: 1.5),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.black, width: 1.5),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: const BorderSide(color: Colors.black, width: 2),
+                    ),
+                    filled: true,
+                    fillColor: Colors.grey.shade50,
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Product price is required';
+                    }
+                    final price = double.tryParse(value);
+                    if (price == null || price <= 0) {
+                      return 'Please enter a valid price';
+                    }
+                    return null;
+                  },
+                  onChanged: (_) {
+                    setState(() {
+                      if (isPrimaryProduct && _invalidFieldId == _fidProductPrice) {
+                        _invalidFieldId = null;
+                      }
+                    });
+                  },
+                ),
+              ],
+            ),
           ),
 
           const SizedBox(height: 16),
 
           // Estimated Arrival
-          _buildTextField(
-            controller: product.estimatedArrivalController,
-            label: 'Estimated Arrival in Days',
-            hint: 'Enter number of days',
-            maxLength: 3,
-            keyboardType: TextInputType.number,
-            inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-            validator: (value) {
-              if (value == null || value.isEmpty) {
-                return 'Estimated arrival is required';
-              }
-              return null;
-            },
+          Container(
+            key: isPrimaryProduct ? _fieldKeys[_fidEstimatedShippingDays] : null,
+            decoration: BoxDecoration(
+              border: isPrimaryProduct && _invalidFieldId == _fidEstimatedShippingDays
+                  ? Border.all(color: Colors.red, width: 1.5)
+                  : null,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: _buildTextField(
+              controller: product.estimatedArrivalController,
+              fieldId: isPrimaryProduct ? _fidEstimatedShippingDays : null,
+              label: 'Estimated Arrival in Days',
+              hint: 'Enter number of days',
+              maxLength: 3,
+              keyboardType: TextInputType.number,
+              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return null;
+                }
+                if (int.tryParse(value) == null) {
+                  return 'Only numbers allowed for estimated arrival';
+                }
+                return null;
+              },
+            ),
           ),
           const SizedBox(height: 20),
           // Free Shipping Checkbox
@@ -1947,9 +2256,8 @@ class _PostYourStorePageState extends State<PostYourStorePage> {
 
   bool _isProductComplete(ProductFormData product) {
     if (product.titleController.text.trim().isEmpty) return false;
-    if (product.priceController.text.trim().isEmpty) return false;
     if (product.descriptionController.text.trim().isEmpty) return false;
-    if (product.estimatedArrivalController.text.trim().isEmpty) return false;
+    if (product.priceController.text.trim().isEmpty) return false;
     if (product.productCondition.isEmpty) return false;
     if (product.productImageBytes == null || product.productImageBytes!.isEmpty) return false;
     final price = double.tryParse(product.priceController.text);

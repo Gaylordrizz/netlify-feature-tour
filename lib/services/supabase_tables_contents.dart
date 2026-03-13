@@ -16,32 +16,32 @@ class UserChatRoom {
   final String id;
   final String creatorId;
   final String roomName;
-  final String? description;
+  final String description;
   final bool isPrivate;
   final DateTime createdAt;
   final int messageCount;
-  final DateTime? lastMessageAt;
+  final DateTime lastMessageAt;
 
   UserChatRoom({
     required this.id,
     required this.creatorId,
     required this.roomName,
-    this.description,
+    this.description = '',
     required this.isPrivate,
     required this.createdAt,
     required this.messageCount,
-    this.lastMessageAt,
+    required this.lastMessageAt,
   });
 
   factory UserChatRoom.fromJson(Map<String, dynamic> json) => UserChatRoom(
         id: json['id'] as String,
         creatorId: json['creator_id'] as String,
         roomName: json['room_name'] as String,
-        description: json['description'] as String?,
+        description: (json['description'] as String?) ?? '',
         isPrivate: json['is_private'] as bool,
         createdAt: DateTime.parse(json['created_at'] as String),
         messageCount: json['message_count'] is int ? json['message_count'] as int : int.parse(json['message_count'].toString()),
-        lastMessageAt: json['last_message_at'] != null ? DateTime.parse(json['last_message_at'] as String) : null,
+        lastMessageAt: DateTime.parse(json['last_message_at'] as String),
       );
 
   Map<String, dynamic> toJson() => {
@@ -52,7 +52,7 @@ class UserChatRoom {
         'is_private': isPrivate,
         'created_at': createdAt.toIso8601String(),
         'message_count': messageCount,
-        'last_message_at': lastMessageAt?.toIso8601String(),
+        'last_message_at': lastMessageAt.toIso8601String(),
       };
 }
 /// Table: subscriptions
@@ -88,8 +88,8 @@ class Subscription {
   final String id;
   final String userId;
   final String status;
-  final String? priceId;
-  final int? quantity;
+  final String priceId;
+  final int quantity;
   final bool? cancelAtPeriodEnd;
   final DateTime? currentPeriodStart;
   final DateTime? currentPeriodEnd;
@@ -100,8 +100,8 @@ class Subscription {
     required this.id,
     required this.userId,
     required this.status,
-    this.priceId,
-    this.quantity,
+    this.priceId = '',
+    this.quantity = 1,
     this.cancelAtPeriodEnd,
     this.currentPeriodStart,
     this.currentPeriodEnd,
@@ -113,8 +113,8 @@ class Subscription {
         id: json['id'] as String,
         userId: json['user_id'] as String,
         status: json['status'] as String,
-        priceId: json['price_id'] as String?,
-        quantity: json['quantity'] == null ? null : (json['quantity'] is int ? json['quantity'] as int : int.tryParse(json['quantity'].toString())),
+        priceId: (json['price_id'] as String?) ?? '',
+        quantity: json['quantity'] is int ? json['quantity'] as int : int.parse(json['quantity'].toString()),
         cancelAtPeriodEnd: json['cancel_at_period_end'] as bool?,
         currentPeriodStart: json['current_period_start'] != null ? DateTime.parse(json['current_period_start'] as String) : null,
         currentPeriodEnd: json['current_period_end'] != null ? DateTime.parse(json['current_period_end'] as String) : null,
@@ -154,14 +154,14 @@ class Message {
   final String communityId;
   final String userId;
   final String content;
-  final DateTime? createdAt;
+  final DateTime createdAt;
 
   Message({
     required this.id,
     required this.communityId,
     required this.userId,
     required this.content,
-    this.createdAt,
+    required this.createdAt,
   });
 
   factory Message.fromJson(Map<String, dynamic> json) => Message(
@@ -169,7 +169,7 @@ class Message {
         communityId: json['community_id'] as String,
         userId: json['user_id'] as String,
         content: json['content'] as String,
-        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+        createdAt: DateTime.parse(json['created_at'] as String),
       );
 
   Map<String, dynamic> toJson() => {
@@ -177,7 +177,7 @@ class Message {
         'community_id': communityId,
         'user_id': userId,
         'content': content,
-        'created_at': createdAt?.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
       };
 }
 /// Table: communities
@@ -198,22 +198,22 @@ class Community {
   final String name;
   final String slug;
   final String? userId;
-  final String? creatorId;
-  final DateTime? createdAt;
-  final bool? isUserRoom;
-  final int? messageCount;
-  final Map<String, dynamic>? settings;
+  final String creatorId;
+  final DateTime createdAt;
+  final bool isUserRoom;
+  final int messageCount;
+  final Map<String, dynamic> settings;
 
   Community({
     required this.id,
     required this.name,
     required this.slug,
     this.userId,
-    this.creatorId,
-    this.createdAt,
-    this.isUserRoom,
-    this.messageCount,
-    this.settings,
+    required this.creatorId,
+    required this.createdAt,
+    this.isUserRoom = true,
+    this.messageCount = 0,
+    this.settings = const {},
   });
 
   factory Community.fromJson(Map<String, dynamic> json) => Community(
@@ -221,11 +221,11 @@ class Community {
         name: json['name'] as String,
         slug: json['slug'] as String,
         userId: json['user_id'] as String?,
-        creatorId: json['creator_id'] as String?,
-        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
-        isUserRoom: json['is_user_room'] == null ? null : json['is_user_room'] as bool,
-        messageCount: json['message_count'] == null ? null : (json['message_count'] is int ? json['message_count'] as int : int.tryParse(json['message_count'].toString())),
-        settings: json['settings'] == null ? null : Map<String, dynamic>.from(json['settings'] as Map),
+        creatorId: json['creator_id'] as String,
+        createdAt: DateTime.parse(json['created_at'] as String),
+        isUserRoom: (json['is_user_room'] as bool?) ?? true,
+        messageCount: json['message_count'] is int ? json['message_count'] as int : int.parse(json['message_count'].toString()),
+        settings: json['settings'] == null ? <String, dynamic>{} : Map<String, dynamic>.from(json['settings'] as Map),
       );
 
   Map<String, dynamic> toJson() => {
@@ -234,7 +234,7 @@ class Community {
         'slug': slug,
         'user_id': userId,
         'creator_id': creatorId,
-        'created_at': createdAt?.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
         'is_user_room': isUserRoom,
         'message_count': messageCount,
         'settings': settings,
@@ -246,22 +246,22 @@ class Community {
 class SupabaseTables {
     static const String userChatRooms = 'user_chat_rooms';
   static const String subscriptions = 'subscriptions';
-  static const String analyticsEvents = 'analytics events';
+  static const String analyticsEvents = 'analytics_events';
   static const String passwordResetCodes = 'password_reset_codes';
-  static const String productFlags = 'product flags';
-  static const String productRating = 'product rating';
-  static const String productStats = 'product stats';
-  static const String productVisibilityCooldowns = 'product visibility cooldowns';
+  static const String productFlags = 'product_flags';
+  static const String productRating = 'product_rating';
+  static const String productStats = 'product_stats';
+  static const String productVisibilityCooldowns = 'product_visibility_cooldowns';
   static const String products = 'products';
   static const String profiles = 'profiles';
-  static const String storeFlags = 'store flags';
-  static const String storeRatings = 'store ratings';
-  static const String storeStats = 'store stats';
+  static const String storeFlags = 'store_flags';
+  static const String storeRatings = 'store_ratings';
+  static const String storeStats = 'store_stats';
   static const String stores = 'stores';
-  static const String userProductHistory = 'user product history';
-  static const String userSavedProducts = 'user saved products';
-  static const String userSavedStores = 'user saved stores';
-  static const String userStoreHistory = 'user store history';
+  static const String userProductHistory = 'user_product_history';
+  static const String userSavedProducts = 'user_saved_products';
+  static const String userSavedStores = 'user_saved_stores';
+  static const String userStoreHistory = 'user_store_history';
   static const String orders = 'orders';
   static const String userPhotos = 'user_photos';
   static const String invoices = 'invoices';
@@ -289,35 +289,35 @@ class Receipt {
   final String id;
   final String userId;
   final String stripeInvoiceId;
-  final String? receiptNumber;
+  final String receiptNumber;
   final int amount;
   final String currency;
   final String status;
-  final String? receiptPdf;
-  final DateTime? createdAt;
+  final String receiptPdf;
+  final DateTime createdAt;
 
   Receipt({
     required this.id,
     required this.userId,
     required this.stripeInvoiceId,
-    this.receiptNumber,
+    this.receiptNumber = '',
     required this.amount,
     required this.currency,
     required this.status,
-    this.receiptPdf,
-    this.createdAt,
+    this.receiptPdf = '',
+    required this.createdAt,
   });
 
   factory Receipt.fromJson(Map<String, dynamic> json) => Receipt(
         id: json['id'] as String,
         userId: json['user_id'] as String,
         stripeInvoiceId: json['stripe_invoice_id'] as String,
-        receiptNumber: json['receipt_number'] as String?,
+        receiptNumber: (json['receipt_number'] as String?) ?? '',
         amount: json['amount'] is int ? json['amount'] as int : int.parse(json['amount'].toString()),
         currency: json['currency'] as String,
         status: json['status'] as String,
-        receiptPdf: json['receipt_pdf'] as String?,
-        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+        receiptPdf: (json['receipt_pdf'] as String?) ?? '',
+        createdAt: DateTime.parse(json['created_at'] as String),
       );
 
   Map<String, dynamic> toJson() => {
@@ -329,7 +329,7 @@ class Receipt {
         'currency': currency,
         'status': status,
         'receipt_pdf': receiptPdf,
-        'created_at': createdAt?.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
       };
 }
 /// Table: invoices
@@ -352,35 +352,35 @@ class Invoice {
   final String id;
   final String userId;
   final String stripeInvoiceId;
-  final String? invoiceNumber;
+  final String invoiceNumber;
   final int amountDue;
   final String currency;
   final String status;
-  final String? invoicePdf;
-  final DateTime? createdAt;
+  final String invoicePdf;
+  final DateTime createdAt;
 
   Invoice({
     required this.id,
     required this.userId,
     required this.stripeInvoiceId,
-    this.invoiceNumber,
+    this.invoiceNumber = '',
     required this.amountDue,
     required this.currency,
     required this.status,
-    this.invoicePdf,
-    this.createdAt,
+    this.invoicePdf = '',
+    required this.createdAt,
   });
 
   factory Invoice.fromJson(Map<String, dynamic> json) => Invoice(
         id: json['id'] as String,
         userId: json['user_id'] as String,
         stripeInvoiceId: json['stripe_invoice_id'] as String,
-        invoiceNumber: json['invoice_number'] as String?,
+        invoiceNumber: (json['invoice_number'] as String?) ?? '',
         amountDue: json['amount_due'] is int ? json['amount_due'] as int : int.parse(json['amount_due'].toString()),
         currency: json['currency'] as String,
         status: json['status'] as String,
-        invoicePdf: json['invoice_pdf'] as String?,
-        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+        invoicePdf: (json['invoice_pdf'] as String?) ?? '',
+        createdAt: DateTime.parse(json['created_at'] as String),
       );
 
   Map<String, dynamic> toJson() => {
@@ -392,7 +392,7 @@ class Invoice {
         'currency': currency,
         'status': status,
         'invoice_pdf': invoicePdf,
-        'created_at': createdAt?.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
       };
 }
 ///
@@ -468,14 +468,14 @@ class PasswordResetCode {
   final String email;
   final String code;
   final DateTime expiresAt;
-  final DateTime? createdAt;
+  final DateTime createdAt;
 
   PasswordResetCode({
     required this.id,
     required this.email,
     required this.code,
     required this.expiresAt,
-    this.createdAt,
+    required this.createdAt,
   });
 
   factory PasswordResetCode.fromJson(Map<String, dynamic> json) => PasswordResetCode(
@@ -483,7 +483,7 @@ class PasswordResetCode {
         email: json['email'] as String,
         code: json['code'] as String,
         expiresAt: DateTime.parse(json['expires_at'] as String),
-        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+        createdAt: DateTime.parse(json['created_at'] as String),
       );
 
   Map<String, dynamic> toJson() => {
@@ -491,7 +491,7 @@ class PasswordResetCode {
         'email': email,
         'code': code,
         'expires_at': expiresAt.toIso8601String(),
-        'created_at': createdAt?.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
       };
 }
 
@@ -569,7 +569,7 @@ class ProductRating {
   final String productId;
   final String userId;
   final int rating;
-  final String? reviewText;
+  final String reviewText;
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -578,7 +578,7 @@ class ProductRating {
     required this.productId,
     required this.userId,
     required this.rating,
-    this.reviewText,
+    this.reviewText = '',
     required this.createdAt,
     this.updatedAt,
   });
@@ -588,7 +588,7 @@ class ProductRating {
         productId: json['product_id'] as String,
         userId: json['user_id'] as String,
         rating: json['rating'] as int,
-        reviewText: json['review_text'] as String?,
+        reviewText: (json['review_text'] as String?) ?? '',
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       );
@@ -621,16 +621,16 @@ class ProductStats {
   final int impressions;
   final int clicks;
   final int daysListed;
-  final num? ratingAvg;
-  final int? ratingCount;
+  final num ratingAvg;
+  final int ratingCount;
 
   ProductStats({
     required this.productId,
     required this.impressions,
     required this.clicks,
     required this.daysListed,
-    this.ratingAvg,
-    this.ratingCount,
+    this.ratingAvg = 0,
+    this.ratingCount = 0,
   });
 
   factory ProductStats.fromJson(Map<String, dynamic> json) => ProductStats(
@@ -638,8 +638,8 @@ class ProductStats {
         impressions: json['impressions'] as int,
         clicks: json['clicks'] as int,
         daysListed: json['days_listed'] as int,
-        ratingAvg: json['rating_avg'] != null ? num.parse(json['rating_avg'].toString()) : null,
-        ratingCount: json['rating_count'] as int?,
+        ratingAvg: json['rating_avg'] == null ? 0 : num.parse(json['rating_avg'].toString()),
+        ratingCount: json['rating_count'] is int ? json['rating_count'] as int : int.parse(json['rating_count'].toString()),
       );
 
   Map<String, dynamic> toJson() => {
@@ -720,30 +720,32 @@ class Product {
   final String storeId;
   final String name;
   final num price;
-  final String? productUrl;
-  final String? imageUrl;
-  final String? description;
-  final String? category;
+  final String productUrl;
+  final String imageUrl;
+  final String description;
+  final String category;
   final String condition;
-  final int? estimatedShippingDays;
+  final int estimatedShippingDays;
   final DateTime createdAt;
   final DateTime? updatedAt;
-  final String? publicId;
+  final String publicId;
+  final bool freeShippingCheck;
 
   Product({
     required this.id,
     required this.storeId,
     required this.name,
     required this.price,
-    this.productUrl,
-    this.imageUrl,
-    this.description,
-    this.category,
+    this.productUrl = '',
+    this.imageUrl = '',
+    required this.description,
+    required this.category,
     this.condition = 'New',
     this.estimatedShippingDays = 3,
     required this.createdAt,
     this.updatedAt,
-    this.publicId,
+    this.publicId = '',
+    this.freeShippingCheck = false,
   });
 
   factory Product.fromJson(Map<String, dynamic> json) => Product(
@@ -751,19 +753,18 @@ class Product {
         storeId: json['store_id'] as String,
         name: json['name'] as String,
         price: num.parse(json['price'].toString()),
-        productUrl: json['product_url'] as String?,
-        imageUrl: json['image_url'] as String?,
-        description: json['description'] as String?,
-        category: json['category'] as String?,
+        productUrl: (json['product_url'] as String?) ?? '',
+        imageUrl: (json['image_url'] as String?) ?? '',
+        description: (json['description'] as String?) ?? '',
+        category: (json['category'] as String?) ?? 'Uncategorized',
         condition: (json['condition'] as String?) ?? 'New',
-        estimatedShippingDays: json['estimated_shipping_days'] == null
-            ? null
-            : (json['estimated_shipping_days'] is int
-                ? json['estimated_shipping_days'] as int
-                : int.tryParse(json['estimated_shipping_days'].toString())),
+        estimatedShippingDays: json['estimated_shipping_days'] is int
+          ? json['estimated_shipping_days'] as int
+          : int.parse(json['estimated_shipping_days'].toString()),
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
-        publicId: json['public_id'] as String?,
+        publicId: (json['public_id'] as String?) ?? '',
+        freeShippingCheck: (json['free_shipping_check'] as bool?) ?? false,
       );
 
   Map<String, dynamic> toJson() => {
@@ -780,6 +781,7 @@ class Product {
         'created_at': createdAt.toIso8601String(),
         'updated_at': updatedAt?.toIso8601String(),
         'public_id': publicId,
+        'free_shipping_check': freeShippingCheck,
       };
 }
 
@@ -801,7 +803,7 @@ class Profile {
   final String name;
   final bool isPaying;
   final DateTime? updatedAt;
-  final String? avatarUrl;
+  final String avatarUrl;
 
   Profile({
     required this.id,
@@ -810,7 +812,7 @@ class Profile {
     required this.name,
     required this.isPaying,
     this.updatedAt,
-    this.avatarUrl,
+    this.avatarUrl = '',
   });
 
   factory Profile.fromJson(Map<String, dynamic> json) => Profile(
@@ -820,7 +822,7 @@ class Profile {
         name: json['name'] as String,
         isPaying: json['is_paying'] as bool,
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
-        avatarUrl: json['avatar_url'] as String?,
+        avatarUrl: (json['avatar_url'] as String?) ?? '',
       );
 
   Map<String, dynamic> toJson() => {
@@ -908,7 +910,7 @@ class StoreRating {
   final String storeId;
   final String userId;
   final int rating;
-  final String? reviewText;
+  final String reviewText;
   final DateTime createdAt;
   final DateTime? updatedAt;
 
@@ -917,7 +919,7 @@ class StoreRating {
     required this.storeId,
     required this.userId,
     required this.rating,
-    this.reviewText,
+    this.reviewText = '',
     required this.createdAt,
     this.updatedAt,
   });
@@ -927,7 +929,7 @@ class StoreRating {
         storeId: json['store_id'] as String,
         userId: json['user_id'] as String,
         rating: json['rating'] as int,
-        reviewText: json['review_text'] as String?,
+        reviewText: (json['review_text'] as String?) ?? '',
         createdAt: DateTime.parse(json['created_at'] as String),
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       );
@@ -1014,16 +1016,16 @@ class Store {
   final DateTime createdAt;
   final String ownerId;
   final String name;
-  final String? storeUrl;
-  final String? category;
-  final String? subheading;
-  final String? aboutStore;
-  final String? facebookLink;
-  final String? instagramLink;
-  final String? contactEmail;
-  final String? contactAddress;
-  final String? postalCode;
-  final String? contactPhone;
+  final String storeUrl;
+  final String category;
+  final String subheading;
+  final String aboutStore;
+  final String facebookLink;
+  final String instagramLink;
+  final String contactEmail;
+  final String contactAddress;
+  final String postalCode;
+  final String contactPhone;
   final DateTime? updatedAt;
 
   Store({
@@ -1031,16 +1033,16 @@ class Store {
     required this.createdAt,
     required this.ownerId,
     required this.name,
-    this.storeUrl,
-    this.category,
-    this.subheading,
-    this.aboutStore,
-    this.facebookLink,
-    this.instagramLink,
-    this.contactEmail,
-    this.contactAddress,
-    this.postalCode,
-    this.contactPhone,
+    this.storeUrl = '',
+    this.category = 'Uncategorized',
+    this.subheading = '',
+    this.aboutStore = '',
+    this.facebookLink = '',
+    this.instagramLink = '',
+    required this.contactEmail,
+    this.contactAddress = '',
+    this.postalCode = '',
+    this.contactPhone = '',
     this.updatedAt,
   });
 
@@ -1049,16 +1051,16 @@ class Store {
         createdAt: DateTime.parse(json['created_at'] as String),
         ownerId: json['owner_id'] as String,
         name: json['name'] as String,
-        storeUrl: json['store_url'] as String?,
-        category: json['category'] as String?,
-        subheading: json['subheading'] as String?,
-        aboutStore: json['about_store'] as String?,
-        facebookLink: json['facebook_link'] as String?,
-        instagramLink: json['instagram_link'] as String?,
-        contactEmail: json['contact_email'] as String?,
-        contactAddress: json['contact_address'] as String?,
-        postalCode: json['postal_code'] as String?,
-        contactPhone: json['contact_phone'] as String?,
+        storeUrl: (json['store_url'] as String?) ?? '',
+        category: (json['category'] as String?) ?? 'Uncategorized',
+        subheading: (json['subheading'] as String?) ?? '',
+        aboutStore: (json['about_store'] as String?) ?? '',
+        facebookLink: (json['facebook_link'] as String?) ?? '',
+        instagramLink: (json['instagram_link'] as String?) ?? '',
+        contactEmail: json['contact_email'] as String,
+        contactAddress: (json['contact_address'] as String?) ?? '',
+        postalCode: (json['postal_code'] as String?) ?? '',
+        contactPhone: (json['contact_phone'] as String?) ?? '',
         updatedAt: json['updated_at'] != null ? DateTime.parse(json['updated_at'] as String) : null,
       );
 
@@ -1222,39 +1224,39 @@ class UserSavedStore {
 class Orders {
   final String id;
   final String? userId;
-  final String? stripeSessionId;
-  final String? stripePaymentIntentId;
-  final String? stripeSubscriptionId;
-  final String? stripeCustomerId;
+  final String stripeSessionId;
+  final String stripePaymentIntentId;
+  final String stripeSubscriptionId;
+  final String stripeCustomerId;
   final int amount;
   final String currency;
   final String status;
-  final DateTime? createdAt;
+  final DateTime createdAt;
 
   Orders({
     required this.id,
     this.userId,
-    this.stripeSessionId,
-    this.stripePaymentIntentId,
-    this.stripeSubscriptionId,
-    this.stripeCustomerId,
+    this.stripeSessionId = '',
+    this.stripePaymentIntentId = '',
+    this.stripeSubscriptionId = '',
+    this.stripeCustomerId = '',
     this.amount = 0,
     this.currency = 'usd',
     this.status = 'pending',
-    this.createdAt,
+    required this.createdAt,
   });
 
   factory Orders.fromJson(Map<String, dynamic> json) => Orders(
         id: json['id'] as String,
         userId: json['user_id'] as String?,
-        stripeSessionId: json['stripe_session_id'] as String?,
-        stripePaymentIntentId: json['stripe_payment_intent_id'] as String?,
-        stripeSubscriptionId: json['stripe_subscription_id'] as String?,
-        stripeCustomerId: json['stripe_customer_id'] as String?,
+        stripeSessionId: (json['stripe_session_id'] as String?) ?? '',
+        stripePaymentIntentId: (json['stripe_payment_intent_id'] as String?) ?? '',
+        stripeSubscriptionId: (json['stripe_subscription_id'] as String?) ?? '',
+        stripeCustomerId: (json['stripe_customer_id'] as String?) ?? '',
         amount: json['amount'] is int ? json['amount'] as int : int.parse(json['amount'].toString()),
         currency: json['currency'] as String? ?? 'usd',
         status: json['status'] as String? ?? 'pending',
-        createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
+        createdAt: DateTime.parse(json['created_at'] as String),
       );
 
   Map<String, dynamic> toJson() => {
@@ -1267,7 +1269,7 @@ class Orders {
         'amount': amount,
         'currency': currency,
         'status': status,
-        'created_at': createdAt?.toIso8601String(),
+        'created_at': createdAt.toIso8601String(),
       };
 }
 
@@ -1326,16 +1328,16 @@ class UserPhotos {
   final String id;
   final String userId;
   final String filePath;
-  final String? description;
-  final bool? isPublic;
+  final String description;
+  final bool isPublic;
   final DateTime? createdAt;
 
   UserPhotos({
     required this.id,
     required this.userId,
     required this.filePath,
-    this.description,
-    this.isPublic,
+    this.description = '',
+    this.isPublic = false,
     this.createdAt,
   });
 
@@ -1343,8 +1345,8 @@ class UserPhotos {
         id: json['id'] as String,
         userId: json['user_id'] as String,
         filePath: json['file_path'] as String,
-        description: json['description'] as String?,
-        isPublic: json['is_public'] as bool?,
+        description: (json['description'] as String?) ?? '',
+        isPublic: (json['is_public'] as bool?) ?? false,
         createdAt: json['created_at'] != null ? DateTime.parse(json['created_at'] as String) : null,
       );
 
